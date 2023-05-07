@@ -1,0 +1,20 @@
+.toplist {
+  background-color: transparent;
+  height: 60px;
+}
+
+.selectShow {
+  background-color: rgb(248 245 245 / 70%);
+  font-size: 20px;
+  outline: none;
+  border: 1px solid #aaa;
+  color: rgb(73, 73, 73);
+}
+
+.menu {
+  top: 70px;
+}
+
+.menu ul .check {
+  display: block;
+}

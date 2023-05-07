@@ -1,0 +1,577 @@
+import $ from "jquery";
+import MarkdownIt from "markdown-it";
+import hljs from "highlight.js";
+import '../../css/iconfont.css'
+import './note.css'
+import {
+  queryURLParams,
+  myOpen,
+  _setData,
+  _getData,
+  _delData,
+  _setTimeout,
+  throttle,
+  debounce,
+  _getTarget,
+  _mySlide,
+  _postAjax,
+  _getAjax,
+  _upFile,
+  copyText,
+  encodeHtml,
+  _each,
+  _imgSize,
+  _position,
+  _offset,
+  _myOpen,
+  _progressBar,
+  imgPreview,
+} from '../../utils/utils'
+import { _speed, mediaURL } from "../../config";
+import '../../js/common'
+import { _err, _success } from "../../plugins/message";
+import { _loadingBar } from '../../plugins/loadingBar'
+import { rightMenu } from '../../plugins/rightMenu'
+~(function () {
+  let $totop = $('.totop'),
+    $icon = $("link[rel*='icon']"),
+    $html = $(document.documentElement),
+    urlparmes = queryURLParams(myOpen()),
+    $body = $('body'),
+    $mbg = $('.mbg'),
+    HASH = urlparmes.HASH;
+  document.addEventListener('visibilitychange', function () {
+    // 页面变为不可见时触发
+    if (document.visibilityState == 'hidden') {
+      $icon.attr('href', '/img/icon.png');
+    }
+    // 页面变为可见时触发
+    if (document.visibilityState == 'visible') {
+      $icon.attr('href', '/img/icon1.png');
+    }
+  });
+  _setTimeout(() => {
+    $mbg.css({
+      opacity: '0.6',
+    });
+  }, 600)
+  $totop.click(function () {
+    $html.stop().animate(
+      {
+        scrollTop: 0,
+      },
+      _speed
+    );
+  });
+  let $fsbg = $('.fsbg'),
+    $notebotlist = $('.notebotlist'),
+    $hicodeid = $('#hicode'),
+    $markdown = $('.markdown'),
+    $notetitle = $('.notetitle'),
+    $pageSearch = $('.pageSearch'),
+    $pageSearchOn = $('.pageSearchOn'),
+    $pageSearchNum = $('.pageSearchNum'),
+    $editnote = $('.editnote'),
+    $from = $('.from'),
+    editlistmdobj = {
+      fontsz: 20,
+      fontwe: 0,
+      theme: 2,
+    },
+    highlightnum = 0,
+    $highlight = null,
+    titleName = '';
+  $editnote.click(
+    debounce(function () {
+      _myOpen(`/page/edit/#${urlparmes.v}`, titleName);
+    }, 500)
+  );
+  function notexuanrandefault() {
+    let str = '';
+    new Array(20).fill(null).forEach((v, i) => {
+      let w = Math.round(Math.random() * (90 - 20) + 20);
+      str += `<p style="pointer-events: none;background-color:#83818173;height:25px;width:100%;margin:15px 0;"></p>
+            ${w % 2 === 0
+          ? '<p style="background-color:#83818173;height:25px;width:100%;margin:15px 0;"></p>'
+          : ''
+        }
+            <p style="background-color:#83818173;height:25px;width:${w}%;margin:15px 0;"></p>
+      `;
+    });
+    $markdown.html(str);
+  }
+  notexuanrandefault();
+  if (urlparmes.v) {
+    _getAjax('/note/getnote', { v: urlparmes.v }).then((result) => {
+      if (parseInt(result.code) === 0) {
+        let { name, data, account, username, own } = result.data;
+        titleName = name
+        $from._uobj = {
+          account,
+          username,
+          own,
+        };
+        let logoUrl = `${mediaURL}/logo/${account}/${account}.png`;
+        $from
+          .find('.logo')
+          .attr('title', username)
+          .css('background-image', `url(${logoUrl})`);
+        data = `# ${name}\n` + data;
+        let str = MarkdownIt({ linkify: true }).render(data);
+        $markdown.html(str);
+        hljs.highlightAll();
+        $markdown.find('pre')
+          .append(
+            `<div title="复制" cursor class="codeCopy iconfont icon-fuzhi"><div>`
+          )
+          .prepend(
+            `<div data-flag="y" cursor class="shrink iconfont icon-Down"><div>`
+          );
+        $markdown.find('a').attr('target', '_blank')
+        // hljs.initHighlightingOnLoad();
+        BlogDirectory();
+        $notetitle.text(name);
+        $notebotlist.addClass('open');
+        $html.stop().animate(
+          {
+            scrollTop: 0,
+          },
+          _speed
+        );
+        if (HASH) {
+          HASH = decodeURIComponent(HASH);
+          $markdown.highlight(HASH);
+          $highlight = $markdown.find('span.highlight')
+          let _length = $highlight.length;
+          highlightnum = 0;
+          if (_length > 0) {
+            $pageSearchOn.click();
+            $pageSearch.find('.hinp').val(HASH);
+            $pageSearchNum.html(`${highlightnum + 1}/${_length}`);
+            highlightPosition(highlightnum);
+          }
+        }
+        return;
+      }
+      $markdown.html(result.codeText);
+      $notebotlist.remove();
+      $from.remove();
+    }).catch(err => { })
+  } else {
+    $markdown.html('输入地址错误');
+    $notebotlist.remove();
+  }
+  $from.find('.logo').click(
+    debounce(
+      function (e) {
+        let { account, username, own } = $from._uobj;
+        let uname = encodeHtml(username);
+        let str = `<div cursor class="mtcitem" style="justify-content: center;">${uname}</div>
+    <div cursor class="mtcitem1">查看更多</div>
+    ${own === 'y' ? '' : `<div cursor class="mtcitem2">@${uname}</div>`}`;
+        rightMenu(
+          e,
+          str,
+          debounce(
+            function ({ close, e }) {
+              if (_getTarget(e, '.mtcitem1')) {
+                let url = `/page/allnote/#${account}`;
+                if (own === 'y') {
+                  url = `/page/notes/`;
+                }
+                _myOpen(url, username);
+                close();
+              } else if (_getTarget(e, '.mtcitem')) {
+                imgPreview([{ u1: `${mediaURL}/logo/${account}/${account}.png` }]);
+              } else if (_getTarget(e, '.mtcitem2')) {
+                _setData('toUser', {
+                  account,
+                  username,
+                });
+                myOpen(`/?c=open`, '_blank');
+              }
+            },
+            1000,
+            true
+          )
+        );
+      },
+      500,
+      true
+    )
+  );
+  $markdown
+    .on(
+      'click',
+      '.codeCopy',
+      debounce(
+        function () {
+          let str = $(this).parent().find('code').text();
+          copyText(str);
+        },
+        500,
+        true
+      )
+    )
+    .on(
+      'click',
+      '.shrink',
+      debounce(
+        function () {
+          let $this = $(this);
+          let flag = $this.attr('data-flag');
+          if (flag === 'y') {
+            $this.attr({
+              'data-flag': 'n',
+              class: 'shrink iconfont icon-page-next',
+            });
+            $this.parent().find('code').stop().hide();
+          } else {
+            $this.attr({
+              'data-flag': 'y',
+              class: 'shrink iconfont icon-Down',
+            });
+            $this.parent().find('code').stop().show();
+          }
+        },
+        500,
+        true
+      )
+    );
+  $pageSearch.click((e) => {
+    $highlight = $markdown.find('span.highlight')
+    let target = e.target,
+      _length = $highlight.length;
+    if (target.tagName === 'DIV') {
+      if ($(target).attr('flag') === 'x') {
+        $pageSearch.css('display', 'none');
+        $markdown.removeHighlight();
+        highlightnum = 0;
+        $pageSearch.find('.hinp').val('');
+        $pageSearchNum.text('');
+      } else {
+        if (_length === 0) return;
+        if ($(target).attr('flag') === 'next') {
+          highlightnum++;
+        } else if ($(target).attr('flag') === 'pre') {
+          highlightnum--;
+        }
+        highlightnum >= _length
+          ? (highlightnum = 0)
+          : highlightnum < 0
+            ? (highlightnum = _length - 1)
+            : null;
+        $pageSearchNum.text(`${highlightnum + 1}/${_length}`);
+        highlightPosition(highlightnum);
+      }
+    }
+  });
+  $pageSearchOn.click(() => {
+    $pageSearch.css('display', 'flex').find('.hinp').focus();
+  });
+  $pageSearch
+    .find('.hinp')
+    .on('input', function () {
+      let $this = $(this),
+        val = $this.val().trim();
+      $markdown.removeHighlight();
+      $pageSearchNum.text(``);
+      if (val === '') return;
+      $markdown.highlight(val);
+      $highlight = $markdown.find('span.highlight')
+      let _length = $highlight.length;
+      $pageSearch.css('display', 'flex');
+      highlightnum = 0;
+      if (_length > 0) {
+        $pageSearchNum.text(`${highlightnum + 1}/${_length}`);
+        highlightPosition(highlightnum);
+      }
+    })
+    .on('mouseenter', function () {
+      $(this).focus();
+    })
+    .on('keydown', function (e) {
+      let key = e.key;
+      if (key === 'Enter') {
+        $highlight = $markdown.find('span.highlight')
+        let _length = $highlight.length;
+        if (_length === 0) return;
+        highlightnum++;
+        highlightnum >= _length
+          ? (highlightnum = 0)
+          : highlightnum < 0
+            ? (highlightnum = _length - 1)
+            : null;
+        highlightPosition(highlightnum);
+        $pageSearchNum.text(`${highlightnum + 1}/${_length}`);
+        e.preventDefault();
+      }
+    });
+
+  //高亮定位
+  function highlightPosition(num) {
+    let DH = $(window).height(),
+      _top = _position($highlight.eq(num)[0], true).top + $html.scrollTop();
+    $highlight.removeClass('active').eq(num).addClass('active');
+    if (_top > $html.scrollTop() && _top < $html.scrollTop() + DH) {
+    } else {
+      $html.stop().animate(
+        {
+          scrollTop: _top - 60,
+        },
+        _speed
+      );
+    }
+  }
+  if (_getData('editlistmdobj')) {
+    editlistmdobj = _getData('editlistmdobj');
+  }
+
+  $markdown.css({
+    'font-size': editlistmdobj.fontsz,
+  });
+
+  let fsbgnum = editlistmdobj.theme;
+  function changebg() {
+    switch (fsbgnum) {
+      case 1:
+        {
+          editlistmdobj.theme = fsbgnum;
+          _setData('editlistmdobj', editlistmdobj);
+          $body.attr('class', 'heibaibg');
+          $markdown.attr('class', 'markdown heibaibg');
+          $hicodeid.attr('href', '/css/notecode1.css');
+          fsbgnum++;
+        }
+        break;
+      case 2:
+        {
+          editlistmdobj.theme = fsbgnum;
+          _setData('editlistmdobj', editlistmdobj);
+          $body.attr('class', 'baiheibg');
+          $markdown.attr('class', 'markdown baiheibg');
+          $hicodeid.attr('href', '/css/notecode.css');
+          fsbgnum++;
+        }
+        break;
+      case 3:
+        {
+          editlistmdobj.theme = fsbgnum;
+          _setData('editlistmdobj', editlistmdobj);
+          $body.attr('class', 'moren');
+          $markdown.attr('class', ' markdown moren');
+          $hicodeid.attr('href', '/css/notecode2.css');
+          fsbgnum = 1;
+        }
+        break;
+    }
+  }
+  changebg();
+  $fsbg.click((e) => {
+    changebg();
+  });
+  $('.fszd').click((e) => {
+    let fsztnum = editlistmdobj.fontsz;
+    fsztnum += 2;
+    fsztnum >= 30 ? (fsztnum = 30) : null;
+    $markdown.css({
+      'font-size': fsztnum,
+    });
+    editlistmdobj.fontsz = fsztnum;
+    _setData('editlistmdobj', editlistmdobj);
+  });
+  $('.fsjx').click((e) => {
+    let fsztnum = editlistmdobj.fontsz;
+    fsztnum -= 2;
+    fsztnum <= 12 ? (fsztnum = 12) : null;
+    $markdown.css({
+      'font-size': fsztnum,
+    });
+    editlistmdobj.fontsz = fsztnum;
+    _setData('editlistmdobj', editlistmdobj);
+  });
+  window.addEventListener(
+    'scroll',
+    throttle(function () {
+      let p = document.documentElement.scrollTop;
+      if (p <= 100) {
+        $totop.stop().slideUp(_speed);
+      } else {
+        $totop.stop().slideDown(_speed);
+      }
+      let H = window.innerHeight,
+        CH = document.documentElement.scrollHeight - H;
+      pagepro(p / CH);
+    }, 500)
+  );
+
+  $markdown.on('click', 'img', function () {
+    imgPreview([{ u1: $(this).attr('src') }]);
+  });
+
+  let BlogDirectory = function () {
+    let $mdBox = $('.markdownbox'),
+      $navwrap = $('.navwrap'),
+      $dirBox = $('.dirBox'),
+      $showDir = $('.showDir'),
+      $allH = $mdBox.find('h1,h2,h3,h4,h5,h6'),
+      str = '';
+    $allH.each((idx, item) => {
+      let text = encodeHtml(item.innerText);
+      item.id = 'hello_' + idx;
+      str += `<li h="${item.tagName.slice(
+        1
+      )}" cursor title="${text}" data-id="hello_${idx}">${text}</li>`;
+    });
+    $dirBox.html(str);
+
+    let $allLi = $navwrap.find('li');
+    document.addEventListener('click', function (e) {
+      if (!_getTarget(e, '.navwrap')) {
+        $navwrap.removeClass('open');
+      }
+    });
+    $navwrap.on('click', 'li', function (e) {
+      let $this = $(this);
+      $allLi.removeClass('open');
+      $this.addClass('open');
+      let id = $this.attr('data-id'),
+        el = $html.find(`#${id}`),
+        _top = _position(el[0], true).top + $html.scrollTop();
+      $html.stop().animate(
+        {
+          scrollTop: _top - 60,
+        },
+        _speed
+      );
+    });
+    // .on('click', '.navClose', function () {
+    //   $navwrap.removeClass('open');
+    // })
+    _mySlide({
+      el: '.navwrap',
+      right() {
+        $navwrap.removeClass('open');
+      },
+    });
+    $showDir.on('click', (e) => {
+      e.stopPropagation();
+      $navwrap.addClass('open');
+      hdNavActive();
+    });
+    function hdNavActive() {
+      if (!$navwrap.hasClass('open')) return;
+      $allLi.removeClass('open');
+      let $smalltopH = $allH
+        .filter((_, item) => _position(item, true).top >= 0)
+        .eq(0);
+      $smalltopH.length > 0 ? null : ($smalltopH = $allH.last());
+      if ($smalltopH.length > 0) {
+        let $cuLi = $allLi
+          .filter((_, item) => $(item).attr('data-id') === $smalltopH[0].id)
+          .eq(0);
+        if ($cuLi.length > 0) {
+          $cuLi.addClass('open');
+          $dirBox.stop().animate(
+            {
+              scrollTop:
+                $dirBox.scrollTop() +
+                _position($cuLi[0], true).top -
+                $navwrap.height() / 4,
+            },
+            _speed
+          );
+        }
+      }
+    }
+    window.addEventListener('scroll', debounce(hdNavActive, 200));
+  };
+})();
+
+~(function () {
+  let div = document.createElement('div');
+  div.style.cssText = `
+    width: 0;
+    height: 4px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radio:20px;
+    pointer-events: none;
+    transition: 1s;
+    background-image: linear-gradient(to right, green, orange);
+    z-index: 9999999999;
+  `;
+  document.body.appendChild(div);
+  window.pagepro = function (pes) {
+    div.style.width = pes * 100 + '%';
+  };
+})();
+$.fn.highlight = function (pat) {
+  function innerHighlight(node, pat) {
+    var skip = 0;
+    if (node.nodeType == 3) {
+      var pos = node.data.toUpperCase().indexOf(pat);
+      if (pos >= 0) {
+        var spannode = document.createElement('span');
+        spannode.className = 'highlight';
+        var middlebit = node.splitText(pos);
+        var endbit = middlebit.splitText(pat.length);
+        var middleclone = middlebit.cloneNode(true);
+        spannode.appendChild(middleclone);
+        middlebit.parentNode.replaceChild(spannode, middlebit);
+        skip = 1;
+      }
+    } else if (
+      node.nodeType == 1 &&
+      node.childNodes &&
+      !/(script|style)/i.test(node.tagName)
+    ) {
+      for (var i = 0; i < node.childNodes.length; ++i) {
+        i += innerHighlight(node.childNodes[i], pat);
+      }
+    }
+    return skip;
+  }
+  return this.each(function () {
+    innerHighlight(this, pat.toUpperCase());
+  });
+};
+
+$.fn.removeHighlight = function () {
+  function newNormalize(node) {
+    for (
+      var i = 0, children = node.childNodes, nodeCount = children.length;
+      i < nodeCount;
+      i++
+    ) {
+      var child = children[i];
+      if (child.nodeType == 1) {
+        newNormalize(child);
+        continue;
+      }
+      if (child.nodeType != 3) {
+        continue;
+      }
+      var next = child.nextSibling;
+      if (next == null || next.nodeType != 3) {
+        continue;
+      }
+      var combined_text = child.nodeValue + next.nodeValue;
+      let new_node = node.ownerDocument.createTextNode(combined_text);
+      node.insertBefore(new_node, child);
+      node.removeChild(child);
+      node.removeChild(next);
+      i--;
+      nodeCount--;
+    }
+  }
+
+  return this.find('span.highlight')
+    .each(function () {
+      var thisParent = this.parentNode;
+      thisParent.replaceChild(this.firstChild, this);
+      newNormalize(thisParent);
+    })
+    .end();
+};

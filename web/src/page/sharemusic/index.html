@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="google" content="notranslate" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="assets">
+  <link rel="stylesheet icon" href="../../img/music.jpg">
+  <title id="title">ShareMusic</title>
+</head>
+
+<body>
+  <audio id="myAudio"></audio>
+  <div class="box">
+    <div class="mbg"></div>
+    <div class="musiclrcwrap">
+      <p class="from"><span cursor></span></p>
+      <div class="musicbg"></div>
+      <div class="mlrcbox">
+        <div class="mhead">
+          <div title="更多音乐" cursor class="home iconfont icon-zhuye"></div>
+          <div class="musicconfig">
+            <div class="mname"></div>
+            <div class="martist"></div>
+          </div>
+        </div>
+        <div class="musiclrc">
+          <div class="lrc"></div>
+          <div class="operation">
+            <div cursor class="mvon">MV</div>
+            <div cursor class="lrcfyon">译</div>
+          </div>
+        </div>
+        <div class="musicbar">
+          <div cursor id="play" class="iconfont icon-65zanting"></div>
+          <div class="prowrap">
+            <div class="current_time">00:00</div>
+            <div class="total_time">00:00</div>
+            <div cursor class="probox clearfix">
+              <div class="pro1">
+                <div class="pro2">
+                  <div cursor class="dolt"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- MV -->
+  <div class="musicmv">
+    <div class="mvonoffbox">
+      <div cursor class="mvoff iconfont icon-guanbi"></div>
+      <div cursor class="mvoffxs iconfont icon-prev"></div>
+    </div>
+    <div class="videowrap">
+      <video id="myVideo" width="100%" controls="controls"></video>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,127 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-image: linear-gradient(to top, #a8edea 0, #fed6e3 100%);
+}
+
+body:before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: inherit;
+  background-size: cover;
+}
+
+.mbg {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../img/bg.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 3s
+}
+
+.codebox {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.code {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.box {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  color: #ccc;
+}
+
+.box .item {
+  background-color: #59464c94;
+  display: inline-block;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  display: flex;
+  flex-flow: row;
+  overflow: hidden;
+  font-size: 20px;
+}
+
+.box .item:hover {
+  background-color: #59464c;
+  color: #fff;
+}
+
+button:active,
+.box .item:active {
+  transition: 0;
+  opacity: .2;
+}
+
+.box .item .img {
+  opacity: 0;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  background: no-repeat center;
+  background-size: cover;
+  border-radius: 5px;
+}
+
+.box .item .text {
+  flex: auto;
+  padding: 0 10px;
+  height: 40px;
+  line-height: 40px;
+}
+
+button {
+  display: block;
+  outline: none;
+  height: 30px;
+  border: none;
+  padding: 0 8px;
+  background: #ccc;
+  transition: 0.3s;
+  margin: 30px auto;
+  color: #626262;
+}
+
+button:hover {
+  color: rgb(255, 255, 255);
+  background-color: #aaa;
+}

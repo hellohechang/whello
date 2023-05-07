@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="google" content="notranslate" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=0;"/> -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <!-- <meta name="theme-color" content="#2979ff"> -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="assets">
+  <title id="title">Hello</title>
+  <link rel="stylesheet icon" href="./img/icon1.png" />
+</head>
+
+<body>
+  <!-- 加载效果 -->
+  <div class="onloading">
+    <div>Loading...</div>
+  </div>
+  <!-- 壁纸 -->
+  <div class="bgmain"></div>
+  <!--左侧书签栏-->
+  <div class="navwrap">
+    <nav id="menu">
+      <div class="menu-item"></div>
+      <div class="footmenu">
+        <div cursor class="iconfont icon-xuanzeweixuanze"></div>
+        <button cursor class="deleallsq">删除</button>
+        <button cursor class="moveallsq">移动到</button>
+        <button cursor class="closesq">取消</button>
+      </div>
+    </nav>
+  </div>
+  <!--主容器-->
+  <main id="main">
+    <!-- 时钟 -->
+    <div class="clock jzxz">
+      <ul class="line-min"></ul>
+      <ul class="line-hour"></ul>
+      <ol class="number"></ol>
+      <ul class="pointer">
+        <li class="hour"></li>
+        <li class="min"></li>
+        <li class="sec"></li>
+        <li class="circle"></li>
+      </ul>
+    </div>
+    <div class="hideBox"></div>
+    <!-- 侧边栏按钮 -->
+    <div cursor id="menubtn">
+      <div class="boxtop"></div>
+      <div class="boxcon"></div>
+      <div class="boxdow"></div>
+    </div>
+    <!-- 界面logo -->
+    <img cursor class="search-boxon jzxz" alt="" />
+    <!-- 搜索盒子 -->
+    <div class="search-box jzxz">
+      <div class="searchBoxwrap">
+        <!-- 管理历史记录 -->
+        <div title="Search History" cursor class="manageHistory iconfont icon-lishijilu"></div>
+        <!-- logo -->
+        <div id="logo">
+          <div cursor id="state">
+            <img id="img" />
+          </div>
+        </div>
+        <!-- 搜索引擎 -->
+        <div class="inputDiv">
+          <div cursor class="ydfy">译</div>
+          <div class="searchwrap">
+            <input class="int" autocomplete="off" id="inputText" type="search" size="30" />
+          </div>
+          <div class="iconfont icon-search" cursor id="submitButton"></div>
+          <!-- 搜索提示词 -->
+          <div id="searchlist">
+            <ul id="list"></ul>
+          </div>
+        </div>
+        <!-- 书签 -->
+        <div id="folder" class="folder">
+          <ul></ul>
+        </div>
+        <div class="homefootmenu">
+          <div cursor class="iconfont icon-xuanzeweixuanze"></div>
+          <button cursor class="deleallsq">删除</button>
+          <button cursor class="moveallsq">移动到</button>
+          <button cursor class="closesq">取消</button>
+        </div>
+      </div>
+    </div>
+    <!-- 迷你播放器 -->
+    <div class="musichide">
+      <div cursor class="nextm iconfont icon-skip-next"></div>
+      <div cursor class="prevm iconfont icon-ic_skip_previous_px"></div>
+      <div cursor class="playbox iconfont icon-lib-resize"></div>
+      <div cursor id="hplay" class="iconfont icon-65zanting"></div>
+      <div cursor class="gcm">词</div>
+    </div>
+    <audio preload="none" id="myAudio"></audio>
+    <audio preload="none" class="yuyplay"></audio>
+    <!--迷你歌词-->
+    <div class="lrcbotwrap jzxz">
+      <div cursor class="lrcbotoff iconfont icon-guanbi"></div>
+      <div class="lrcbot" x="0">
+        <div class="one"></div>
+        <div class="tow"></div>
+      </div>
+    </div>
+    <!-- 音乐播放器 -->
+    <div id="mmlist" class="jzxz">
+      <!-- 进度条 -->
+      <div class="mmjdt"></div>
+      <div class="mmlist-wrap">
+        <!--本地搜索列表-->
+        <div class="searchlistwrap">
+          <div class="msearchlist">
+            <ul id="msearchlist"></ul>
+          </div>
+        </div>
+        <!-- 正在播放列表 -->
+        <div class="playingwrap">
+          <div class="playinglist">
+            <div class="playingtop">
+              <div class="playtingtopleft"></div>
+              <div cursor class="playtingtopright iconfont icon-qingchu"></div>
+            </div>
+            <div class="playingbot"></div>
+          </div>
+        </div>
+        <!--播放器背景-->
+        <div class="mmlistbg"></div>
+        <!--顶部功能键-->
+        <div class="onoffbox">
+          <div cursor class="mmlistoff iconfont icon-guanbi"></div>
+          <div cursor class="mmlisthide iconfont icon-jianhao"></div>
+          <div cursor id="mmlistsx" class="iconfont icon-prev"></div>
+          <div class="gedantname"></div>
+          <input type="search" placeholder="搜索" autocomplete="off" id="musictext" />
+          <div cursor id="vobell" class="iconfont icon-24gl-volumeHigh"></div>
+        </div>
+        <div class="mmlistwrap">
+          <div class="mmlist">
+            <ul class="mmitemwrap"></ul>
+          </div>
+          <div class="mmmlist">
+            <div class="mmmitemwrap"></div>
+          </div>
+        </div>
+        <div class="mmlistbot">
+          <div class="musicboxleft">
+            <div cursor id="musicimg">
+              <img alt="" />
+            </div>
+          </div>
+          <div cursor id="musicname"></div>
+          <div class="botbtn">
+            <div cursor id="hhplay" class="iconfont icon-65zanting"></div>
+            <div cursor class="nextmm iconfont icon-skip-next"></div>
+            <div cursor class="dqplarying iconfont icon-bofangliebiao"></div>
+          </div>
+        </div>
+        <!-- 歌词 -->
+        <div class="musiclrc">
+          <div class="musiclrcwrap">
+            <div class="musiclrcbg"></div>
+            <div class="gbiaoti">
+              <div cursor class="iconfont icon-Down" id="lrcdown"></div>
+              <div class="musicbt">
+                <div class="btname"></div>
+                <div class="btartist"></div>
+              </div>
+              <div cursor class="iconfont icon-yuanchengguanli" id="yuanchengbf"></div>
+            </div>
+            <div class="lrccwrap">
+              <div id="lrcc" class="lrc"></div>
+            </div>
+            <!-- 音乐控制台 -->
+            <div class="tianc">
+              <div cursor class="shoucang iconfont icon-icon-"></div>
+              <div id="lrclist">
+                <div cursor title="Speed" class="playsd">x1</div>
+                <div cursor title="Share songs" class="musicshare iconfont icon-fenxiang_2"></div>
+                <div cursor title="Play MV" id="mvp">MV</div>
+                <div cursor title="Lyrics editor" class="looklrc iconfont icon-geci"></div>
+                <div cursor title="Lyrics Translation" class="lrcfyon">译</div>
+              </div>
+            </div>
+            <div class="musicbox">
+              <div class="musicboxtop">
+                <div class="current_time">00:00</div>
+                <!--进度条-->
+                <div class="probox">
+                  <div cursor class="pro1">
+                    <div cursor class="pro2">
+                      <div cursor class="dolt"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="total_time">00:00</div>
+              </div>
+              <div class="musicbtnall">
+                <div cursor id="random" class="iconfont icon-shunxubofang"></div>
+                <div cursor id="prev" class="iconfont icon-ic_skip_previous_px"></div>
+                <div cursor id="play" class="iconfont icon-65zanting"></div>
+                <div cursor id="next" class="iconfont icon-skip-next"></div>
+                <div cursor id="ksbfxs" class="iconfont icon-bofangliebiao"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 歌词编辑 -->
+    <div class="editlrc">
+      <div class="editlrcbtn">
+        <div cursor class="close iconfont icon-guanbi"></div>
+        <div cursor class="lrcClose iconfont icon-prev"></div>
+        <div cursor class="save iconfont icon-baocun"></div>
+        <div style="flex:auto;" class="lrceditspace"></div>
+      </div>
+      <textarea></textarea>
+    </div>
+    <!-- MV -->
+    <div class="musicmv">
+      <div class="mvonoffbox">
+        <div cursor class="mvoff iconfont icon-guanbi"></div>
+        <div cursor class="mvoffxs iconfont icon-prev"></div>
+        <div style="flex:auto;" class="mvtopspace"></div>
+      </div>
+      <div class="videowrap">
+        <video id="myVideo" width="100%" controls="controls"></video>
+      </div>
+    </div>
+    <!-- 日志 -->
+    <div class="logdata">
+      <div class="logtop">
+        <div cursor class="logoff iconfont icon-guanbi"></div>
+        <div cursor class="logoffxs iconfont icon-prev"></div>
+        <div class="logspace" style="flex: auto;"></div>
+        <input class="searchlog" autocomplete="off" placeholder="搜索" type="search">
+        <div cursor class="uploadlog iconfont icon-suijibofang"></div>
+        <div cursor class="clearlog iconfont icon-qingchu"></div>
+      </div>
+      <div class="logbot"></div>
+      <select cursor class="logshowpage">
+        <option value="20">20/页</option>
+        <option value="40">40/页</option>
+        <option value="60">60/页</option>
+        <option value="80">80/页</option>
+        <option value="100">100/页</option>
+        <option value="200">200/页</option>
+        <option value="500">500/页</option>
+      </select>
+    </div>
+    <!-- 右上功能键 -->
+    <div cursor class="dltx"></div>
+    <div class="youtopwrap">
+      <div class="youtop jzxz">
+        <div class="youtoplist">
+          <div class="usermin"></div>
+          <div class="selecMenuBox">
+            <div cursor class="openplayer">
+              <i class="iconfont icon-Music"></i><span>播放器</span>
+            </div>
+            <div cursor class="onlinenote">
+              <i class="iconfont icon-bijiben"></i><span>笔记</span>
+            </div>
+            <div cursor class="logon">
+              <i class="iconfont icon-rizhi"></i><span>日志</span>
+            </div>
+            <div cursor class="recycle">
+              <i class="iconfont icon-huishouzhan"></i><span>回收站</span>
+            </div>
+            <div cursor class="shareList">
+              <i class="iconfont icon-fenxiang_2"></i><span>分享列表</span>
+            </div>
+            <div cursor class="setUp">
+              <i class="iconfont icon-shezhi"></i><span>设置</span>
+            </div>
+            <div cursor class="about">
+              <i class="iconfont icon-about"></i><span>关于</span>
+            </div>
+            <div cursor class="dcout">
+              <i class="iconfont icon-tuichu"></i><span>退出</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="userinfobox">
+      <div cursor class="userinfoclose iconfont icon-guanbi"></div>
+      <div class="userlogoBox">
+        <div cursor></div>
+      </div>
+      <div class="usermsgBox"></div>
+    </div>
+    <!-- 聊天室 -->
+    <div class="guestbook">
+      <div class="newly"><img src="./img/loading3.gif" alt="" /></div>
+      <i cursor class="iconfont icon-liaotian"></i>
+    </div>
+    <div class="guestbooklist">
+      <div class="guestbookwrap">
+        <div cursor class="toMsgBottom iconfont icon-Down"></div>
+        <div class="chengyuanwrap"></div>
+        <div class="guestbooklisttop">
+          <div cursor class="guestbookoff iconfont icon-guanbi"></div>
+          <div cursor class="guestbookoffxs iconfont icon-prev"></div>
+          <div cursor class="guestclear iconfont icon-qingchu"></div>
+          <div class="lytitle">聊天室</div>
+          <input class="searchMsg" placeholder="搜索" autocomplete="off" type="search">
+          <div cursor class="chengyuan iconfont icon-duoren">
+            <i class="msgtx"></i>
+          </div>
+          <div cursor class="guestbookclear iconfont icon-liaotian">
+            <i class="qmsgtx"></i>
+          </div>
+        </div>
+        <div class="guestbooklistcon">
+          <div class="guestbooklistconwrap"></div>
+        </div>
+        <div class="guestbooklistbot">
+          <div cursor x="1" class="yyfs">
+            <i class="iconfont icon-yuyin"></i>
+          </div>
+          <div class="guesttext">
+            <div id="ycdiv" class="ycdiv" contenteditable="true"></div>
+            <div class="guestgo jzxz">按住 说话</div>
+          </div>
+          <div cursor x="1" class="sctupic">
+            <i class="iconfont icon-jiahao"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="weatherbox"></div>
+    <img onload="this.onload=null,this.style.opacity=0.8" class="dandelion" src="./img/dandelion.png" alt="">
+    <img onload="this.onload=null,this.style.opacity=1" class="dandelionloading" src="./img/dandelion.gif" alt="">
+    <img onload="this.onload=null,this.style.opacity=1" class="grass" src="./img/grass.gif" alt="">
+    <img onload="this.onload=null,this.style.opacity=0.8" class="grassp" src="./img/grass.png" alt="">
+    <!--壁纸容器-->
+    <div title="Change Wallpaper" cursor class="xzbg">
+      <img src="./img/bgqh.png" alt="" />
+      <div></div>
+    </div>
+    <div class="allbgwrap">
+      <div cursor class="allbgoff iconfont icon-guanbi"></div>
+      <div cursor class="toupbg iconfont icon-shangchuan1"></div>
+      <div class="allbg"></div>
+      <select cursor class="bgshowpage">
+        <option value="20">20/页</option>
+        <option value="40">40/页</option>
+        <option value="60">60/页</option>
+        <option value="80">80/页</option>
+        <option value="100">100/页</option>
+        <option value="200">200/页</option>
+        <option value="500">500/页</option>
+      </select>
+    </div>
+  </main>
+  <!--操作提示弹窗-->
+  <div class="codewrap">
+    <div class="sharebox">
+      <div class="getcode"></div>
+      <input class="linkCheck" type="text" value="">
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+html {
+  width: 100%;
+  height: 100%
+}
+
+body {
+  height: 100%;
+  padding: 30px 10px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.userlist {
+  height: 50px;
+  line-height: 50px;
+  color: #8a2be2
+}
+
+.userbox li {
+  line-height: 32px
+}
+
+button {
+  outline: none;
+  height: 30px;
+  border: none;
+  padding: 0 8px;
+  background: #ccc;
+  transition: 0.3s;
+  color: rgb(108, 108, 108);
+  cursor: pointer;
+}
+
+button:hover {
+  color: rgb(255, 255, 255);
+  background-color: #aaa;
+}

@@ -1,0 +1,120 @@
+/* 右键菜单 */
+.mtc::-webkit-scrollbar {
+  display: none;
+}
+
+.mtc .mtcitem,
+.mtc .mtcitem1,
+.mtc .mtcitem2,
+.mtc .mtcitem3,
+.mtc .mtcitem4,
+.mtc .mtcitem5,
+.mtc .mtcitem6,
+.mtc .mtcitem7,
+.mtc .mtcitem8,
+.mtc .mtcitem9,
+.mtc .mtcitem10 {
+  font-size: 18px;
+  box-sizing: border-box;
+  margin: 2px;
+  padding: 6px;
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+}
+
+.mtc .mtcitem:hover,
+.mtc .mtcitem1:hover,
+.mtc .mtcitem2:hover,
+.mtc .mtcitem3:hover,
+.mtc .mtcitem4:hover,
+.mtc .mtcitem5:hover,
+.mtc .mtcitem6:hover,
+.mtc .mtcitem7:hover,
+.mtc .mtcitem8:hover,
+.mtc .mtcitem9:hover,
+.mtc .mtcitem10:hover {
+  background-color: #ccc;
+  color: rgb(209, 20, 178);
+}
+
+.mtc .mtcitem:active,
+.mtc .mtcitem1:active,
+.mtc .mtcitem2:active,
+.mtc .mtcitem3:active,
+.mtc .mtcitem4:active,
+.mtc .mtcitem5:active,
+.mtc .mtcitem6:active,
+.mtc .mtcitem7:active,
+.mtc .mtcitem8:active,
+.mtc .mtcitem9:active,
+.mtc .mtcitem10:active {
+  transition: 0s;
+  opacity: .2;
+}
+
+.mtc .mtcinp,
+.mtc .mtcinp1,
+.mtc .mtcinp2,
+.mtc .mtcinp3,
+.mtc .mtcinp4,
+.mtc .mtcinp5,
+.mtc .mtcinp6,
+.mtc .mtcinp7,
+.mtc .mtcinp8,
+.mtc .mtcinp9,
+.mtc .mtcinp10 {
+  width: 90%;
+  margin: 10px auto 20px auto;
+}
+
+.mtc .mtcinp input,
+.mtc .mtcinp1 input,
+.mtc .mtcinp2 input,
+.mtc .mtcinp3 input,
+.mtc .mtcinp4 input,
+.mtc .mtcinp5 input,
+.mtc .mtcinp6 input,
+.mtc .mtcinp7 input,
+.mtc .mtcinp8 input,
+.mtc .mtcinp9 input,
+.mtc .mtcinp10 input {
+  width: 100%;
+  text-align: center;
+  border: 1px solid #ccc;
+  box-shadow: none;
+  color: #4a4949;
+  outline: none;
+  font-size: 20px;
+  box-sizing: border-box;
+  padding: 8px;
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+.mtc .mtcinp input:focus,
+.mtc .mtcinp1 input:focus,
+.mtc .mtcinp2 input:focus,
+.mtc .mtcinp3 input:focus,
+.mtc .mtcinp4 input:focus,
+.mtc .mtcinp5 input:focus,
+.mtc .mtcinp6 input:focus,
+.mtc .mtcinp7 input:focus,
+.mtc .mtcinp8 input:focus,
+.mtc .mtcinp9 input:focus,
+.mtc .mtcinp10 input:focus {
+  border: 1px solid rgb(12, 12, 12);
+  background-color: #1413131e;
+}
+
+.mtc .mtcbtn {
+  display: block;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  line-height: 25px;
+  padding: 0 20px;
+}
+
+.mtc .mtcbtn:hover {
+  background-color: rgb(175, 173, 173);
+}
