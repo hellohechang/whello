@@ -29,6 +29,8 @@ import { alert } from '../../plugins/alert'
 import { _loadingBar } from '../../plugins/loadingBar'
 import { pagination } from '../../plugins/pagination'
 import { rightMenu } from '../../plugins/rightMenu'
+import icon1logo from '../../img/icon1.png'
+import iconlogo from '../../img/icon.png'
 ~(async function () {
   let $mbg = $('.mbg'),
     $toplist = $('.toplist'),
@@ -41,11 +43,11 @@ import { rightMenu } from '../../plugins/rightMenu'
   document.addEventListener('visibilitychange', async function () {
     // 页面变为不可见时触发
     if (document.visibilityState == 'hidden') {
-      $icon.attr('href', '/img/icon.png');
+      $icon.attr('href', iconlogo);
     }
     // 页面变为可见时触发
     if (document.visibilityState == 'visible') {
-      $icon.attr('href', '/img/icon1.png');
+      $icon.attr('href', icon1logo);
     }
   });
   _setTimeout(() => {

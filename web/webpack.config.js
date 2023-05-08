@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const autoprefixer = require('autoprefixer')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = {
   entry: {
@@ -309,9 +310,13 @@ module.exports = {
   // devtool: 'source-map'
   mode: 'production',
   optimization: {
-    // 压缩css
     minimizer: [
+      // 压缩css
       new CssMinimizerPlugin(),
-    ],
+      // 压缩js
+      new UglifyJsPlugin({
+        test: /\.js(\?.*)?$/i,
+      }),
+    ]
   },
 }

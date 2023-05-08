@@ -32,6 +32,8 @@ import '../../js/common'
 import { _err, _success } from "../../plugins/message";
 import { _loadingBar } from '../../plugins/loadingBar'
 import { rightMenu } from '../../plugins/rightMenu'
+import icon1logo from '../../img/icon1.png'
+import iconlogo from '../../img/icon.png'
 ~(function () {
   let $totop = $('.totop'),
     $icon = $("link[rel*='icon']"),
@@ -43,11 +45,11 @@ import { rightMenu } from '../../plugins/rightMenu'
   document.addEventListener('visibilitychange', function () {
     // 页面变为不可见时触发
     if (document.visibilityState == 'hidden') {
-      $icon.attr('href', '/img/icon.png');
+      $icon.attr('href', iconlogo);
     }
     // 页面变为可见时触发
     if (document.visibilityState == 'visible') {
-      $icon.attr('href', '/img/icon1.png');
+      $icon.attr('href', icon1logo);
     }
   });
   _setTimeout(() => {
