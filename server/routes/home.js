@@ -36,7 +36,7 @@ route.get('/getlist', async (req, res) => {
     let home = bookSort(
       await queryData(
         'bookmk',
-        'id,name,link,logo,num',
+        'id,name,link,logo,num,des',
         `WHERE listid=? AND state=? AND account=?`,
         ['home', '0', account]
       )
@@ -166,10 +166,10 @@ route.post('/setlogo', async (req, res) => {
 route.post('/editbmk', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let { id, name, link, logo } = req.body;
+    let { id, name, link, logo, des } = req.body;
     await updateData(
       'bookmk',
-      { name, logo, link },
+      { name, logo, link, des },
       `WHERE account=? AND state=? AND id=? AND listid=?`,
       [account, '0', id, 'home']
     );

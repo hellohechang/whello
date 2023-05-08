@@ -3,8 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const autoprefixer = require('autoprefixer')
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = {
   entry: {
@@ -27,7 +25,7 @@ module.exports = {
   },
   output: {
     filename: 'js/[name][hash].js',
-    path: resolve(__dirname, 'static'),
+    path: resolve(__dirname, '..', 'static'),
     clean: true,
   },
   plugins: [
@@ -238,16 +236,16 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: resolve(__dirname, 'src/img'),
-          to: resolve(__dirname, 'static/img')
+          from: resolve(__dirname, '..', 'src/img'),
+          to: resolve(__dirname, '..', 'static/img')
         }
       ],
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: resolve(__dirname, 'src/css'),
-          to: resolve(__dirname, 'static/css')
+          from: resolve(__dirname, '..', 'src/css'),
+          to: resolve(__dirname, '..', 'static/css')
         }
       ],
     }),
@@ -289,34 +287,5 @@ module.exports = {
         }
       }
     ],
-  },
-  devServer: {
-    static: {
-      directory: resolve(__dirname, 'src'),
-    },
-    compress: true,
-    port: 9000,
-    // open: true,
-    hot: true,
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:4000',
-        pathRewrite: { '^/api': '' },
-      },
-    },
-  },
-  performance: { hints: false },
-  // mode: 'development',
-  // devtool: 'source-map'
-  mode: 'production',
-  optimization: {
-    minimizer: [
-      // 压缩css
-      new CssMinimizerPlugin(),
-      // 压缩js
-      new UglifyJsPlugin({
-        test: /\.js(\?.*)?$/i,
-      }),
-    ]
   },
 }

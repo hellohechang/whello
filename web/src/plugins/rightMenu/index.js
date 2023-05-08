@@ -43,7 +43,7 @@ export function rightMenu(e, html, callback) {
       document.body.appendChild(this.box);
 
       this.rightBox.innerHTML = this.html;
-      this.allInp = this.rightBox.querySelectorAll('input');
+      this.allInp = this.rightBox.querySelectorAll('input,textarea');
       this.rikey(this.e);
       this.newHdClick = this.hdClick.bind(this);
       this.newHdKeyup = this.hdKeyup.bind(this);
@@ -80,7 +80,7 @@ export function rightMenu(e, html, callback) {
       this.callback && this.callback({ e, close: newClose, inp: data });
     }
     hdKeyup(e) {
-      if (e.target.tagName === 'INPUT' && e.key === 'Enter') {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' && e.key === 'Enter') {
         this.box.querySelector('.mtcbtn').click();
       }
     }

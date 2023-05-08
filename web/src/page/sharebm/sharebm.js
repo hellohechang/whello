@@ -45,13 +45,14 @@ import { _loadingBar } from '../../plugins/loadingBar'
     if (res.code == 0) {
       let str = '';
       res.data.forEach((item) => {
-        let { name, link, logo } = item;
+        let { name, link, logo, des } = item;
+        des = des ? encodeHtml(des) : ''
         name = encodeHtml(name);
-        str += `<div cursor data-link="${link}" data-name="${name}"
-              data-src="${logo}" title="${name}(${link})" class="item">
-              <div class="img"></div>
-              <div class="text">${name}</div>
-            </div>`;
+        str += `<li data-name="${name}" data-src="${logo}" data-des="${des}" cursor class="item jzxz" data-link="${link}">
+        <div class="img"></div>
+        <div title="${name}(${link})" class="text">${name}</div>
+        <p title="${des}">${des || '描述'}</p>
+        </li>`
       });
       $box.html(str);
       $('.item').each((index, item) => {

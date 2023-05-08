@@ -132,8 +132,8 @@ route.get('/getsearchdata', async (req, res) => {
     arr1 = [];
     bmk.forEach((item) => {
       //包含搜索词的书签
-      let { name, link } = item,
-        n = `${name}|${link}`;
+      let { name, link, des } = item,
+        n = `${name}|${link}|${des || ''}`;
       let searchArr = hdSearch(a, n);
       if (searchArr.length > 0) {
         arr1.push({

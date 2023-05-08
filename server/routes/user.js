@@ -76,12 +76,14 @@ queryData('user', 'account')
       state   TEXT DEFAULT (0),
       num     INT,
       id      TEXT PRIMARY KEY
-                  NOT NULL,
+                    NOT NULL,
       listid  TEXT,
       account TEXT,
       name    TEXT,
       link    TEXT,
-      logo    TEXT)`);
+      logo    TEXT,
+      des     TEXT
+      );`);
       await runSqlite(`CREATE TABLE booklist (
       state   TEXT DEFAULT (0),
       id      TEXT PRIMARY KEY

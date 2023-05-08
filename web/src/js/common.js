@@ -124,7 +124,7 @@ import { _err, _success } from '../plugins/message'
   document.addEventListener('keyup', debounce(show, 500));
 })();
 document.addEventListener('mouseover', function (e) {
-  let target = _getTarget(e, 'input', 1) || _getTarget(e, '#ycdiv', 1);
+  let target = _getTarget(e, 'input', 1) || _getTarget(e, 'textarea', 1) || _getTarget(e, '#ycdiv', 1);
   if (target) {
     target.focus();
     // target.select && target.select()

@@ -1,6 +1,13 @@
 /* 右键菜单 */
+.mtc textarea::-webkit-scrollbar,
 .mtc::-webkit-scrollbar {
   display: none;
+}
+
+.mtc textarea,
+.mtc {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .mtc .mtcitem,
@@ -68,17 +75,7 @@
   margin: 10px auto 20px auto;
 }
 
-.mtc .mtcinp input,
-.mtc .mtcinp1 input,
-.mtc .mtcinp2 input,
-.mtc .mtcinp3 input,
-.mtc .mtcinp4 input,
-.mtc .mtcinp5 input,
-.mtc .mtcinp6 input,
-.mtc .mtcinp7 input,
-.mtc .mtcinp8 input,
-.mtc .mtcinp9 input,
-.mtc .mtcinp10 input {
+.mtc input {
   width: 100%;
   text-align: center;
   border: 1px solid #ccc;
@@ -92,17 +89,23 @@
   border-radius: 2px;
 }
 
-.mtc .mtcinp input:focus,
-.mtc .mtcinp1 input:focus,
-.mtc .mtcinp2 input:focus,
-.mtc .mtcinp3 input:focus,
-.mtc .mtcinp4 input:focus,
-.mtc .mtcinp5 input:focus,
-.mtc .mtcinp6 input:focus,
-.mtc .mtcinp7 input:focus,
-.mtc .mtcinp8 input:focus,
-.mtc .mtcinp9 input:focus,
-.mtc .mtcinp10 input:focus {
+.mtc textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  box-shadow: none;
+  color: #4a4949;
+  outline: none;
+  font-size: 18px;
+  box-sizing: border-box;
+  padding: 8px;
+  min-height: 100px;
+  resize: vertical;
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+.mtc input:focus,
+.mtc textarea:focus {
   border: 1px solid rgb(12, 12, 12);
   background-color: #1413131e;
 }

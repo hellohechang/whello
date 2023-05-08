@@ -676,10 +676,12 @@ import { UpProgress } from '../plugins/UpProgress'
         <ul style="display:'block'">`;
         item.item.forEach((y) => {
           let name = encodeHtml(y.name);
-          str += `<li data-pid="${item.id}" data-name="${name}" title="${name}(${y.link})" data-id="${y.id}" cursor class="sidenav-btn jzxz" data-link="${y.link}" data-src="${y.logo}" draggable="true">
+          let des = y.des ? encodeHtml(y.des) : '';
+          str += `<li data-pid="${item.id}" data-name="${name}" data-des="${des}" data-id="${y.id}" cursor class="sidenav-btn jzxz" data-link="${y.link}" data-src="${y.logo}" draggable="true">
           <div cursor check="n" class="seleckbook"></div>
           <div class="suqlogo"></div>
-          <div class="suqname">${name}</div>
+          <div title="${name}(${y.link})" class="suqname">${name}</div>
+          <p title="${des}">${des || '描述'}</p>
           </li>`;
         });
         str += '</ul>';
@@ -752,10 +754,12 @@ import { UpProgress } from '../plugins/UpProgress'
             if (!bmk) return;
             bmk.item.forEach((y) => {
               let name = encodeHtml(y.name);
-              str += `<li data-pid="${id}" data-name="${name}" data-id="${y.id}" data-link="${y.link}" data-src="${y.logo}" title="${name}(${y.link})" cursor class="sidenav-btn jzxz" draggable="true">
+              let des = y.des ? encodeHtml(y.des) : '';
+              str += `<li data-pid="${id}" data-name="${name}" data-des="${des}" data-id="${y.id}" data-link="${y.link}" data-src="${y.logo}" cursor class="sidenav-btn jzxz" draggable="true">
         <div cursor check="n" class="seleckbook"></div>
         <div class="suqlogo"></div>
-          <div class="suqname">${name}</div>
+          <div title="${name}(${y.link})" class="suqname">${name}</div>
+          <p title="${des}">${des || '描述'}</p>
           </li>`;
             });
             $('.blockquote')
@@ -793,7 +797,6 @@ import { UpProgress } from '../plugins/UpProgress'
     )
     .on('click', '.sidenav-btn', function (e) {
       let link = $(this).attr('data-link');
-      menuoff();
       myOpen(link, "_blank");
     })
     .on('click', '.addsqcd', (e) => {
@@ -845,6 +848,7 @@ import { UpProgress } from '../plugins/UpProgress'
       sidenavbtnmenu(e, {
         pid: $this.attr('data-pid'),
         cid: $this.attr('data-id'),
+        des: $this.attr('data-des'),
         index: $this.index(),
         name: $this.attr('data-name'),
         link: $this.attr('data-link'),
@@ -1005,6 +1009,7 @@ import { UpProgress } from '../plugins/UpProgress'
         sidenavbtnmenu(ev, {
           pid: $this.attr('data-pid'),
           cid: $this.attr('data-id'),
+          des: $this.attr('data-des'),
           index: $this.index(),
           name: $this.attr('data-name'),
           link: $this.attr('data-link'),
@@ -1067,6 +1072,9 @@ import { UpProgress } from '../plugins/UpProgress'
             <div class="mtcinp2">
               <input autocomplete="off" placeholder="https://" type="text">
             </div>
+            <div class="mtcinp3">
+              <textarea autocomplete="off" placeholder="描述"></textarea>
+            </div>
           <button cursor class="mtcbtn">提交</button>`;
             rightMenu(
               e,
@@ -1075,7 +1083,8 @@ import { UpProgress } from '../plugins/UpProgress'
                 function ({ close, e, inp }) {
                   if (_getTarget(e, '.mtcbtn')) {
                     let an = inp[0],
-                      al = inp[1];
+                      al = inp[1],
+                      des = inp[2];
                     if (!isurl(al)) {
                       _err('请输入正确的网址');
                       return;
@@ -1087,7 +1096,7 @@ import { UpProgress } from '../plugins/UpProgress'
                     let logo = '//' + getHost(al) + '/favicon.ico';
                     _postAjax('/nav/addbmk', {
                       id: obj.id,
-                      obj: { name: an, link: al, logo: logo },
+                      obj: { name: an, link: al, logo: logo, des },
                     }).then((result) => {
                       if (parseInt(result.code) === 0) {
                         close();
@@ -1231,6 +1240,9 @@ import { UpProgress } from '../plugins/UpProgress'
           <div class="mtcinp1">
             <input autocomplete="off" value="${obj.link}" type="text">
           </div>
+          <div class="mtcinp1">
+            <textarea autocomplete="off">${encodeHtml(obj.des)}</textarea>
+          </div>
         <button cursor class="mtcbtn">提交</button>`;
             rightMenu(
               e,
@@ -1239,7 +1251,8 @@ import { UpProgress } from '../plugins/UpProgress'
                 function ({ close, e, inp }) {
                   if (_getTarget(e, '.mtcbtn')) {
                     let an = inp[0],
-                      al = inp[1];
+                      al = inp[1],
+                      des = inp[2];
                     if (!isurl(al)) {
                       _err('请输入正确的网址');
                       return;
@@ -1248,10 +1261,11 @@ import { UpProgress } from '../plugins/UpProgress'
                       _err('请输入书签标题');
                       return;
                     }
-                    if (an === obj.name && al === obj.link) return;
+                    if (an === obj.name && al === obj.link && des === obj.des) return;
                     let requestObj = {
                       pid: obj.pid,
                       cid: obj.cid,
+                      des,
                       name: an,
                       logo: obj.logo,
                       link: al,
@@ -1263,6 +1277,7 @@ import { UpProgress } from '../plugins/UpProgress'
                       if (parseInt(result.code) === 0) {
                         obj.name = an;
                         obj.link = al;
+                        obj.des = des;
                         close();
                         sendCommand({ type: 'updatedata', flag: 'bookmark' });
                         renderNav();
@@ -1470,10 +1485,11 @@ import { UpProgress } from '../plugins/UpProgress'
       str = '';
     homearr.forEach((v, i) => {
       let name = encodeHtml(v.name);
-      str += `<li title="${name}(${v.link})" data-link="${v.link}" data-src="${v.logo}" data-id="${v.id}" data-name="${name}" class="folder-item" draggable="true">
+      let des = v.des ? encodeHtml(v.des) : '';
+      str += `<li data-link="${v.link}" data-des="${des}" data-src="${v.logo}" data-id="${v.id}" data-name="${name}" class="folder-item" draggable="true">
               <div cursor check="n" class="celeckhomesq"></div>
-              <div cursor class="folder-item-box"></div>
-              <p>${name}</p>
+              <div cursor title="${name}(${v.link})" class="folder-item-box"></div>
+              <p title="${des}">${name}</p>
               </li>`;
     });
     str += `<li class="folder-item" data-src="/img/tianjia.png">
@@ -1534,6 +1550,9 @@ import { UpProgress } from '../plugins/UpProgress'
             <div class="mtcinp1">
               <input autocomplete="off" placeholder="https://" type="text">
             </div>
+            <div class="mtcinp2">
+              <textarea autocomplete="off" placeholder="描述"></textarea>
+            </div>
           <button cursor class="mtcbtn">提交</button>`;
             rightMenu(
               e,
@@ -1542,7 +1561,8 @@ import { UpProgress } from '../plugins/UpProgress'
                 function ({ close, e, inp }) {
                   if (_getTarget(e, '.mtcbtn')) {
                     let sqname = inp[0],
-                      sqlink = inp[1];
+                      sqlink = inp[1],
+                      des = inp[2];
                     if (!isurl(sqlink)) {
                       _err('请输入正确的网址');
                       return;
@@ -1556,6 +1576,7 @@ import { UpProgress } from '../plugins/UpProgress'
                       name: sqname,
                       link: sqlink,
                       logo: logo,
+                      des
                     }).then((result) => {
                       if (parseInt(result.code) === 0) {
                         close();
@@ -1586,6 +1607,7 @@ import { UpProgress } from '../plugins/UpProgress'
         id: $this.parent().attr('data-id'),
         name: $this.parent().attr('data-name'),
         link: $this.parent().attr('data-link'),
+        des: $this.parent().attr('data-des'),
         logo: $this.parent().attr('data-src'),
         index: $this.parent().index(),
       });
@@ -1739,6 +1761,7 @@ import { UpProgress } from '../plugins/UpProgress'
         id: $this.parent().attr('data-id'),
         name: $this.parent().attr('data-name'),
         link: $this.parent().attr('data-link'),
+        des: $this.parent().attr('data-des'),
         logo: $this.parent().attr('data-src'),
         index: $this.parent().index(),
       });
@@ -1846,6 +1869,9 @@ import { UpProgress } from '../plugins/UpProgress'
             <div class="mtcinp1">
               <input autocomplete="off" value="${obj.link}" type="text">
             </div>
+            <div class="mtcinp1">
+            <textarea autocomplete="off">${encodeHtml(obj.des)}</textarea>
+          </div>
           <button cursor class="mtcbtn">提交</button>`;
             rightMenu(
               e,
@@ -1854,7 +1880,8 @@ import { UpProgress } from '../plugins/UpProgress'
                 function ({ close, e, inp }) {
                   if (_getTarget(e, '.mtcbtn')) {
                     let b = inp[0],
-                      c = inp[1];
+                      c = inp[1],
+                      des = inp[2];
                     if (!isurl(c)) {
                       _err('请输入正确的网址');
                       return;
@@ -1866,17 +1893,19 @@ import { UpProgress } from '../plugins/UpProgress'
                     let requestObj = {
                       id: obj.id,
                       name: b,
+                      des,
                       logo: obj.logo,
                       link: c,
                     };
                     if (requestObj.logo.includes('favicon.ico')) {
                       requestObj.logo = '//' + getHost(c) + '/favicon.ico';
                     }
-                    if (b === obj.name && c === obj.link) return;
+                    if (b === obj.name && c === obj.link && des === obj.des) return;
                     _postAjax('/home/editbmk', requestObj).then((result) => {
                       if (parseInt(result.code) === 0) {
                         obj.name = b;
                         obj.link = c;
+                        obj.des = des;
                         close();
                         sendCommand({ type: 'updatedata', flag: 'bookmark' });
                         renderHomebook();

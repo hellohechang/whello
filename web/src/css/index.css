@@ -2633,13 +2633,13 @@ body {
   font-size: 18px;
   box-sizing: border-box;
   padding-left: 20px;
-  height: 35px;
-  line-height: 35px;
+  height: 50px;
+  line-height: 50px;
   transition: .3s;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.9) 0%, rgba(252, 193, 255, 0.3) 60%);
+  background-image: linear-gradient(to right, rgb(255 255 255 / 89%) 0%, #fed6e378 100%);
 }
 
 .blockquote:hover {
@@ -2685,11 +2685,11 @@ body {
 #menu {
   position: relative;
   width: 80%;
-  max-width: 400px;
+  max-width: 500px;
   height: 100%;
   transform: translateX(-100%);
   transition: transform 0.5s;
-  background-color: rgba(0, 0, 0, 0.801);
+  background-color: rgb(0 0 0 / 84%);
   overflow: hidden;
 }
 
@@ -2753,8 +2753,8 @@ body {
   width: 47%;
   float: left;
   font-size: 16px;
-  height: 40px;
-  line-height: 40px;
+  height: 100px;
+  /* line-height: 40px; */
   margin: 5px 0 5px 2%;
   border-radius: 5px;
   background-color: #ffffff24;
@@ -2777,15 +2777,18 @@ body {
   color: #000;
 }
 
-.sidenav-btn .seleckbook input {
-  display: block;
+.sidenav-btn:hover p {
+  color: #383737;
+}
+
+.sidenav-btn:hover .suqname {
+  border-bottom: 1px solid #747474;
 }
 
 .sidenav-btn .suqlogo {
   position: absolute;
-  top: 50%;
+  top: 5px;
   left: 0;
-  transform: translateY(-50%);
   margin-left: 5px;
   border-radius: 5px;
   width: 25px;
@@ -2804,13 +2807,19 @@ body {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  border-bottom: 1px solid #cccccc78;
 }
 
 .sidenav-btn p {
-  margin: 0;
-  font-size: 10px;
-  text-align: center;
-  color: gray;
+  color: #aaa;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 18px;
+  margin: 5px;
 }
 
 
