@@ -168,11 +168,11 @@ import { _loadingBar } from '../../plugins/loadingBar'
   $musiclrc.click(function () {
     if (this._isop) {
       $musiclrc.css('opacity', 1);
-      $musicbg.css('opacity', 0.2);
+      $musicbg.removeClass('fopen');
       this._isop = false;
     } else {
       $musiclrc.css('opacity', 0);
-      $musicbg.css('opacity', 0.6);
+      $musicbg.addClass('fopen');
       this._isop = true;
     }
   });

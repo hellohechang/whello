@@ -1,8 +1,5 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const autoprefixer = require('autoprefixer')
 
 module.exports = {
   entry: {
@@ -29,12 +26,6 @@ module.exports = {
     clean: true,
   },
   plugins: [
-    // css前缀
-    autoprefixer,
-    // 抽取css
-    new MiniCssExtractPlugin({
-      filename: '[name][hash].css',
-    }),
     new HtmlWebpackPlugin({
       template: './src/page/login/index.html',
       filename: 'page/login/index.html',
@@ -233,29 +224,9 @@ module.exports = {
         minifyJS: true
       }
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: resolve(__dirname, '..', 'src/img'),
-          to: resolve(__dirname, '..', 'static/img')
-        }
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: resolve(__dirname, '..', 'src/css'),
-          to: resolve(__dirname, '..', 'static/css')
-        }
-      ],
-    }),
   ],
   module: {
     rules: [
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader", 'postcss-loader'],
-      },
       {
         test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
         type: "asset"
@@ -266,15 +237,6 @@ module.exports = {
         options: {
           esModule: false
         }
-      },
-      {
-        test: /\.less$/i,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'postcss-loader',
-          'less-loader',
-        ],
       },
       {
         test: /\.m?js$/,

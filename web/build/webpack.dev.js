@@ -1,6 +1,22 @@
 const { resolve } = require('path')
 const { merge } = require('webpack-merge')
 module.exports = merge(require('./webpack.base'), {
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', "css-loader"]
+      },
+      {
+        test: /\.less$/i,
+        use: [
+          'style-loader',
+          'css-loader',
+          'less-loader',
+        ],
+      },
+    ]
+  },
   devServer: {
     static: {
       directory: resolve(__dirname, '..', 'src'),

@@ -69,12 +69,20 @@ html {
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 3s;
+  transform: scale(1.1);
+  filter: blur(10px);
+  transition: transform 0.3s, filter 1s, opacity 1s;
   pointer-events: none;
 }
 
 .box .musiclrcwrap .musicbg.open {
-  opacity: .2
+  opacity: .3
+}
+
+.box .musiclrcwrap .musicbg.fopen {
+  opacity: .8;
+  transform: scale(1);
+  filter: blur(0);
 }
 
 .box .musiclrcwrap .mlrcbox {
@@ -134,7 +142,6 @@ html {
   overflow: hidden;
   box-sizing: border-box;
   padding: 0 8%;
-
 }
 
 .box .musiclrcwrap .mlrcbox .musiclrc .operation {
