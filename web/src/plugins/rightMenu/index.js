@@ -30,7 +30,7 @@ export function rightMenu(e, html, callback) {
       position: absolute;
       border-radius: 5px;
       box-sizing: border-box;
-      background-color: rgba(255, 255, 255, .9);
+      background-color: rgba(255, 255, 255);
       box-shadow: 0 0 10px #5e5c5c;
       overflow-y: auto;
       border: 10px solid transparent;
@@ -80,7 +80,8 @@ export function rightMenu(e, html, callback) {
       this.callback && this.callback({ e, close: newClose, inp: data });
     }
     hdKeyup(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' && e.key === 'Enter') {
+      if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.key === 'Enter') {
+        e.preventDefault()
         this.box.querySelector('.mtcbtn').click();
       }
     }

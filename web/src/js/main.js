@@ -3384,7 +3384,7 @@ import { UpProgress } from '../plugins/UpProgress'
             let { size } = lrcstatu;
             size += 2;
             size >= 24 ? (size = 24) : null;
-            $lrcdiv = $lrc.children('div');
+            let $lrcdiv = $lrc.children('div');
             $lrcdiv.find('.elrc').css({
               'font-size': size + 'px',
               'line-height': size + 6 + 'px',
@@ -3400,7 +3400,7 @@ import { UpProgress } from '../plugins/UpProgress'
             let { size } = lrcstatu;
             size -= 2;
             size <= 14 ? (size = 14) : null;
-            $lrcdiv = $lrc.children('div');
+            let $lrcdiv = $lrc.children('div');
             $lrcdiv.find('.elrc').css({
               'font-size': size + 'px',
               'line-height': size + 6 + 'px',
@@ -3414,7 +3414,7 @@ import { UpProgress } from '../plugins/UpProgress'
             handleLrc(true);
           } else if (_getTarget(e, '.mtcitem2')) {
             lrcstatu.statu = 'left';
-            $lrcdiv = $lrc.children('div');
+            let $lrcdiv = $lrc.children('div');
             $lrcdiv.find('.elrc').css({
               'text-align': 'left',
             });
@@ -3424,7 +3424,7 @@ import { UpProgress } from '../plugins/UpProgress'
             _setData('lrcstatu', lrcstatu);
           } else if (_getTarget(e, '.mtcitem3')) {
             lrcstatu.statu = 'center';
-            $lrcdiv = $lrc.children('div');
+            let $lrcdiv = $lrc.children('div');
             $lrcdiv.find('.elrc').css({
               'text-align': 'center',
             });
@@ -3434,7 +3434,7 @@ import { UpProgress } from '../plugins/UpProgress'
             _setData('lrcstatu', lrcstatu);
           } else if (_getTarget(e, '.mtcitem4')) {
             lrcstatu.statu = 'right';
-            $lrcdiv = $lrc.children('div');
+            let $lrcdiv = $lrc.children('div');
             $lrcdiv.find('.elrc').css({
               'text-align': 'right',
             });
@@ -5324,8 +5324,8 @@ import { UpProgress } from '../plugins/UpProgress'
       } else {
         $this.attr('check', 'n').css('background-color', 'transparent');
       }
-      let $duoxuan = $('.duoxuan');
-      $checkArr = $duoxuan.filter((_, item) => $(item).attr('check') === 'y');
+      let $duoxuan = $('.duoxuan'),
+        $checkArr = $duoxuan.filter((_, item) => $(item).attr('check') === 'y');
       _success(`选中：${$checkArr.length}`, true);
     });
   if (isios()) {

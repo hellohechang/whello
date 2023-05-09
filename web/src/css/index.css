@@ -2820,6 +2820,7 @@ body {
   -webkit-box-orient: vertical;
   line-height: 18px;
   margin: 5px;
+  word-break: break-all;
 }
 
 

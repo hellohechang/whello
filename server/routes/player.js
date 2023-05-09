@@ -5,7 +5,6 @@ const express = require('express'),
 const { insertData, updateData, queryData } = require('../sqlite');
 const {
   handleMusicList,
-  arrSortMinToMax,
   writelog,
   _readFile,
   _writeFile,
@@ -125,7 +124,6 @@ route.get('/search', async (req, res) => {
         });
       });
       ar = qucong(ar);
-      // ar = arrSortMinToMax(ar, 'artist');
       let sArr = [];
       ar.forEach((item) => {
         let { name, artist } = item;
