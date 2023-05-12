@@ -13,12 +13,11 @@ import '../../js/common'
 import { _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert'
 ~(function () {
-  let $userbox = $('.userbox'),
-    $clearupload = $('.clearupload'),
+  let $clearupload = $('.clearupload'),
     $clearchat = $('.clearchat'),
     $isregister = $('.isregister'),
     $delmusicfile = $('.delmusicfile');
-
+  let $tbody = $('tbody')
   render();
   function render() {
     _getAjax('/root/userlist', {}).then((result) => {
@@ -27,34 +26,35 @@ import { alert } from '../../plugins/alert'
         let str = '';
         result.data.forEach((v) => {
           let { account, username, time, state, online } = v;
-          str += `<li data-acc="${account}" data-state="${state}">
-              <span style="color:#992f2f;">[${newDate(
-            '{0}-{1}-{2} {3}:{4}',
-            time
-          )}]</span>
-              <span style="color:${online === 'y' ? 'green' : '#aaa'};">${online === 'y' ? '在线' : '离线'
-            }</span>
-              <span style="color:#4494d5;">${encodeHtml(username)}(${account})</span>
-              <button cursor class="deluser" style="${state == 0 ? '' : 'color:red;'
-            }">${state == 0 ? '激活' : '关闭'}</button>
+          username = encodeHtml(username)
+          str += `<tr data-acc="${account}" data-state="${state}" data-name="${username}">
+          <td>${newDate('{0}-{1}-{2} {3}:{4}', time)}</td>
+          <td style="color:${online === 'y' ? 'green' : '#aaa'};">${online === 'y' ? '在线' : '离线'}</td>
+          <td>${username}</td>
+          <td>${account}</td>
+          <td style="${state == 0 ? '' : 'color:red;'}">${state == 0 ? '启用' : '停用'}</td>
+          <td>
+            <button cursor class="closeuser">${state == 0 ? '停用' : '启用'}</button>
               <button cursor class="resetpd">重置密码</button>
-              <button cursor class="tologin">登录</button>
-              <button cursor class="delaccount">销毁</button>
-            </li>`;
+              <button cursor class="tologin">进入</button>
+              <button cursor class="delaccount">删除</button>
+          </td>
+        </tr>`
         });
-        $userbox.html(str);
+        $tbody.html(str);
         return;
       }
-      document.body.innerHTML = `<p style="font-size: 20px;color: #303030;text-align:center;">${result.codeText}</p>`;
+      myOpen('/404')
     }).catch(err => { })
   }
-  $userbox
-    .on('click', '.deluser', function () {
+  $tbody
+    .on('click', '.closeuser', function () {
       let $this = $(this),
-        x = $this.parent().attr('data-acc'),
-        state = $this.parent().attr('data-state'),
+        x = $this.parent().parent().attr('data-acc'),
+        state = $this.parent().parent().attr('data-state'),
+        name = $this.parent().parent().attr('data-name'),
         flag = state == '0' ? '1' : '0';
-      alert(`确认 ${state == 0 ? '关闭' : '激活'} ${x}？`, {
+      alert(`确认 ${state == 0 ? '停用' : '启用'} ${name}(${x})？`, {
         confirm: true,
         handled: (msg) => {
           if (msg === 'confirm') {
@@ -70,9 +70,9 @@ import { alert } from '../../plugins/alert'
     })
     .on('click', '.delaccount', function () {
       let $this = $(this),
-        x = $this.parent().attr('data-acc');
-
-      alert(`确认销毁：${x}？`, {
+        x = $this.parent().parent().attr('data-acc'),
+        name = $this.parent().parent().attr('data-name');
+      alert(`确认删除：${name}(${x})？`, {
         confirm: true,
         handled: (msg) => {
           if (msg === 'confirm') {
@@ -87,8 +87,10 @@ import { alert } from '../../plugins/alert'
       });
     })
     .on('click', '.resetpd', function () {
-      let x = $(this).parent().attr('data-acc');
-      alert(`确认重置账号(${x})的密码？`, {
+      let $this = $(this),
+        x = $this.parent().parent().attr('data-acc'),
+        name = $this.parent().parent().attr('data-name');
+      alert(`确认重置账号 ${name}(${x})的密码？`, {
         confirm: true,
         handled: (msg) => {
           if (msg === 'confirm') {
@@ -102,8 +104,10 @@ import { alert } from '../../plugins/alert'
       });
     })
     .on('click', '.tologin', function () {
-      let x = $(this).parent().attr('data-acc');
-      alert(`确认登录账号：${x}？`, {
+      let $this = $(this),
+        x = $this.parent().parent().attr('data-acc'),
+        name = $this.parent().parent().attr('data-name');
+      alert(`确认进入账号：${name}(${x})？`, {
         confirm: true,
         handled: (msg) => {
           if (msg === 'confirm') {

@@ -10,16 +10,32 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="assets">
   <link rel="stylesheet icon" href="../../img/manage.jpg">
-  <title>Administrator</title>
+  <title>Admin</title>
 </head>
 
 <body>
-  <button cursor style="margin-bottom: 5px;" class="isregister"></button>
-  <button cursor style="margin-bottom: 5px;" class="clearupload">清空upload</button>
-  <button cursor style="margin-bottom: 5px;" class="clearchat">清除聊天记录</button>
-  <button cursor style="margin-bottom: 5px;" class="delmusicfile">清除多余歌曲文件</button>
-  <div class="userlist">用户列表</div>
-  <ul class="userbox"></ul>
+  <div class="table-box">
+    <div style="width: 100%; padding: 30px 0;">
+      <button cursor class="isregister">注册：开</button>
+      <button cursor class="clearupload">清空upload</button>
+      <button cursor class="clearchat">清除聊天记录</button>
+      <button cursor class="delmusicfile">清除多余歌曲文件</button>
+    </div>
+    <table border="1" cellpadding="0">
+      <thead>
+        <tr>
+          <th width="15%">在线时间</th>
+          <th width="7%">登录状态</th>
+          <th>昵称</th>
+          <th width="15%">id</th>
+          <th width="7%">使用状态</th>
+          <th width="22%">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 </body>
 
 </html>

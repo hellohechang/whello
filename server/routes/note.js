@@ -32,10 +32,10 @@ route.get('/getnote', async (req, res) => {
           own,
         });
       } else {
-        _err(res, '当前笔记未公开~');
+        _err(res, '当前笔记未公开');
       }
     } else {
-      _err(res, '当前笔记不存在~');
+      _err(res, '当前笔记不存在');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);

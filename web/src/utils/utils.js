@@ -594,7 +594,6 @@ export function computeSize(fsize) {
   }
   return fsize;
 }
-
 // 转义字符串
 export function encodeHtml(str) {
   return str && str.replace
@@ -786,7 +785,6 @@ export function _offset(el) {
     left,
   };
 }
-
 export function _myOpen(url, name) {
   // 在iframe中显示
   if (parent.window !== window) {
@@ -795,7 +793,6 @@ export function _myOpen(url, name) {
   }
   myOpen(url, '_blank');
 }
-
 export function _progressBar(percent, callback) {
   let box = document.createElement('div');
   box.style.cssText = `
@@ -939,8 +936,6 @@ export function _progressBar(percent, callback) {
     }
   };
 }
-
-
 export function isImgFile(name) {
   return /(\.JPG|\.PNG|\.GIF|\.JPEG)$/gi.test(name);
 }

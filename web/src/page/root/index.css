@@ -4,31 +4,56 @@ html {
 }
 
 body {
-  height: 100%;
-  padding: 30px 10px;
-  overflow-y: auto;
+  font-size: 16px;
+}
+
+.table-box {
+  margin: 0 auto;
   box-sizing: border-box;
+  padding: 5px;
+  width: 100%;
+  max-width: 1400px;
+  min-width: 1000px;
 }
 
-.userlist {
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th,
+td {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  word-break: break-all;
+}
+
+tbody tr.active {
+  color: #155724;
+  background-color: #d4edda;
+}
+
+thead tr {
+  color: #004085;
   height: 50px;
-  line-height: 50px;
-  color: #8a2be2
-}
-
-.userbox li {
-  line-height: 32px
+  background-color: #cce5ff;
 }
 
 button {
   outline: none;
   height: 30px;
   border: none;
+  font-size: 16px;
   padding: 0 8px;
-  background: #ccc;
   transition: 0.3s;
-  color: rgb(108, 108, 108);
-  cursor: pointer;
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  margin: 5px 0;
 }
 
 button:hover {

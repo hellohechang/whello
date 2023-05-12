@@ -3986,7 +3986,7 @@ import { UpProgress } from '../plugins/UpProgress'
             $msearchlistid.html(str);
           } else {
             $msearchlistid.html(
-              '<p style="padding: 20px 0;text-align: center;pointer-events: none;">没有找到歌曲~</p>'
+              '<p style="padding: 20px 0;text-align: center;pointer-events: none;">没有找到歌曲</p>'
             );
           }
           return;
@@ -6638,7 +6638,7 @@ import { UpProgress } from '../plugins/UpProgress'
               if ($guestbooklist.is(':hidden')) return;
               let str = sxliuyan(result.data);
               if (str === '') {
-                str += `<div class="nomore" style="text-align: center;font-size: 14px;color: #cdb;">没有更多了~<div>`;
+                str += `<div class="nomore" style="text-align: center;font-size: 14px;color: #cdb;">没有更多了<div>`;
               }
               $guestbooklistconwrap.prepend(str);
               $guestbooklistcon.scrollTop(fristel.position().top - 50);
@@ -7510,7 +7510,7 @@ import { UpProgress } from '../plugins/UpProgress'
               } else if (flag === 'del') {
                 //撤回消息
                 if (from.account !== _userinfo.account) {
-                  tongzhi(from.username, '撤回消息~');
+                  tongzhi(from.username, '撤回消息');
                 }
                 if (!$guestbooklist.is(':hidden')) {
                   if (
@@ -7527,7 +7527,7 @@ import { UpProgress } from '../plugins/UpProgress'
               } else if (flag === 'clear') {
                 //清空聊天框
                 if (from.account !== _userinfo.account) {
-                  tongzhi(from.username, '清空聊天记录~');
+                  tongzhi(from.username, '清空聊天记录');
                 }
                 if (!$guestbooklist.is(':hidden')) {
                   if (

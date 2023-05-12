@@ -263,7 +263,7 @@ function _send(res, options) {
     )
   );
 }
-function _success(res, codeText = '操作成功~', data = null) {
+function _success(res, codeText = '操作成功', data = null) {
   _send(res, {
     data,
     codeText,
@@ -272,7 +272,7 @@ function _success(res, codeText = '操作成功~', data = null) {
 function _nologin(res) {
   _send(res, {
     code: 2,
-    codeText: `当前未登录，请登录后再操作~`,
+    codeText: `当前未登录，请登录后再操作`,
   });
 }
 function _nothing(res) {
@@ -280,7 +280,7 @@ function _nothing(res) {
     code: 3,
   });
 }
-function _err(res, codeText = '操作失败，请稍后再试~', data = null) {
+function _err(res, codeText = '操作失败，请稍后再试', data = null) {
   _send(res, {
     code: 1,
     codeText,
