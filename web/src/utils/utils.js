@@ -259,10 +259,9 @@ export function isurl(url) {
 }
 // 获取url域名
 export function getHost(url) {
-  return url.match(/([^\/]{1,}\.)+([a-zA-Z]{2,})/)[0];
-  // let link = document.createElement("a");
-  // link.href = url;
-  // return link.host;
+  let link = document.createElement("a");
+  link.href = url;
+  return link.host;
 }
 // 判断是否苹果设备
 export function isios() {
