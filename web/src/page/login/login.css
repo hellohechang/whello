@@ -54,20 +54,18 @@ main {
 }
 
 p {
-  height: 28px;
-  line-height: 28px;
+  height: 30px;
+  line-height: 30px;
   color: red;
   font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
-.email input,
-.password2 input,
-.password input,
-.password1 input,
-.username input,
-.account input {
+input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   box-sizing: border-box;
   margin: 0;
   font-size: 16px;
@@ -82,61 +80,14 @@ input {
   color: #3d3d3d;
 }
 
-.code {
-  display: flex;
-}
-
-.code input {
-  flex: auto;
-  height: 40px;
-  line-height: 40px;
-  padding: 0;
-  margin: 0px;
-  width: 0;
-  text-indent: 20px;
-  font-size: 16px;
-  border: 1px solid #aaa;
-  outline: none;
-  background-color: rgba(255, 255, 255, 0.644);
-  border-radius: 2px;
-}
-
-.code button {
-  height: 40px;
-  line-height: 40px;
-  font-size: 16px;
-  padding: 0 10px;
-  margin-left: 20px;
-  user-select: none;
-  border: 1px solid #aaa;
-  background: #ccc;
-}
-
-.code button:hover {
-  color: #0f6ce6;
-}
-
-.code button.active {
-  pointer-events: none;
-}
-
-.email input:focus,
-.code input:focus,
-.password2 input:focus,
-.password input:focus,
-.password1 input:focus,
-.username input:focus,
-.account input:focus {
+input:focus {
   border: 1px solid rgb(119, 118, 118);
   background-color: #fff;
 }
 
-.submit {
-  text-align: center;
-}
 
-.submit button {
-  width: 60%;
+button {
+  width: 70%;
   height: 40px;
   line-height: 40px;
   font-size: 16px;
@@ -149,28 +100,23 @@ input {
   user-select: none;
 }
 
-.submit button:active {
+button:active {
   transition: 0s;
   opacity: .2;
 }
 
-.submit button:hover {
+button:hover {
   background-color: rgb(16, 76, 124);
   color: #fff;
 }
 
-.resetPass {
-  float: left;
-  color: #0760b3;
-  user-select: none;
-}
 
 .register {
+  font-size: 16px;
   float: right;
   user-select: none;
 }
 
-.resetPass:hover,
 .register:hover {
-  color: crimson;
+  color: rgb(38, 118, 210);
 }

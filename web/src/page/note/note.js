@@ -8,29 +8,20 @@ import {
   myOpen,
   _setData,
   _getData,
-  _delData,
   _setTimeout,
   throttle,
   debounce,
   _getTarget,
   _mySlide,
-  _postAjax,
   _getAjax,
-  _upFile,
   copyText,
   encodeHtml,
-  _each,
-  _imgSize,
   _position,
-  _offset,
   _myOpen,
-  _progressBar,
   imgPreview,
 } from '../../utils/utils'
 import { _speed, mediaURL } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
-import { _loadingBar } from '../../plugins/loadingBar'
 import { rightMenu } from '../../plugins/rightMenu'
 import icon1logo from '../../img/icon1.png'
 import iconlogo from '../../img/icon.png'

@@ -1,6 +1,6 @@
 const express = require('express'),
   fs = require('fs'),
-  { mediaurl } = require('../myconfig'),
+  { filepath } = require('../myconfig'),
   route = express.Router();
 const {
   writelog,
@@ -23,7 +23,7 @@ route.use((req, res, next) => {
   if (req._userInfo.account === 'root') {
     next();
   } else {
-    _err(res, '当前账号没有权限执行该操作~');
+    _err(res, '当前账号没有权限执行该操作');
   }
 });
 // 图床
@@ -31,7 +31,7 @@ route.use((req, res, next) => {
 route.get('/getlist', async (req, res) => {
   try {
     let { page, showpage = 40 } = req.query,
-      bgarr = await readMenu(`${mediaurl.filepath}/pic`),
+      bgarr = await readMenu(`${filepath}/pic`),
       pagenum = Math.ceil(bgarr.length / showpage);
     bgarr.sort((a, b) => {
       return b.time - a.time;
@@ -54,8 +54,8 @@ route.get('/getlist', async (req, res) => {
 route.post('/delpic', async (req, res) => {
   try {
     let url = req.body.url;
-    _unlink(`${mediaurl.filepath}/pic/${url}`);
-    _unlink(`${mediaurl.filepath}/picys/${url}`);
+    _unlink(`${filepath}/pic/${url}`);
+    _unlink(`${filepath}/picys/${url}`);
     _success(res);
     await writelog(req, `删除图片[${url}]`);
   } catch (error) {
@@ -66,7 +66,7 @@ route.post('/delpic', async (req, res) => {
 // 上传
 route.post('/up', async (req, res) => {
   try {
-    let path = `${mediaurl.filepath}/tem/${req.query.HASH}`;
+    let path = `${filepath}/tem/${req.query.HASH}`;
     await _mkdir(path);
     await receiveFiles(req, path, req.query.name);
     _success(res);
@@ -83,16 +83,16 @@ route.post('/mergefile', async (req, res) => {
       _err(res);
       return;
     }
-    await delDir(`${mediaurl.filepath}/picys/${name}`);
-    await delDir(`${mediaurl.filepath}/pic/${name}`);
+    await delDir(`${filepath}/picys/${name}`);
+    await delDir(`${filepath}/pic/${name}`);
     await _rename(
-      `${mediaurl.filepath}/tem/${HASH}/_hello`,
-      `${mediaurl.filepath}/picys/${name}`
+      `${filepath}/tem/${HASH}/_hello`,
+      `${filepath}/picys/${name}`
     );
     await mergefile(
       --count,
-      `${mediaurl.filepath}/tem/${HASH}`,
-      `${mediaurl.filepath}/pic/${name}`
+      `${filepath}/tem/${HASH}`,
+      `${filepath}/pic/${name}`
     );
     await writelog(req, `上传图片[${name}]`);
     _success(res);
@@ -105,7 +105,7 @@ route.post('/mergefile', async (req, res) => {
 route.post('/breakpoint', async (req, res) => {
   try {
     let { HASH } = req.body,
-      path = `${mediaurl.filepath}/tem/${HASH}`,
+      path = `${filepath}/tem/${HASH}`,
       arr = await _readdir(path);
     _success(res, 'ok', arr);
   } catch (error) {
@@ -117,8 +117,8 @@ route.post('/breakpoint', async (req, res) => {
 route.post('/repeatfile', async (req, res) => {
   try {
     let { name } = req.body;
-    let u = `${mediaurl.filepath}/pic/${name}`;
-    let uys = `${mediaurl.filepath}/picys/${name}`;
+    let u = `${filepath}/pic/${name}`;
+    let uys = `${filepath}/picys/${name}`;
     if (fs.existsSync(u) && fs.existsSync(uys)) {
       _success(res);
       return;

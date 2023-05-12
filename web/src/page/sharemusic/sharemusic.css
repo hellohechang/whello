@@ -106,6 +106,15 @@ html {
   font-size: 30px;
 }
 
+.box .musiclrcwrap .mlrcbox .mhead .userLogo {
+  flex: none;
+  width: 60px;
+  height: 60px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 70%;
+}
+
 .box .musiclrcwrap .mlrcbox .mhead .musicconfig {
   flex: auto;
   width: 0;

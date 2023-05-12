@@ -24,7 +24,7 @@ route.get('/share', async (req, res) => {
       'bookmk',
     ]);
     if (arr.length === 0) {
-      _err(res, '分享已被取消~');
+      _err(res, '分享已被取消');
       return;
     }
     arr = JSON.parse(arr[0].data);
@@ -187,12 +187,6 @@ route.post('/dellist', async (req, res) => {
       'booklist',
       { state: '1' },
       `WHERE account=? AND id=? AND state=?`,
-      [account, id, '0']
-    );
-    await updateData(
-      'bookmk',
-      { state: '1' },
-      `WHERE account=? AND listid=? AND state=?`,
       [account, id, '0']
     );
     await writelog(req, `删除书签列表[${id}]`);
@@ -369,7 +363,7 @@ route.post('/share', async (req, res) => {
       )
     );
     if (arr.length === 0) {
-      _err(res, '当前列表为空~');
+      _err(res, '当前列表为空');
       return;
     }
     let obj = {
@@ -396,7 +390,7 @@ route.get('/saveshare', async (req, res) => {
       'bookmk',
     ]);
     if (arr.length === 0) {
-      _err(res, '分享已被取消~');
+      _err(res, '分享已被取消');
       return;
     }
     arr = JSON.parse(arr[0].data);

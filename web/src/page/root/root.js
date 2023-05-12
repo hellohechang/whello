@@ -4,33 +4,19 @@ import '../../css/iconfont.css'
 import './index.css'
 import {
   myOpen,
-  _setData,
-  _getData,
-  _delData,
-  _setTimeout,
-  _getTarget,
-  _mySlide,
   _postAjax,
   _getAjax,
-  _upFile,
   newDate,
   encodeHtml,
-  _each,
-  _imgSize,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
 } from '../../utils/utils'
-import { _speed } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
+import { _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert'
-import { _loadingBar } from '../../plugins/loadingBar'
 ~(function () {
   let $userbox = $('.userbox'),
     $clearupload = $('.clearupload'),
     $clearchat = $('.clearchat'),
+    $isregister = $('.isregister'),
     $delmusicfile = $('.delmusicfile');
 
   render();
@@ -40,7 +26,7 @@ import { _loadingBar } from '../../plugins/loadingBar'
         result.data.sort((a, b) => b.time - a.time);
         let str = '';
         result.data.forEach((v) => {
-          let { account, username, time, email, state, online } = v;
+          let { account, username, time, state, online } = v;
           str += `<li data-acc="${account}" data-state="${state}">
               <span style="color:#992f2f;">[${newDate(
             '{0}-{1}-{2} {3}:{4}',
@@ -48,8 +34,7 @@ import { _loadingBar } from '../../plugins/loadingBar'
           )}]</span>
               <span style="color:${online === 'y' ? 'green' : '#aaa'};">${online === 'y' ? '在线' : '离线'
             }</span>
-              <span style="color:#4494d5;">${encodeHtml(username)}(${account})${email ? `(${email})` : ''
-            }</span>
+              <span style="color:#4494d5;">${encodeHtml(username)}(${account})</span>
               <button cursor class="deluser" style="${state == 0 ? '' : 'color:red;'
             }">${state == 0 ? '激活' : '关闭'}</button>
               <button cursor class="resetpd">重置密码</button>
@@ -174,4 +159,17 @@ import { _loadingBar } from '../../plugins/loadingBar'
       },
     });
   });
+  _getAjax('/user/isregister').then(res => {
+    if (res.code == 0) {
+      $isregister.text(res.data === 'y' ? '注册：开' : '注册：关')
+    }
+  }).catch(() => { })
+  $isregister.click(function () {
+    _postAjax('/root/isregister').then(res => {
+      if (res.code == 0) {
+        $isregister.text(res.data === 'y' ? '注册：开' : '注册：关')
+        _success(res.data === 'y' ? '开放注册成功' : '已关闭注册')
+      }
+    }).catch(() => { })
+  })
 })();

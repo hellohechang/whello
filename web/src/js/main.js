@@ -1,5 +1,6 @@
 import $ from "jquery";
 import SparkMD5 from "spark-md5";
+import md5 from 'md5'
 import './recorder.mp3.min'
 import '../css/reset.css'
 import '../css/iconfont.css'
@@ -36,20 +37,17 @@ import {
   computeSize,
   encodeHtml,
   isUserName,
-  _each,
   nanoid,
   _imgSize,
   compressionImg,
   deepClone,
   _position,
-  _offset,
-  _myOpen,
   _progressBar,
   isImgFile,
   fileLogoType,
   downloadFile,
   imgPreview,
-} from '../utils/utils'
+} from '../utils/utils.js'
 import { _speed, serverURL, mediaURL } from "../config";
 import '../js/common'
 import { _err, _success } from "../plugins/message";
@@ -1160,10 +1158,6 @@ import { UpProgress } from '../plugins/UpProgress'
         function ({ close, e }) {
           if (_getTarget(e, '.mtcitem1')) {
             //上传图标
-            if (_userinfo.account === 'test') {
-              _err('测试账号不让更换图标~');
-              return;
-            }
             close();
             let input = document.createElement('input');
             input.type = 'file';
@@ -1787,10 +1781,6 @@ import { UpProgress } from '../plugins/UpProgress'
         function ({ close, e }) {
           if (_getTarget(e, '.mtcitem1')) {
             // 自定义图标
-            if (_userinfo.account === 'test') {
-              _err('测试账号不让更换图标~');
-              return;
-            }
             close();
             let input = document.createElement('input');
             input.type = 'file';
@@ -2394,10 +2384,6 @@ import { UpProgress } from '../plugins/UpProgress'
     })(0);
   }
   $toupbg.click(function () {
-    if (_userinfo.account === 'test') {
-      _err('测试账号不让上传壁纸~');
-      return;
-    }
     let input = document.createElement('input');
 
     input.type = 'file';
@@ -2425,10 +2411,6 @@ import { UpProgress } from '../plugins/UpProgress'
     });
     allbg.addEventListener('drop', function (e) {
       e.preventDefault();
-      if (_userinfo.account === 'test') {
-        _err('测试账号不让上传壁纸~');
-        return;
-      }
       var files = [...e.dataTransfer.files];
       if (files.length == 0) return;
       hdUpBg(files);
@@ -2680,16 +2662,38 @@ import { UpProgress } from '../plugins/UpProgress'
                         $userinfobox.stop().fadeIn(_speed);
                         setZindex($userinfobox);
                       } else if (_getTarget(e, '.mtcitem1')) {
-                        if (_userinfo.account === 'test') {
-                          _err('测试账号不让修改密码~');
-                          return;
-                        }
-                        myOpen('/page/login/#changepass');
+                        let str = `<div class="mtcinp">
+                        <input autocomplete="off" placeholder="原密码" type="password">
+                      </div>
+                      <div class="mtcinp1">
+                        <input autocomplete="off" placeholder="新密码" type="password">
+                      </div>
+                      <div class="mtcinp2">
+                        <input autocomplete="off" placeholder="确认密码" type="password">
+                      </div>
+                    <button cursor class="mtcbtn">提交</button>`
+                        rightMenu(e, str, debounce(function ({ close, e, inp }) {
+                          if (_getTarget(e, '.mtcbtn')) {
+                            let oldpassword = inp[0],
+                              newpassword = inp[1],
+                              newpassword1 = inp[2];
+                            if (newpassword !== newpassword1) {
+                              _err('密码不一致')
+                              return
+                            };
+                            _postAjax('/user/changepass', {
+                              oldpassword: md5(oldpassword),
+                              newpassword: md5(newpassword),
+                            }).then((result) => {
+                              if (parseInt(result.code) === 0) {
+                                close()
+                                _success(result.codeText);
+                                return;
+                              }
+                            }).catch((_) => { });
+                          }
+                        }, 500, true))
                       } else if (_getTarget(e, '.mtcitem2')) {
-                        if (_userinfo.account === 'test') {
-                          _err('测试账号不让删除账号~');
-                          return;
-                        }
                         alert('确认删除账号？', {
                           confirm: true,
                           handled: (m) => {
@@ -4394,9 +4398,10 @@ import { UpProgress } from '../plugins/UpProgress'
       str = '';
     arr.forEach((item) => {
       let name = encodeHtml(item.name);
+      let pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic
       str += `<li title="${name}" data-id="${item.id}" data-name="${name}" cursor draggable="true" class="gedanlist">
       <div class="gdiwrap">
-        <img class="gedimg" data-src="${item.pic}"></div>
+        <img class="gedimg" data-src="${pic}"></div>
         <span>${name}</sapn>
         </li>`;
     });
@@ -4466,9 +4471,10 @@ import { UpProgress } from '../plugins/UpProgress'
 
     let str = '';
     let name = encodeHtml(marr.name);
+    let pic = !/^\/img/.test(marr.pic) ? `${mediaURL}${marr.pic}` : marr.pic
     str += `<div class="lbxianshi">
        <div class="gdfmtop">
-         <img onload="this.style.display='block';this.parentNode.style.background='none'" onerror="this.onerror=''; src='/img/music.jpg';this.parentNode.style.background='none'" src="${marr.pic
+         <img onload="this.style.display='block';this.parentNode.style.background='none'" onerror="this.onerror=''; src='/img/music.jpg';this.parentNode.style.background='none'" src="${pic
       }">
        </div>
        <div class="gdlbname">
@@ -4903,7 +4909,7 @@ import { UpProgress } from '../plugins/UpProgress'
         (result) => {
           if (parseInt(result.code) === 0) {
             sendCommand({ type: 'updatedata', flag: 'playinglist' });
-            _success('已添加到播放列表~');
+            _success('已添加到播放列表');
             return;
           }
         }
@@ -5077,7 +5083,7 @@ import { UpProgress } from '../plugins/UpProgress'
         (result) => {
           if (parseInt(result.code) === 0) {
             sendCommand({ type: 'updatedata', flag: 'playinglist' });
-            _success('已添加到播放列表~');
+            _success('已添加到播放列表');
             $('#mmlistqx').click();
             return;
           }
@@ -5523,7 +5529,7 @@ import { UpProgress } from '../plugins/UpProgress'
   }
   $myVideo[0].onerror = function (e) {
     if (!musicobj) return;
-    _err(`${musicobj.artist}-${musicobj.name} 加载失败~`);
+    _err(`${musicobj.artist}-${musicobj.name} 加载失败`);
   };
   let boxpositon = {};
   if (_getData('lastweizi')) {
@@ -5901,10 +5907,6 @@ import { UpProgress } from '../plugins/UpProgress'
         if (m === 'close') return;
         let all = 'y';
         m === 'confirm' ? (all = 'n') : null;
-        if (_userinfo.account === 'test' && all === 'y') {
-          _err(`测试账号不让退出所有~`);
-          return;
-        }
         _getAjax('/user/signout', { all }).then((result) => {
           if (parseInt(result.code) === 0) {
             _delData('state');
@@ -5919,10 +5921,6 @@ import { UpProgress } from '../plugins/UpProgress'
 
   $userinfobox
     .on('click', '.edituname', function (e) {
-      if (_userinfo.account === 'test') {
-        _err('测试账号不让改昵称~');
-        return;
-      }
       let str = `<div class="mtcinp">
               <input autocomplete="off" value="${encodeHtml(
         _userinfo.username
@@ -5952,54 +5950,6 @@ import { UpProgress } from '../plugins/UpProgress'
                   close();
                   sendCommand({ type: 'updatedata', flag: 'userinfo' });
                   handleuser();
-                  return;
-                }
-              }).catch(err => { })
-            }
-          },
-          1000,
-          true
-        )
-      );
-    })
-    .on('click', '.bindEmail', function (e) {
-      if (_userinfo.account === 'test') {
-        _err('测试账号不让绑定邮箱~');
-        return;
-      }
-      let str = `<div class="mtcinp">
-              <input autocomplete="off" value="${encodeHtml(
-        _userinfo.email || ''
-      )}" type="text">
-            </div>
-            <button cursor class="mtcbtn">提交</button>`;
-      rightMenu(
-        e,
-        str,
-        debounce(
-          function ({ close, e, inp }) {
-            if (_getTarget(e, '.mtcbtn')) {
-              let uname = inp[0];
-              if (uname === _userinfo.email) return;
-              if (uname === '') {
-                _err('请输入邮箱');
-                return;
-              }
-              if (
-                !/^\w+((-\w+)|(\.\w+))*@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/.test(
-                  uname
-                )
-              ) {
-                _err('邮箱格式错误');
-                return;
-              }
-              _getAjax('/user/bindemail', {
-                email: uname,
-              }).then((result) => {
-                if (parseInt(result.code) === 0) {
-                  close();
-                  handleuser();
-                  sendCommand({ type: 'updatedata', flag: 'userinfo' });
                   return;
                 }
               }).catch(err => { })
@@ -6040,10 +5990,6 @@ import { UpProgress } from '../plugins/UpProgress'
       debounce(
         function ({ close, e }) {
           if (_getTarget(e, '.mtcitem')) {
-            if (_userinfo.account === 'test') {
-              _err('测试账号不让换头像~');
-              return;
-            }
             let input = document.createElement('input');
             input.type = 'file';
             input.accept = '.jpg,.png,.gif,.jpeg';
@@ -6099,9 +6045,6 @@ import { UpProgress } from '../plugins/UpProgress'
       _userinfo.username
     )}</li><li cursor class="edituname">修改</li></ul>
     <ul><li>账号</li><li>${_userinfo.account}</li></ul>
-    <ul><li>邮箱</li><li class="useremail">${_userinfo.email || '未绑定'
-      }</li><li class="bindEmail" cursor>${_userinfo.email ? '更换' : '绑定'
-      }</li></ul>
     <ul><li>壁纸</li><li>每日自动更换壁纸</li><li class="dailybg" cursor>${_userinfo.dailybg && _userinfo.dailybg === 'y' ? '开' : '关'
       }</li></ul>`;
     $usermsgBox.html(str);
@@ -6617,7 +6560,7 @@ import { UpProgress } from '../plugins/UpProgress'
           }
           return;
         }
-        _err('文件已过期~');
+        _err('文件已过期');
       }).catch(err => { })
     })
     .on('contextmenu', '.guestbookitemcon', function (e) {
@@ -6652,7 +6595,7 @@ import { UpProgress } from '../plugins/UpProgress'
           imgPreview([{ u1: mediaURL + a, u2: mediaURL + b }]);
           return;
         }
-        _err('图片已过期~');
+        _err('图片已过期');
       }).catch(err => { })
     })
     .on(
@@ -6793,7 +6736,7 @@ import { UpProgress } from '../plugins/UpProgress'
                 downloadFile(`/getfile${y}`, n);
                 return;
               }
-              _err(`${type}已过期~`);
+              _err(`${type}已过期`);
             }).catch(err => { })
           }
         },
@@ -6827,7 +6770,7 @@ import { UpProgress } from '../plugins/UpProgress'
       $('.yuykuang').children('i').css('animation', 'none');
     })
     .on('error', function () {
-      _err('语音已过期~');
+      _err('语音已过期');
       $yuyplay.playflag = '';
       $('.yuykuang').children('i').css('animation', 'none');
     });
@@ -6938,10 +6881,6 @@ import { UpProgress } from '../plugins/UpProgress'
   // 发送文件
   $sctupic.click(function () {
     if ($(this).attr('x') == 1) {
-      if (_userinfo.account === 'test') {
-        _err('测试账号不让发送文件信息~');
-        return;
-      }
       let pchatId = deepClone(chatobj),
         input = document.createElement('input');
 
@@ -6974,10 +6913,6 @@ import { UpProgress } from '../plugins/UpProgress'
     });
     guestb.addEventListener('drop', function (e) {
       e.preventDefault();
-      if (_userinfo.account === 'test') {
-        _err('测试账号不让发送文件信息~');
-        return;
-      }
       var files = [...e.dataTransfer.files],
         pchatId = deepClone(chatobj);
       if (files.length == 0) return;
@@ -6986,10 +6921,6 @@ import { UpProgress } from '../plugins/UpProgress'
   })();
   // 递归发送文件
   function sendfile(files, pchatId) {
-    if (_userinfo.account === 'test') {
-      _err('测试账号不让发送文件信息~');
-      return;
-    }
     ~(async function fn(num) {
       if (num >= files.length) {
         return;
@@ -7052,7 +6983,7 @@ import { UpProgress } from '../plugins/UpProgress'
               sendmasg(obj, pchatId);
             } else {
               pro.fail('发送失败');
-              _err(`${files[num].name} 发送失败~`);
+              _err(`${files[num].name} 发送失败`);
             }
             num++;
             fn(num);
@@ -7166,7 +7097,7 @@ import { UpProgress } from '../plugins/UpProgress'
         },
         error: () => {
           pro.fail('发送失败');
-          _err('发送失败~');
+          _err('发送失败');
         },
       });
     };
@@ -7448,6 +7379,7 @@ import { UpProgress } from '../plugins/UpProgress'
       if (parseInt(result.code) === 0) {
         _userinfo = result.data;
         mytitle = `Hello ${_userinfo.username}`;
+        _setData('account', _userinfo.username)
         if ($myAudio[0].paused) {
           $titleid.text(mytitle);
         }
@@ -7464,12 +7396,12 @@ import { UpProgress } from '../plugins/UpProgress'
         if (dmwidth > 800) {
           $bgmain.css(
             'background-image',
-            `url(${mediaURL}/bg/bg/${_userinfo.bg})`
+            _userinfo.bg ? `url(${mediaURL}/bg/bg/${_userinfo.bg})` : '/img/bg.jpg'
           );
         } else {
           $bgmain.css(
             'background-image',
-            `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})`
+            _userinfo.bgxs ? `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})` : '/img/bg.jpg'
           );
         }
         handleUserinfo();

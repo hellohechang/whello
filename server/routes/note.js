@@ -232,10 +232,10 @@ route.get('/geteditnote', async (req, res) => {
         let data = noteobj.data;
         _success(res, 'ok', { name, data });
       } else {
-        _err(res, '当前笔记未公开~');
+        _err(res, '当前笔记未公开');
       }
     } else {
-      _err(res, '当前笔记不存在~');
+      _err(res, '当前笔记不存在');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -269,10 +269,10 @@ route.post('/editnote', async (req, res) => {
         },
       ]);
       await writelog(req, `新增笔记[${vn}(${id})]`);
-      _success(res, '新增笔记成功~', { id });
+      _success(res, '新增笔记成功', { id });
     } else {
       await writelog(req, `更新笔记[${vn}(${id})]`);
-      _success(res, '更新笔记成功~');
+      _success(res, '更新笔记成功');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);

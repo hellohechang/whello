@@ -13,7 +13,6 @@ let {
   _nologin,
   _nothing,
   _err,
-  sendEmail,
   _setTimeout,
   jwten,
   receiveFiles,
@@ -30,11 +29,10 @@ let {
     queryData,
     runSqlite,
   } = require('../sqlite'),
-  { mediaurl } = require('../myconfig'),
+  { filepath } = require('../myconfig'),
   landingerr = {}, //多次密码错误IP临时存放
   realTimeData = {}, //同步数据存放
-  _yc = {},
-  _ecode = []; //验证码临时存放
+  _yc = {};
 // 前端错误记录
 route.post('/panelerror', async (req, res) => {
   try {
@@ -48,247 +46,238 @@ route.post('/panelerror', async (req, res) => {
 //获取字体
 route.get('/getfont', async (req, res) => {
   try {
-    let arr = await _readdir(`${mediaurl.filepath}/font`);
+    let arr = await _readdir(`${filepath}/font`);
     _success(res, 'ok', arr);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
   }
 });
-
-queryData('user', 'account')
-  .then(() => { })
-  .catch(async () => {
-    try {
-      await runSqlite(`CREATE TABLE chat (
-      state    TEXT DEFAULT (0),
-      id       TEXT PRIMARY KEY
+route.get('/isregister', async (req, res) => {
+  try {
+    _success(res, 'ok', (await _readFile('./config.json')).registerstate)
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+})
+queryData('user', 'account').then(() => { }).catch(async () => {
+  try {
+    await runSqlite(`CREATE TABLE chat (
+      state TEXT DEFAULT (0) 
+                  NOT NULL,
+      id    TEXT PRIMARY KEY
+                  NOT NULL,
+      _from TEXT NOT NULL,
+      _to   TEXT NOT NULL,
+      flag  TEXT NOT NULL,
+      time  TEXT NOT NULL,
+      date  TEXT NOT NULL,
+      data  TEXT NOT NULL,
+      isrc  TEXT,
+      size  TEXT
+      );`);
+    await runSqlite(`CREATE TABLE bookmk (
+      state   TEXT DEFAULT (0) 
                     NOT NULL,
-      _from    TEXT,
-      _to      TEXT,
-      flag     TEXT,
-      time     TEXT,
-      data     TEXT,
-      date     TEXT,
-      isrc     TEXT,
-      size     TEXT)`);
-      await runSqlite(`CREATE TABLE bookmk (
-      state   TEXT DEFAULT (0),
-      num     INT,
+      num     INT  NOT NULL,
       id      TEXT PRIMARY KEY
                     NOT NULL,
-      listid  TEXT,
-      account TEXT,
-      name    TEXT,
-      link    TEXT,
-      logo    TEXT,
+      listid  TEXT NOT NULL,
+      account TEXT NOT NULL,
+      name    TEXT NOT NULL,
+      link    TEXT NOT NULL,
+      logo    TEXT NOT NULL,
       des     TEXT
       );`);
-      await runSqlite(`CREATE TABLE booklist (
-      state   TEXT DEFAULT (0),
+    await runSqlite(`CREATE TABLE booklist (
+      state   TEXT DEFAULT (0) 
+                    NOT NULL,
       id      TEXT PRIMARY KEY
-                  NOT NULL,
-      account TEXT,
-      num     INT,
-      name    TEXT)`);
-      await runSqlite(`CREATE TABLE friends (
-      account TEXT,
-      friend  TEXT,
-      islook  TEXT DEFAULT y,
-      time    TEXT)`);
-      await runSqlite(`CREATE TABLE history (
-      state   TEXT DEFAULT (0),
+                    NOT NULL,
+      account TEXT NOT NULL,
+      num     INT  NOT NULL,
+      name    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE friends (
+      account TEXT NOT NULL,
+      friend  TEXT NOT NULL,
+      islook  TEXT DEFAULT y
+                    NOT NULL,
+      time    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE history (
+      state   TEXT DEFAULT (0) 
+                    NOT NULL,
       id      TEXT PRIMARY KEY
-                  NOT NULL,
-      account TEXT,
-      data    TEXT)`);
-      await runSqlite(`CREATE TABLE lastmusic (
-      state   TEXT DEFAULT (0),
+                    NOT NULL,
+      account TEXT NOT NULL,
+      data    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE lastmusic (
+      state   TEXT DEFAULT (0) 
+                    NOT NULL,
       account TEXT PRIMARY KEY
-                  NOT NULL,
-      data    TEXT)`);
-      await runSqlite(`CREATE TABLE musicinfo (
+                    NOT NULL,
+      data    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE musicinfo (
       account TEXT PRIMARY KEY
-                  NOT NULL,
-      data    TEXT)`);
-      await runSqlite(`CREATE TABLE note (
-      state   TEXT DEFAULT (0),
+                    NOT NULL,
+      data    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE note (
+      state   TEXT DEFAULT (0) 
+                    NOT NULL,
       id      TEXT PRIMARY KEY
-                  NOT NULL,
-      account TEXT,
-      name    TEXT,
-      share   TEXT DEFAULT n,
-      data    TEXT,
-      time    TEXT)`);
-      await runSqlite(`CREATE TABLE playing (
+                    NOT NULL,
+      account TEXT NOT NULL,
+      name    TEXT NOT NULL,
+      share   TEXT DEFAULT n
+                    NOT NULL,
+      data    TEXT NOT NULL,
+      time    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE playing (
       account TEXT PRIMARY KEY
-                  NOT NULL,
-      data    TEXT)`);
-      await runSqlite(`CREATE TABLE share (
-      type    TEXT DEFAULT (0),
+                    NOT NULL,
+      data    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE share (
+      type    TEXT DEFAULT (0) 
+                    NOT NULL,
       id      TEXT PRIMARY KEY
-                  NOT NULL,
-      account TEXT,
-      data    TEXT)`);
-      await runSqlite(`CREATE TABLE user (
-      state    TEXT DEFAULT (0),
+                    NOT NULL,
+      account TEXT NOT NULL,
+      data    TEXT NOT NULL
+      );`);
+    await runSqlite(`CREATE TABLE user (
+      state    TEXT DEFAULT (0) 
+                    NOT NULL,
       account  TEXT PRIMARY KEY
                     NOT NULL,
-      username TEXT,
-      password TEXT,
-      email    TEXT,
-      time     TEXT,
-      bg       TEXT,
-      bgxs     TEXT,
-      dailybg  TEXT DEFAULT n,
-      flag     TEXT)`);
-      await runSqlite(`CREATE VIEW getchat AS
-    SELECT u.username name,
-           c.state,
-           c._from,
-           c.id,
-           c._to,
-           c.flag,
-           c.time,
-           c.date,
-           c.data,
-           c.isrc,
-           c.size
-      FROM chat AS c LEFT JOIN
-           user AS u
-     ON u.account = c._from;`);
-      await runSqlite(`CREATE VIEW getnote AS
-    SELECT u.username,
-           n.state,
-           n.id,
-           n.account,
-           n.name,
-           n.time,
-           n.data,
-           n.share
-      FROM note AS n LEFT JOIN
-           user AS u
-     ON u.account = n.account;`);
-      await runSqlite(`CREATE VIEW getshare AS
-    SELECT u.username,
-           s.id,
-           s.account,
-           s.type,
-           s.data
-      FROM share AS s LEFT JOIN
-           user AS u
-     ON u.account = s.account;`);
-      await runSqlite(`CREATE TRIGGER deluser AFTER DELETE 
-    ON user
-    BEGIN
-       DELETE from friends WHERE account = old.account OR friend = old.account;
-       DELETE from share WHERE account = old.account;
-       DELETE from playing WHERE account = old.account;
-       DELETE from musicinfo WHERE account = old.account;
-       DELETE from lastmusic WHERE account = old.account;
-       DELETE from bookmk WHERE account = old.account;
-       DELETE from booklist WHERE account = old.account;
-       DELETE from history WHERE account = old.account;
-       DELETE from note WHERE account = old.account;
-       DELETE from chat WHERE (_from=old.account OR _to=old.account) AND flag !='chang';
-    END;`);
-      let userObj = {
+      username TEXT NOT NULL,
+      password TEXT NOT NULL,
+      time     TEXT NOT NULL,
+      bg       TEXT NOT NULL,
+      bgxs     TEXT NOT NULL,
+      dailybg  TEXT DEFAULT n
+                    NOT NULL,
+      flag     TEXT NOT NULL
+                    DEFAULT (0) 
+      );`);
+    await runSqlite(`CREATE VIEW getchat AS
+      SELECT u.username name,
+            c.state,
+            c._from,
+            c.id,
+            c._to,
+            c.flag,
+            c.time,
+            c.date,
+            c.data,
+            c.isrc,
+            c.size
+        FROM chat AS c LEFT JOIN
+            user AS u
+      ON u.account = c._from;`);
+    await runSqlite(`CREATE VIEW getnote AS
+      SELECT u.username,
+            n.state,
+            n.id,
+            n.account,
+            n.name,
+            n.time,
+            n.data,
+            n.share
+        FROM note AS n LEFT JOIN
+            user AS u
+      ON u.account = n.account;`);
+    await runSqlite(`CREATE VIEW getshare AS
+      SELECT u.username,
+            s.id,
+            s.account,
+            s.type,
+            s.data
+        FROM share AS s LEFT JOIN
+            user AS u
+      ON u.account = s.account;`);
+    await runSqlite(`CREATE TRIGGER deluser AFTER DELETE 
+      ON user
+      BEGIN
+        DELETE from friends WHERE account = old.account OR friend = old.account;
+        DELETE from share WHERE account = old.account;
+        DELETE from playing WHERE account = old.account;
+        DELETE from musicinfo WHERE account = old.account;
+        DELETE from lastmusic WHERE account = old.account;
+        DELETE from bookmk WHERE account = old.account;
+        DELETE from booklist WHERE account = old.account;
+        DELETE from history WHERE account = old.account;
+        DELETE from note WHERE account = old.account;
+        DELETE from chat WHERE (_from=old.account OR _to=old.account) AND flag !='chang';
+      END;`);
+    let musicArr = [
+      { name: '播放历史', pic: 'img/history.jpg', item: [], id: 'history' },
+      { name: '收藏', pic: 'img/music.jpg', item: [], id: 'favorites' },
+    ];
+    await insertData('user', [
+      {
+        username: 'root',
+        account: 'root',
         time: Date.now(),
         bg: '',
         bgxs: '',
         dailybg: 'n',
         flag: '0',
+        password: '90089e402b00',
+      }
+    ]);
+    await insertData('musicinfo', [
+      {
+        account: 'root',
+        data: JSON.stringify(musicArr),
+      }
+    ]);
+    await _mkdir(`${filepath}/logo/root`); //创建书签图标目录
+    fs.copyFileSync(
+      `admin.jpg`,
+      `${filepath}/logo/root/root.png`
+    );
+    await insertData('note', [
+      {
+        id: 'about',
+        name: 'About',
+        data: (await _readFile('./default_about.md', 1)).toString(),
+        time: Date.now(),
+        share: 'y',
+        account: 'root',
       },
-        musicArr = [
-          { name: '播放历史', pic: 'img/history.jpg', item: [], id: 'history' },
-          { name: '收藏', pic: 'img/music.jpg', item: [], id: 'favorites' },
-        ];
-      await insertData('user', [
-        {
-          ...userObj,
-          username: 'root',
-          account: 'root',
-          password: '90089e402b00',
-        },
-        {
-          ...userObj,
-          username: 'test',
-          account: 'test',
-          password: 'cdvfgbhnymytghy',
-        },
-      ]);
-      await insertData('musicinfo', [
-        {
-          account: 'root',
-          data: JSON.stringify(musicArr),
-        },
-        {
-          account: 'test',
-          data: JSON.stringify(musicArr),
-        },
-      ]);
-      await _mkdir(`${mediaurl.filepath}/logo/root`); //创建书签图标目录
-      await _mkdir(`${mediaurl.filepath}/logo/test`); //创建书签图标目录
-      fs.copyFileSync(
-        `/admin.jpg`,
-        `${mediaurl.filepath}/logo/root/root.png`
-      );
-      fs.copyFileSync(
-        `/admin.jpg`,
-        `${mediaurl.filepath}/logo/test/test.png`
-      );
-      await insertData('note', [
-        {
-          id: 'about',
-          name: 'About',
-          data: (await _readFile('./default_about.md', 1)).toString(),
-          time: Date.now(),
-          share: 'y',
-          account: 'root',
-        },
-      ]);
-    } catch (error) {
-      let str = `[${newDate('{0}-{1}-{2} {3}:{4}')}] - ${error}\n`;
-      await _appendFile('./hello.log', str);
-    }
-  });
+    ]);
+  } catch (error) {
+    let str = `[${newDate('{0}-{1}-{2} {3}:{4}')}] - ${error}\n`;
+    await _appendFile('./hello.log', str);
+  }
+});
 // 注册
 route.post('/register', async (req, res) => {
   try {
-    let { username, password, email, code } = req.body;
-    // 验证账号是否已经存在
-    if (
-      (await queryData('user', 'email', `WHERE email = ?`, [email])).length > 0
-    ) {
-      _err(res, '邮箱已被注册~');
-      return;
+    if ((await _readFile('./config.json')).registerstate === 'n') {
+      _err(res)
+      return
     }
+    let { username, password } = req.body;
     // 验证昵称格式
     if (userlenght(username) || !isUserName(username)) {
-      _err(res, '昵称格式错误~');
-      return;
-    }
-    let now = Date.now();
-    let codeObj = _ecode.find(
-      (item) => now - item.time < 1000 * 60 * 10 && item.email === email
-    );
-    // 验证验证码是否过期
-    if (!codeObj) {
-      _err(res, '验证码已失效，请重新发送~');
-      return;
-    }
-    // 验证验证码
-    if (codeObj.code !== code) {
-      _err(res, '验证码错误~');
+      _err(res, '昵称格式错误');
       return;
     }
     // 写入用户数据
     let account = nanoid();
+    let now = Date.now();
     await insertData('user', [
       {
         username,
         account,
-        email,
         time: now,
         password: encryption(password),
         bg: '',
@@ -306,10 +295,10 @@ route.post('/register', async (req, res) => {
         ]),
       },
     ]);
-    await _mkdir(`${mediaurl.filepath}/logo/${account}`); //创建书签图标目录
+    await _mkdir(`${filepath}/logo/${account}`); //创建书签图标目录
     fs.copyFileSync(
-      `/admin.jpg`,
-      `${mediaurl.filepath}/logo/${account}/${account}.png`
+      `admin.jpg`,
+      `${filepath}/logo/${account}/${account}.png`
     );
     await writelog(req, `注册账号[${username}(${account})]`);
     // 生成token
@@ -318,43 +307,7 @@ route.post('/register', async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 3,
       httpOnly: true,
     });
-    _success(res, '注册账号成功~');
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-//注册验证码
-route.get('/registercode', async (req, res) => {
-  try {
-    let { email } = req.query;
-    // 验证邮箱是否使用
-    if (
-      (await queryData('user', 'email', `WHERE email = ?`, [email])).length > 0
-    ) {
-      _err(res, '邮箱已被注册~');
-      return;
-    }
-    // 生成验证码
-    let code = Math.random().toFixed(6).slice(-6);
-    // 发送验证码
-    sendEmail(code, email)
-      .then(() => {
-        let now = Date.now();
-        _ecode = _ecode.filter(
-          (item) => now - item.time < 1000 * 60 * 10 && item.email !== email
-        );
-        _ecode.push({
-          code,
-          time: now,
-          email,
-        });
-        _success(res, '验证码发送成功~');
-      })
-      .catch(async (error) => {
-        await writelog(req, `[${req._pathUrl}] ${error}`);
-        _err(res, '验证码发送失败，请稍后再试~');
-      });
+    _success(res, '注册账号成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -372,11 +325,11 @@ route.post('/login', async (req, res) => {
       let ruser = await queryData(
         'user',
         '*',
-        `WHERE (account = ? OR username =? OR email =?) AND state = ?`,
-        [account, account, account, '0']
+        `WHERE (account = ? OR username =?) AND state = ?`,
+        [account, account, '0']
       );
       if (ruser.length === 0) {
-        _err(res, '账号不存在~');
+        _err(res, '账号不存在');
         return;
       }
       //验证密码
@@ -394,10 +347,10 @@ route.post('/login', async (req, res) => {
           req,
           `[${_userinfo.username}(${_userinfo.account})]登录成功`
         );
-        _success(res, '登录成功~');
+        _success(res, '登录成功');
         if (landingerr.hasOwnProperty(_ip)) delete landingerr[_ip];
       } else {
-        _err(res, '登录密码错误，请重新输入~');
+        _err(res, '登录密码错误，请重新输入');
         landingerr.hasOwnProperty(_ip)
           ? landingerr[_ip]++
           : (landingerr[_ip] = 1);
@@ -411,111 +364,8 @@ route.post('/login', async (req, res) => {
         });
       }
     } else {
-      _err(res, '登录密码多次错误，请10分钟后再试~');
+      _err(res, '登录密码多次错误，请10分钟后再试');
     }
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-// 重置密码
-route.post('/resetpass', async (req, res) => {
-  try {
-    let { email, password, code } = req.body,
-      user = await queryData('user', '*', `WHERE email = ? AND state = ?`, [
-        email,
-        '0',
-      ]);
-    if (user.length > 0) {
-      let now = Date.now();
-      let codeObj = _ecode.find(
-        (item) => now - item.time < 1000 * 60 * 10 && item.email === email
-      );
-      // 验证验证码
-      if (!codeObj) {
-        _err(res, '验证码已失效，请重新发送~');
-        return;
-      }
-      if (codeObj.code !== code) {
-        _err(res, '验证码错误~');
-        return;
-      }
-      //退出所有登录设备
-      await updateData(
-        'user',
-        {
-          password: encryption(password),
-          flag: parseInt(now / 1000),
-        },
-        `WHERE account=? AND state=?`,
-        [user[0].account, '0']
-      );
-      writelog(req, `[${user[0].username}(${user[0].account})]重置密码`);
-      res.clearCookie('token');
-      _success(res, '重置密码成功~');
-      return;
-    }
-    _err(res, '账号不存在~');
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-// 重置密码验证码
-route.get('/resetpasscode', async (req, res) => {
-  try {
-    let { email } = req.query;
-    if (
-      (
-        await queryData('user', '*', `WHERE email = ? AND state = ?`, [
-          email,
-          '0',
-        ])
-      ).length === 0
-    ) {
-      _err(res, '账号不存在~');
-      return;
-    }
-    let code = Math.random().toFixed(6).slice(-6);
-    sendEmail(code, email)
-      .then(() => {
-        let now = Date.now();
-        _ecode = _ecode.filter(
-          (item) => now - item.time < 1000 * 60 * 10 && item.email !== email
-        );
-        _ecode.push({
-          code,
-          time: now,
-          email,
-        });
-        _success(res, '验证码发送成功~');
-      })
-      .catch(async (error) => {
-        await writelog(req, `[${req._pathUrl}] ${error}`);
-        _err(res, '验证码发送失败，请稍后再试~');
-      });
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-//测试账号访问
-route.get('/testaccount', async (req, res) => {
-  try {
-    let obj = (
-      await queryData('user', 'state', `WHERE account=?`, ['test'])
-    )[0];
-    if (obj.state == '1') {
-      _err(res, '测试账号已关闭~');
-      return;
-    }
-    let token = jwten('test');
-    res.cookie('token', token, {
-      maxAge: 1000 * 60 * 60 * 24 * 3,
-      httpOnly: true,
-    });
-    _success(res, 'ok');
-    writelog(req, `游客访问`);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -539,17 +389,15 @@ route.post('/changepass', async (req, res) => {
       await updateData(
         'user',
         {
-          password: encryption(newpassword),
-          flag: parseInt(Date.now() / 1000), //退出所有登录设备
+          password: encryption(newpassword)
         },
         `WHERE account=? AND state=?`,
         [account, '0']
       );
-      res.clearCookie('token');
-      _success(res, '修改密码成功~');
+      _success(res, '修改密码成功');
       await writelog(req, `修改密码`);
     } else {
-      _err(res, '原密码错误，请重新输入~');
+      _err(res, '原密码错误，请重新输入');
       await writelog(req, `修改密码失败`);
     }
   } catch (error) {
@@ -588,7 +436,7 @@ route.post('/changeusername', async (req, res) => {
       usname = req.body.username;
     // 验证昵称格式
     if (!isUserName(usname)) {
-      _err(res, '昵称格式错误，请重新输入~');
+      _err(res, '昵称格式错误，请重新输入');
       await writelog(req, '修改昵称失败');
       return;
     }
@@ -601,41 +449,11 @@ route.post('/changeusername', async (req, res) => {
       [account, '0']
     );
     await writelog(req, '修改昵称');
-    _success(res, '修改昵称成功~');
+    _success(res, '修改昵称成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
     return;
-  }
-});
-//替换邮箱
-route.get('/bindemail', async (req, res) => {
-  try {
-    let account = req._userInfo.account;
-    if (account !== 'test') {
-      let { email } = req.query;
-      // 验证邮箱是否使用
-      if (
-        (await queryData('user', 'email', `WHERE email = ?`, [email])).length >
-        0
-      ) {
-        _err(res, '该邮箱已绑定账号，一个邮箱只能绑定一个账号~');
-        return;
-      }
-      await updateData(
-        'user',
-        {
-          email,
-        },
-        `WHERE account=? AND state=?`,
-        [account, '0']
-      );
-      writelog(req, `更换邮箱[${email}]`);
-    }
-    _success(res);
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
   }
 });
 // 注销账号
@@ -643,8 +461,8 @@ route.post('/delaccount', async (req, res) => {
   try {
     let account = req._userInfo.account;
     // 过滤管理员和测速账号
-    if (account === 'root' || account === 'test') {
-      _err(res, '当前账号没有权限执行该操作~');
+    if (account === 'root') {
+      _err(res, '当前账号没有权限执行该操作');
     } else {
       await updateData(
         'user',
@@ -660,7 +478,7 @@ route.post('/delaccount', async (req, res) => {
       ]);
       await writelog(req, `关闭账号`);
       res.clearCookie('token');
-      _success(res, '成功删除账号~');
+      _success(res, '成功删除账号');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -684,7 +502,7 @@ route.get('/getuserinfo', async (req, res) => {
 route.post('/upuserlogo', async (req, res) => {
   try {
     let account = req._userInfo.account,
-      path = `${mediaurl.filepath}/logo/${account}`;
+      path = `${filepath}/logo/${account}`;
     await _mkdir(path);
     await _unlink(`${path}/${account}.png`);
     receiveFiles(req, path, `${account}.png`)
@@ -709,11 +527,11 @@ route.get('/dailybg', async (req, res) => {
     if (!req._userInfo.dailybg || req._userInfo.dailybg === 'n') {
       ff = 'y';
       await writelog(req, `开启每日自动更新壁纸`);
-      _success(res, '成功开启~');
+      _success(res, '成功开启');
     } else {
       ff = 'n';
       await writelog(req, `关闭每日自动更新壁纸`);
-      _success(res, '成功关闭~');
+      _success(res, '成功关闭');
     }
     await updateData(
       'user',
@@ -946,6 +764,11 @@ route.post('/deleterecycle', async (req, res) => {
         .join(',')}) AND account=? AND state=?`,
       [...arr, account, '1']
     );
+    if (type === 'booklist') {
+      await deleteData('bookmk', `WHERE listid IN (${new Array(arr.length)
+        .fill('?')
+        .join(',')}) AND account=?`, [...arr, account])
+    }
     await writelog(req, `删除回收站(${type})[${arr.join(',')}]`);
     _success(res);
   } catch (error) {

@@ -5,30 +5,16 @@ import './sharebm.css'
 import {
   queryURLParams,
   myOpen,
-  _setData,
-  _getData,
-  _delData,
   _setTimeout,
   debounce,
-  _getTarget,
   imgjz,
   getHost,
-  _mySlide,
-  _postAjax,
   _getAjax,
-  _upFile,
   encodeHtml,
-  _each,
-  _imgSize,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
 } from '../../utils/utils'
-import { _speed, mediaURL } from "../../config";
+import { mediaURL } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
-import { _loadingBar } from '../../plugins/loadingBar'
+import { _success } from "../../plugins/message";
 
 ~(async function () {
   let urlparmes = queryURLParams(myOpen()),

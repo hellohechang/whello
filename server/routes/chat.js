@@ -1,6 +1,6 @@
 const express = require('express'),
   fs = require('fs'),
-  { mediaurl } = require('../myconfig'),
+  { filepath } = require('../myconfig'),
   route = express.Router();
 
 const { insertData, updateData, queryData } = require('../sqlite');
@@ -177,7 +177,7 @@ route.get('/getmsg', async (req, res) => {
 // 文件是否过期
 route.get('/isexpired', (req, res) => {
   let name = req.query.name;
-  if (fs.existsSync(`${mediaurl.filepath}${name}`)) {
+  if (fs.existsSync(`${filepath}${name}`)) {
     _success(res);
     return;
   }
@@ -188,6 +188,18 @@ route.post('/takemsg', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { obj } = req.body;
+    if (obj._to !== 'chang') {
+      let user = await queryData(
+        'user',
+        'account',
+        `WHERE state = ? AND account = ?`,
+        ['0', obj._to]
+      );
+      if (user.length === 0) {
+        _err(res)
+        return
+      }
+    }
     obj.flag = obj._to === 'chang' ? 'chang' : `${account}-${obj._to}`;
     obj.id = nanoid();
     obj.time = Date.now();
@@ -313,7 +325,7 @@ route.get('/getmember', async (req, res) => {
 route.post('/up', async (req, res) => {
   try {
     let { name, HASH } = req.query,
-      path = `${mediaurl.filepath}/tem/${HASH}`;
+      path = `${filepath}/tem/${HASH}`;
     await _mkdir(path);
     await receiveFiles(req, path, name);
     _success(res);
@@ -325,7 +337,7 @@ route.post('/up', async (req, res) => {
 //接收语音
 route.post('/upp', async (req, res) => {
   try {
-    let path = `${mediaurl.filepath}/upload`;
+    let path = `${filepath}/upload`;
     await receiveFiles(req, path, req.query.name);
     _success(res);
   } catch (error) {
@@ -337,19 +349,19 @@ route.post('/upp', async (req, res) => {
 route.post('/mergefile', async (req, res) => {
   try {
     let { HASH, count, name } = req.body;
-    await delDir(`${mediaurl.filepath}/upload/${name}`);
-    await delDir(`${mediaurl.filepath}/uploadys/${name}`);
+    await delDir(`${filepath}/upload/${name}`);
+    await delDir(`${filepath}/uploadys/${name}`);
     if (isImgFile(name)) {
       await _rename(
-        `${mediaurl.filepath}/tem/${HASH}/_hello`,
-        `${mediaurl.filepath}/uploadys/${name}`
+        `${filepath}/tem/${HASH}/_hello`,
+        `${filepath}/uploadys/${name}`
       );
       --count;
     }
     await mergefile(
       count,
-      `${mediaurl.filepath}/tem/${HASH}`,
-      `${mediaurl.filepath}/upload/${name}`
+      `${filepath}/tem/${HASH}`,
+      `${filepath}/upload/${name}`
     );
     _success(res);
   } catch (error) {
@@ -361,7 +373,7 @@ route.post('/mergefile', async (req, res) => {
 route.post('/breakpoint', async (req, res) => {
   try {
     let { HASH } = req.body,
-      path = `${mediaurl.filepath}/tem/${HASH}`,
+      path = `${filepath}/tem/${HASH}`,
       arr = await _readdir(path);
     _success(res, 'ok', arr);
   } catch (error) {
@@ -373,8 +385,8 @@ route.post('/breakpoint', async (req, res) => {
 route.post('/repeatfile', async (req, res) => {
   try {
     let { name } = req.body;
-    let u = `${mediaurl.filepath}/upload/${name}`;
-    let uys = `${mediaurl.filepath}/uploadys/${name}`;
+    let u = `${filepath}/upload/${name}`;
+    let uys = `${filepath}/uploadys/${name}`;
     if (fs.existsSync(u)) {
       if (isImgFile(name)) {
         if (fs.existsSync(uys)) {

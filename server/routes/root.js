@@ -1,5 +1,5 @@
 const express = require('express'),
-  { mediaurl } = require('../myconfig'),
+  { filepath } = require('../myconfig'),
   route = express.Router();
 
 const { updateData, deleteData, queryData } = require('../sqlite');
@@ -20,7 +20,7 @@ const {
 //拦截器
 route.use((req, res, next) => {
   if (req._userInfo.account !== 'root') {
-    _err(res, '当前账号没有权限执行该操作~');
+    _err(res, '当前账号没有权限执行该操作');
   } else {
     next();
   }
@@ -40,7 +40,7 @@ route.get('/resetpass', async (req, res) => {
       [a, '0']
     );
     await writelog(req, `重置[${a}]密码为空`);
-    _success(res, '重置密码成功~');
+    _success(res, '重置密码成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -76,17 +76,17 @@ route.post('/deluser', async (req, res) => {
         [ac]
       );
       if (flag == 0) {
-        _success(res, '成功激活账号~');
+        _success(res, '成功激活账号');
       } else {
         await deleteData('friends', `WHERE account = ? OR friend = ?`, [
           ac,
           ac,
         ]);
-        _success(res, '成功关闭账号~');
+        _success(res, '成功关闭账号');
       }
       await writelog(req, `${flag == 0 ? '激活' : '关闭'} 账号[${ac}]`);
     } else {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -97,13 +97,13 @@ route.post('/deluser', async (req, res) => {
 route.post('/delaccount', async (req, res) => {
   try {
     let { ac } = req.body;
-    if (ac !== 'root' && ac !== 'test') {
+    if (ac !== 'root') {
       await deleteData('user', `WHERE account=?`, [ac]);
-      await delDir(`${mediaurl.filepath}/logo/${ac}`);
+      await delDir(`${filepath}/logo/${ac}`);
       await writelog(req, `销毁账号[${ac}]`);
-      _success(res, '成功销毁账号~');
+      _success(res, '成功销毁账号');
     } else {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -128,15 +128,15 @@ route.post('/loginother', async (req, res) => {
 // 清空upload
 route.get('/clearup', async (req, res) => {
   try {
-    let up = await _readdir(`${mediaurl.filepath}/upload`);
+    let up = await _readdir(`${filepath}/upload`);
     up.forEach(async (v) => {
-      let p = `${mediaurl.filepath}/upload/${v}`;
-      let pys = `${mediaurl.filepath}/uploadys/${v}`;
+      let p = `${filepath}/upload/${v}`;
+      let pys = `${filepath}/uploadys/${v}`;
       delDir(p);
       delDir(pys);
     });
     await writelog(req, '清空upload目录');
-    _success(res, '成功清空upload目录~');
+    _success(res, '成功清空upload目录');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -218,10 +218,10 @@ route.get('/delmusicfile', async (req, res) => {
     });
     musics = qucong(musics);
     let delarr = '';
-    (await _readdir(`${mediaurl.filepath}/music`)).forEach((item) => {
+    (await _readdir(`${filepath}/music`)).forEach((item) => {
       let i = item.lastIndexOf('.');
       if (!musics.some((v) => `${v.artist}-${v.name}` === item.slice(0, i))) {
-        _unlink(`${mediaurl.filepath}/music/${item}`);
+        _unlink(`${filepath}/music/${item}`);
         delarr += `${item}\n`;
       }
       if (item.slice(i).toLowerCase() === '.mp4') {
@@ -230,21 +230,21 @@ route.get('/delmusicfile', async (req, res) => {
             (v) => `${v.artist}-${v.name}` === item.slice(0, i) && v.mv === ''
           )
         ) {
-          _unlink(`${mediaurl.filepath}/music/${item}`);
+          _unlink(`${filepath}/music/${item}`);
           delarr += `${item}\n`;
         }
       }
     });
-    (await _readdir(`${mediaurl.filepath}/musicys`)).forEach((item) => {
+    (await _readdir(`${filepath}/musicys`)).forEach((item) => {
       let i = item.lastIndexOf('.');
       if (!musics.some((v) => `${v.artist}-${v.name}` === item.slice(0, i))) {
-        _unlink(`${mediaurl.filepath}/musicys/${item}`);
+        _unlink(`${filepath}/musicys/${item}`);
         delarr += `${item}\n`;
       }
     });
     await writelog(req, `更新歌曲文件`);
     if (delarr.length === 0) {
-      _success(res, 'ok', '没有多余歌曲文件~');
+      _success(res, 'ok', '没有多余歌曲文件');
       return;
     }
     _success(res, 'ok', `删除文件:\n ${delarr}`);
@@ -253,5 +253,18 @@ route.get('/delmusicfile', async (req, res) => {
     _err(res);
   }
 });
+//设置注册状态
+route.post('/isregister', async (req, res) => {
+  try {
+    let a = await _readFile('./config.json')
+    a.registerstate = a.registerstate == 'y' ? 'n' : 'y';
+    await _writeFile('./config.json', a)
+    await writelog(req, `${a.registerstate === 'y' ? '开放' : '关闭'}注册`)
+    _success(res, 'ok', a.registerstate)
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+})
 
 module.exports = route;

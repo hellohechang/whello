@@ -3,28 +3,19 @@ import consolas from '../css/consolas.ttf'
 import {
   _setData,
   _getData,
-  _delData,
   _setTimeout,
   debounce,
   playSound,
   randomColor,
   getSelectText,
   _getTarget,
-  _mySlide,
   _postAjax,
-  _getAjax,
-  _upFile,
   copyText,
-  _each,
-  _imgSize,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
+  _myOpen
 } from '../utils/utils'
-import { LevelObj, serverURL } from "../config";
-import { _loadingBar } from "../plugins/loadingBar";
-import { _err, _success } from '../plugins/message'
+import { serverURL, LevelObj } from "../config";
+import { _err } from "../plugins/message";
+import { _loadingBar } from '../plugins/loadingBar'
 
 //复制编辑选中文本
 ~(function () {
@@ -123,13 +114,13 @@ import { _err, _success } from '../plugins/message'
   document.addEventListener('mouseup', debounce(show, 500));
   document.addEventListener('keyup', debounce(show, 500));
 })();
-document.addEventListener('mouseover', function (e) {
-  let target = _getTarget(e, 'input', 1) || _getTarget(e, 'textarea', 1) || _getTarget(e, '#ycdiv', 1);
-  if (target) {
-    target.focus();
-    // target.select && target.select()
-  }
-});
+// document.addEventListener('mouseover', function (e) {
+//   let target = _getTarget(e, 'input', 1) || _getTarget(e, 'textarea', 1) || _getTarget(e, '#ycdiv', 1);
+//   if (target) {
+//     target.focus();
+//     // target.select && target.select()
+//   }
+// });
 _loadingBar.start();
 window.onload = function () {
   _loadingBar.end();
@@ -238,12 +229,12 @@ EventTarget.prototype._longPress = function (str, callback) {
   });
   return this;
 };
-window.addEventListener('online', function () {
-  _success('网络连接成功~');
-});
-window.addEventListener('offline', function () {
-  _err('断网了，少年~');
-});
+// window.addEventListener('online', function () {
+//   _success('网络连接成功');
+// });
+// window.addEventListener('offline', function () {
+//   _err('断网了，少年');
+// });
 ~(function () {
   let img = document.createElement('img');
   img.src = '/img/hechang.png';
@@ -297,7 +288,7 @@ window.onerror = function (message, url, line, column, error) {
         flag = ff;
       })
       .catch(() => {
-        _err('字体加载失败~');
+        _err('字体加载失败');
         _loadingBar.end();
       });
   }

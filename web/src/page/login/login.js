@@ -4,654 +4,166 @@ import '../../css/reset.css'
 import '../../css/iconfont.css'
 import './login.css'
 import {
-  queryURLParams,
   myOpen,
   _setData,
   _getData,
-  _delData,
   _setTimeout,
   debounce,
-  _getTarget,
-  _mySlide,
   _postAjax,
   _getAjax,
-  _upFile,
   isUserName,
-  _each,
-  _imgSize,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
 } from '../../utils/utils'
 import { _speed } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
+import { _err } from "../../plugins/message";
 import { alert } from '../../plugins/alert'
-import { _loadingBar } from '../../plugins/loadingBar'
 
 ~(async function () {
+  if (_getData('state')) {
+    myOpen('/');
+    return;
+  }
   let $loadingBox = $('.loadingBox'),
-    $body = $('body'),
-    HASH = queryURLParams(myOpen()).HASH,
-    $mbg = $('.mbg');
-  let timer = null;
+    $mbg = $('.mbg'),
+    $main = $('main'),
+    $account = $('.account input'),
+    $paccount = $('.account p'),
+    $password = $('.password input'),
+    $repassword = $('.repassword input'),
+    $ppassword = $('.repassword p'),
+    $register = $('.register'),
+    $submit = $('.submit');
+  _getAjax('/user/isregister').then(res => {
+    if (res.code == 0) {
+      if (res.data == 'y') {
+        $register.parent().css('display', 'block')
+      }
+    }
+  }).catch(() => { })
+  let _flag = true
   _setTimeout(() => {
     $mbg.css({
       opacity: '0.8',
     });
-    if (HASH === 'resetpass') {
-      handleResetPass();
-    } else if (HASH === 'register') {
-      handleRegister();
-    } else if (HASH === 'changepass') {
-      handleChangePass();
-    } else {
-      handleLogin();
-    }
+    $main.stop().show(_speed)
   }, 600);
-  // 登录
-  function handleLogin() {
-    if (_getData('state')) {
-      myOpen('/');
-      return;
+  $account.val(_getData('account') || '')
+  let isLogin = true;
+  $register.on('click', () => {
+    if (isLogin) {
+      isLogin = false
+      $register.text('登录')
+      $submit.text('注册')
+      $repassword.parent().css('display', 'block')
+    } else {
+      isLogin = true
+      $register.text('注册')
+      $submit.text('登录')
+      $repassword.parent().css('display', 'none')
     }
-    if (timer !== null) {
-      clearInterval(timer);
-      timer = null;
+  })
+  $main.on('keyup', function (e) {
+    if (e.key === 'Enter') {
+      $submit.click();
     }
-    myOpen('#');
-    $('main').remove();
-    let str = `<main>
-      <div class="account">
-        <input autocomplete="off" type="text" value="${_getData('account') ? _getData('account') : ''
-      }" placeholder="昵称/账号或邮箱">
-      </div>
-      <p class="paccount"></p>
-      <div class="password">
-        <input autocomplete="off" type="password" placeholder="密码">
-      </div>
-      <p></p>
-      <div class="submit">
-        <button cursor>登录</button>
-      </div>
-      <p></p>
-      <div class="other">
-        <div cursor class="resetPass">忘记密码？</div>
-        <div cursor class="register">注册</div>
-      </div>
-    </main>`;
-    $body.append(str);
-    $('main').stop().show(_speed);
-    let $account = $('.account input'),
-      $password = $('.password input'),
-      $resetPass = $('.resetPass'),
-      $register = $('.register'),
-      $submit = $('.submit button'),
-      $paccount = $('.paccount');
-    let _flag = true;
-    $('main').on('keyup', function (e) {
-      if (e.key === 'Enter') {
-        if (_flag) {
-          _flag = false;
-          $submit.click();
-        }
-      }
-    });
-    $submit.click(
-      debounce(
+  });
+  $account.on('blur', checkUserName);
+  $repassword.on('blur', checkPassword);
+  $submit.on('click', debounce(function () {
+    let account = $account.val().trim(),
+      password = $password.val().trim();
+    if (isLogin) {
+      if (!checkUserName() || !_flag) return;
+      _flag = false;
+      validateImg.init(
         function () {
-          let account = $account.val().trim(),
-            password = $password.val().trim();
-          if (!checkUserName()) return;
-          validateImg.init(
-            function () {
-              _flag = true;
-              let npd = {
-                account,
-                password: md5(password),
-              };
-              $loadingBox.stop().fadeIn();
-              _postAjax('/user/login', npd)
-                .then((result) => {
-                  $loadingBox.stop().fadeOut();
-                  if (parseInt(result.code) === 0) {
-                    _setData('account', npd.account);
-                    _setData('state', 'y');
-                    alert(result.codeText, {
-                      handled: () => {
-                        myOpen(_getData('originurl') || '/');
-                      },
-                    });
-                  }
-                })
-                .catch((_) => {
-                  $loadingBox.stop().fadeOut();
-                });
-            },
-            function () {
-              _err('验证失败');
-            }
-          );
-        },
-        2000,
-        true
-      )
-    );
-    $resetPass.click(() => {
-      handleResetPass();
-    });
-    $register.click(() => {
-      handleRegister();
-    });
-    $account.on('blur', checkUserName);
-    function checkUserName() {
-      let account = $account.val().trim();
-      if (account === '') {
-        $paccount.text('昵称/账号或邮箱');
-        return false;
-      }
-      $paccount.text('');
-      return true;
-    }
-  }
-  // 重置密码
-  function handleResetPass() {
-    if (timer !== null) {
-      clearInterval(timer);
-      timer = null;
-    }
-    myOpen(`#resetpass`);
-    $('main').remove();
-    let str = `<main>
-        <div class="password">
-          <input autocomplete="off" type="password" placeholder="新密码">
-        </div>
-        <p></p>
-        <div class="password1">
-          <input autocomplete="off" type="password" placeholder="确认密码">
-        </div>
-        <p class="ppassword"></p>
-        <div class="email">
-          <input autocomplete="off" type="text" placeholder="邮箱">
-        </div>
-        <p class="pemail"></p>
-        <div class="code">
-          <input autocomplete="off" type="text" placeholder="验证码">
-          <button cursor>获取验证码</button>
-        </div>
-        <p class="pcode"></p>
-        <div class="submit">
-        <button cursor>重置密码</button>
-        </div>
-        <p></p>
-        <div class="other">
-        <div cursor class="resetPass">登录</div>
-      </div>
-      </main>`;
-    $body.append(str);
-    $('main').stop().show(_speed);
-    let $email = $('.email input'),
-      $code = $('.code input'),
-      $codebtn = $('.code button'),
-      $password = $('.password input'),
-      $password1 = $('.password1 input'),
-      $ppassword = $('.ppassword'),
-      $pemail = $('.pemail'),
-      $resetPass = $('.resetPass'),
-      $pcode = $('.pcode'),
-      $submit = $('.submit button');
-    let _flag = true;
-    $('main').on('keyup', function (e) {
-      if (e.key === 'Enter') {
-        if (_flag) {
-          _flag = false;
-          $submit.click();
-        }
-      }
-    });
-    $submit.click(
-      debounce(
-        function () {
-          let code = $code.val().trim(),
-            password = $password.val().trim(),
-            email = $email.val().trim();
-          if (!checkUserEmail() || !checkCode() || !checkPassword()) return;
-          validateImg.init(
-            function () {
-              _flag = true;
-              $loadingBox.stop().fadeIn();
-              _postAjax('/user/resetpass', {
-                code,
-                password: md5(password),
-                email,
-              })
-                .then((result) => {
-                  $loadingBox.stop().fadeOut();
-                  if (parseInt(result.code) === 0) {
-                    _delData('state');
-                    _success(result.codeText);
-                    handleLogin();
-                  }
-                })
-                .catch((_) => {
-                  $loadingBox.stop().fadeOut();
-                });
-            },
-            function () {
-              _err('验证失败');
-            }
-          );
-        },
-        2000,
-        true
-      )
-    );
-    $codebtn.click(
-      debounce(
-        function () {
-          if (!checkUserEmail()) return;
-          let num = 60,
-            $this = $(this),
-            email = $email.val().trim();
-          $this.addClass('active');
+          _flag = true;
+          let npd = {
+            account,
+            password: md5(password),
+          };
           $loadingBox.stop().fadeIn();
-          _getAjax('/user/resetpasscode', { email })
+          _postAjax('/user/login', npd)
             .then((result) => {
               $loadingBox.stop().fadeOut();
               if (parseInt(result.code) === 0) {
-                _success(result.codeText);
-                function fun() {
-                  num--;
-                  if (num <= 0) {
-                    $this.text(`获取验证码`);
-                    $this.removeClass('active');
-                  } else {
-                    $this.text(`${num} 秒后重新获取`);
-                    timer = _setTimeout(fun, 1000);
-                  }
-                }
-                fun();
-                return;
-              }
-              $this.removeClass('active');
-            })
-            .catch((_) => {
-              $loadingBox.stop().fadeOut();
-            });
-        },
-        500,
-        true
-      )
-    );
-    $resetPass.click(() => {
-      handleLogin();
-    });
-    $email.on('blur', checkUserEmail);
-    $code.on('blur', checkCode);
-    $password1.on('blur', checkPassword);
-    function checkUserEmail() {
-      let email = $email.val().trim(),
-        reg =
-          /^\w+((-\w+)|(\.\w+))*@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
-      if (email === '') {
-        $pemail.text('请输入邮箱');
-        return false;
-      }
-      if (!reg.test(email)) {
-        $pemail.text('邮箱格式错误');
-        return false;
-      }
-      $pemail.text('');
-      return true;
-    }
-    function checkCode() {
-      let code = $code.val().trim();
-      if (code === '') {
-        $pcode.text('请输入验证码');
-        return false;
-      }
-      $pcode.text('');
-      return true;
-    }
-    function checkPassword() {
-      let password1 = $password1.val().trim(),
-        password = $password.val().trim();
-      if (password !== password1) {
-        $ppassword.text('密码不一致');
-        return false;
-      }
-      $ppassword.text('');
-      return true;
-    }
-  }
-  //注册
-  function handleRegister() {
-    if (timer !== null) {
-      clearInterval(timer);
-      timer = null;
-    }
-    myOpen(`#register`);
-    $('main').remove();
-    let str = `<main>
-      <div class="username">
-        <input autocomplete="off" type="text" placeholder="昵称">
-      </div>
-      <p class="pusername"></p>
-      <div class="email">
-        <input autocomplete="off" type="text" placeholder="邮箱">
-      </div>
-      <p class="pemail"></p>
-      <div class="code">
-        <input autocomplete="off" type="text" placeholder="验证码">
-        <button cursor>获取验证码</button>
-      </div>
-      <p class="pcode"></p>
-      <div class="password">
-        <input autocomplete="off" type="password" placeholder="密码">
-      </div>
-      <p></p>
-      <div class="password1">
-        <input autocomplete="off" type="password" placeholder="确认密码">
-      </div>
-      <p class="ppassword"></p>
-      <div class="submit">
-        <button cursor>注册</button>
-      </div>
-      <p></p>
-      <div class="other">
-        <div cursor class="resetPass">登录</div>
-        <div cursor class="register">登录测试账号</div>
-      </div>
-    </main>`;
-    $body.append(str);
-    $('main').stop().show(_speed);
-    let $username = $('.username input'),
-      $pusername = $('.pusername'),
-      $email = $('.email input'),
-      $code = $('.code input'),
-      $codebtn = $('.code button'),
-      $pcode = $('.pcode'),
-      $pemail = $('.pemail'),
-      $password = $('.password input'),
-      $password1 = $('.password1 input'),
-      $ppassword = $('.ppassword'),
-      $resetPass = $('.resetPass'),
-      $register = $('.register'),
-      $submit = $('.submit button');
-    let _flag = true;
-    $('main').on('keyup', function (e) {
-      if (e.key === 'Enter') {
-        if (_flag) {
-          _flag = false;
-          $submit.click();
-        }
-      }
-    });
-    $submit.click(
-      debounce(
-        function () {
-          let username = $username.val().trim(),
-            code = $code.val().trim(),
-            email = $email.val().trim(),
-            password = $password.val().trim();
-          if (
-            !checkUserName() ||
-            !checkUserEmail() ||
-            !checkCode() ||
-            !checkPassword()
-          )
-            return;
-          validateImg.init(
-            function () {
-              _flag = true;
-              let npd = {
-                username,
-                password: md5(password),
-                email,
-                code,
-              };
-              $loadingBox.stop().fadeIn();
-              _postAjax('/user/register', npd)
-                .then((result) => {
-                  $loadingBox.stop().fadeOut();
-                  if (parseInt(result.code) === 0) {
-                    _setData('account', npd.email);
-                    _setData('state', 'y');
-                    alert(result.codeText, {
-                      handled: () => {
-                        myOpen(_getData('originurl') || '/');
-                      },
-                    });
-                  }
-                })
-                .catch((_) => {
-                  $loadingBox.stop().fadeOut();
-                });
-            },
-            function () {
-              _err('验证失败');
-            }
-          );
-        },
-        2000,
-        true
-      )
-    );
-    $resetPass.click(() => {
-      handleLogin();
-    });
-    $register.click(
-      debounce(function () {
-        validateImg.init(
-          function () {
-            _getAjax('/user/testaccount').then((res) => {
-              if (res.code == 0) {
+                _setData('account', npd.account);
                 _setData('state', 'y');
-                myOpen(_getData('originurl') || '/');
+                alert(result.codeText, {
+                  handled: () => {
+                    myOpen(_getData('originurl') || '/');
+                  },
+                });
               }
-            }).catch(err => { })
-          },
-          function () {
-            _err('验证失败');
-          }
-        );
-      }, 500)
-    );
-    $codebtn.click(
-      debounce(
-        function () {
-          if (!checkUserEmail()) return;
-          let num = 60,
-            $this = $(this),
-            email = $email.val().trim();
-          $this.addClass('active');
-          $loadingBox.stop().fadeIn();
-          _getAjax('/user/registercode', { email })
-            .then((result) => {
-              $loadingBox.stop().fadeOut();
-              if (parseInt(result.code) === 0) {
-                _success(result.codeText);
-                function fun() {
-                  num--;
-                  if (num <= 0) {
-                    $this.text(`获取验证码`);
-                    $this.removeClass('active');
-                  } else {
-                    $this.text(`${num} 秒后重新获取`);
-                    timer = _setTimeout(fun, 1000);
-                  }
-                }
-                fun();
-                return;
-              }
-              $this.removeClass('active');
             })
             .catch((_) => {
               $loadingBox.stop().fadeOut();
             });
         },
-        500,
-        true
-      )
-    );
-    $username.on('blur', checkUserName);
-    $email.on('blur', checkUserEmail);
-    $code.on('blur', checkCode);
-    $password1.on('blur', checkPassword);
-    function checkUserName() {
-      let username = $username.val().trim();
-      if (username === '') {
-        $pusername.text('请输入昵称');
-        return false;
-      }
-      if (!isUserName(username)) {
-        $pusername.text('昵称格式错误');
-        return false;
-      }
-      if (userlenght(username)) {
-        $pusername.text('昵称过长');
-        return false;
-      }
-      $pusername.text('');
-      return true;
-    }
-    function checkUserEmail() {
-      let email = $email.val().trim(),
-        reg =
-          /^\w+((-\w+)|(\.\w+))*@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
-      if (email === '') {
-        $pemail.text('请输入邮箱');
-        return false;
-      }
-      if (!reg.test(email)) {
-        $pemail.text('邮箱格式错误!');
-        return false;
-      }
-      $pemail.text('');
-      return true;
-    }
-    function checkCode() {
-      let code = $code.val().trim();
-      if (code === '') {
-        $pcode.text('请输入验证码');
-        return false;
-      }
-      $pcode.text('');
-      return true;
-    }
-    function checkPassword() {
-      let password = $password.val().trim(),
-        password1 = $password1.val().trim();
-      if (password !== password1) {
-        $ppassword.text('密码不一致');
-        return false;
-      }
-      $ppassword.text('');
-      return true;
-    }
-  }
-  //修改密码
-  function handleChangePass() {
-    if (!_getData('state')) {
-      handleLogin();
-      return;
-    }
-    if (timer !== null) {
-      clearInterval(timer);
-      timer = null;
-    }
-    myOpen(`#changepass`);
-    $('main').remove();
-    let str = `<main>
-        <div class="password">
-          <input autocomplete="off" type="password" placeholder="原密码">
-        </div>
-        <p class="ppassword"></p>
-        <div class="password1">
-          <input autocomplete="off" type="password" placeholder="新密码">
-        </div>
-        <p></p>
-        <div class="password2">
-          <input autocomplete="off" type="password" placeholder="确认密码">
-        </div>
-        <p class="ppassword2"></p>
-        <div class="submit">
-          <button cursor>提交</button>
-        </div>
-        <p></p>
-        <div class="other">
-          <div cursor class="resetPass">返回主页</div>
-        </div>
-      </main>`;
-    $body.append(str);
-    $('main').stop().show(_speed);
-    let $password = $('.password input'),
-      $password1 = $('.password1 input'),
-      $password2 = $('.password2 input'),
-      $ppassword2 = $('.ppassword2'),
-      $resetPass = $('.resetPass'),
-      $submit = $('.submit button');
-    let _flag = true;
-    $('main').on('keyup', function (e) {
-      if (e.key === 'Enter') {
-        if (_flag) {
-          _flag = false;
-          $submit.click();
-        }
-      }
-    });
-    $submit.click(
-      debounce(
         function () {
-          let password1 = $password1.val().trim(),
-            password = $password.val().trim();
-          if (!checkPassword()) return;
-          validateImg.init(
-            function () {
-              _flag = true;
-              $loadingBox.stop().fadeIn();
-              _postAjax('/user/changepass', {
-                oldpassword: md5(password),
-                newpassword: md5(password1),
-              })
-                .then((result) => {
-                  $loadingBox.stop().fadeOut();
-                  if (parseInt(result.code) === 0) {
-                    _success('修改密码成功，请重新登录账号~');
-                    _delData('state');
-                    handleLogin();
-                    return;
-                  }
-                })
-                .catch((_) => {
-                  $loadingBox.stop().fadeOut();
-                });
-            },
-            function () {
-              _err('验证失败');
+          _err('验证失败');
+        }
+      );
+    } else {
+      if (!checkUserName() || !checkPassword() || !_flag) return;
+      _flag = false;
+      validateImg.init(function () {
+        _flag = true
+        let npd = {
+          username: account,
+          password: md5(password)
+        };
+        $loadingBox.stop().fadeIn();
+        _postAjax('/user/register', npd)
+          .then((result) => {
+            $loadingBox.stop().fadeOut();
+            if (parseInt(result.code) === 0) {
+              _setData('account', npd.username);
+              _setData('state', 'y');
+              alert(result.codeText, {
+                handled: () => {
+                  myOpen(_getData('originurl') || '/');
+                },
+              });
             }
-          );
-        },
-        2000,
-        true
-      )
-    );
-    $resetPass.click(() => {
-      myOpen('/');
-    });
-    $password2.on('blur', checkPassword);
-    function checkPassword() {
-      let password1 = $password1.val().trim(),
-        password2 = $password2.val().trim();
-      if (password2 !== password1) {
-        $ppassword2.text('密码不一致');
-        return false;
-      }
-      $ppassword2.text('');
-      return true;
+          })
+          .catch((_) => {
+            $loadingBox.stop().fadeOut();
+          });
+      }, function () {
+        _err('验证失败');
+      })
     }
+  }, 500, true))
+
+  function checkPassword() {
+    let password = $password.val().trim(),
+      repassword = $repassword.val().trim();
+    if (password !== repassword) {
+      $ppassword.text('密码不一致');
+      return false;
+    }
+    $ppassword.text('');
+    return true;
   }
+  function checkUserName() {
+    let username = $account.val().trim();
+    if (username === '') {
+      $paccount.text('请输入昵称');
+      return false;
+    }
+    if (!isUserName(username)) {
+      $paccount.text('昵称格式错误');
+      return false;
+    }
+    if (userlenght(username)) {
+      $paccount.text('昵称过长');
+      return false;
+    }
+    $paccount.text('')
+    return true;
+  }
+
   // 限制用户名长度
   function userlenght(str) {
     let arr = str.split(''),

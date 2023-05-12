@@ -5,33 +5,24 @@ import './pic.css'
 import {
   _setData,
   _getData,
-  _delData,
   _setTimeout,
   debounce,
   _getTarget,
   fileSlice,
   imgjz,
   isios,
-  _mySlide,
   _postAjax,
   _getAjax,
   _upFile,
   copyText,
-  _each,
-  _imgSize,
   compressionImg,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
   isImgFile,
   imgPreview,
 } from '../../utils/utils'
 import { _speed, mediaURL } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
+import { _err } from "../../plugins/message";
 import { alert } from '../../plugins/alert'
-import { _loadingBar } from '../../plugins/loadingBar'
 import { pagination } from '../../plugins/pagination'
 import { rightMenu } from '../../plugins/rightMenu'
 import { UpProgress } from '../../plugins/UpProgress'

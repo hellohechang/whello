@@ -10,13 +10,13 @@ route.get('*', async (req, res) => {
     // 去除url后的?参数
     let url = req.url.split('?')[0];
     // 合并url
-    let path = myconfig.mediaurl.filepath + url;
+    let path = myconfig.filepath + url;
     // 获取访问目录
     let flag = url.split('/')[1];
     // 解码
     path = decodeURI(path);
     if (!fs.existsSync(path)) {
-      _err(res, '文件不存在或已过期~');
+      _err(res, '文件不存在或已过期');
       return;
     }
     // 过滤目录

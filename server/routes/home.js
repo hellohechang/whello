@@ -1,5 +1,5 @@
 const express = require('express'),
-  { mediaurl } = require('../myconfig'),
+  { filepath } = require('../myconfig'),
   route = express.Router();
 const {
   batchUpdateData,
@@ -234,7 +234,7 @@ route.post('/addbmk', async (req, res) => {
 route.post('/bmklogo', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let path = `${mediaurl.filepath}/logo/${account}`,
+    let path = `${filepath}/logo/${account}`,
       purl = `/logo/${account}/${req.query.name}`;
     await _mkdir(path);
     await _unlink(`${path}/${req.query.name}`);

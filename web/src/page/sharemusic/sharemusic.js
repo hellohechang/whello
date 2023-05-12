@@ -7,27 +7,15 @@ import {
   myOpen,
   _setData,
   _getData,
-  _delData,
   _setTimeout,
   throttle,
   debounce,
-  _getTarget,
   imgjz,
-  _mySlide,
-  _postAjax,
-  _getAjax,
-  _upFile,
-  _each,
-  _imgSize,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
+  _getAjax
 } from '../../utils/utils'
 import { _speed, mediaURL } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
-import { _loadingBar } from '../../plugins/loadingBar'
+import { _err } from "../../plugins/message";
 ~(async function () {
   let dmwidth = $(document).width(),
     $box = $('.box'),
@@ -35,6 +23,7 @@ import { _loadingBar } from '../../plugins/loadingBar'
     $musiclrcwrap = $box.find('.musiclrcwrap'),
     $musiclrc = $musiclrcwrap.find('.musiclrc'),
     $home = $musiclrcwrap.find('.home'),
+    $userLogo = $musiclrcwrap.find('.userLogo'),
     $mname = $musiclrcwrap.find('.mname'),
     $martist = $musiclrcwrap.find('.martist'),
     $lrc = $musiclrcwrap.find('.lrc'),
@@ -66,6 +55,8 @@ import { _loadingBar } from '../../plugins/loadingBar'
   let mobj = await _getAjax('/player/musicshare', { id: HASH });
   if (mobj.code == 0) {
     musicobj = mobj.data;
+    let url = `${mediaURL}/logo/${musicobj.account}/${musicobj.account}.png`
+    $userLogo.css('background-image', `url(${url})`)
     if (musicobj.mv == 'y') {
       $mvon.stop().show(100);
     } else {
@@ -95,8 +86,16 @@ import { _loadingBar } from '../../plugins/loadingBar'
       $myVideo[0].play();
     });
   });
+  $userLogo.click(() => {
+    let { account, username } = musicobj;
+    _setData('toUser', {
+      account,
+      username,
+    });
+    myOpen(`/?c=open`, '_blank');
+  })
   $myVideo[0].onerror = function (e) {
-    _err(`${musicobj.artist}-${musicobj.name} 加载失败~`);
+    _err(`${musicobj.artist}-${musicobj.name} 加载失败`);
   };
   $mvoff.click(function () {
     $myVideo[0].pause();
@@ -113,13 +112,8 @@ import { _loadingBar } from '../../plugins/loadingBar'
   $mname.text(musicobj.name);
   $martist.text(musicobj.artist);
   $from.find('span').text(`from @${musicobj.username}`);
-  $from.find('span').click(function () {
-    let { account, username } = musicobj;
-    _setData('toUser', {
-      account,
-      username,
-    });
-    myOpen(`/?c=open`, '_blank');
+  $from.find('span').click(() => {
+    $userLogo.click()
   });
   let showlrcfy = false,
     lrcstatu = _getData('lrcstatu') || {

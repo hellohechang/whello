@@ -6,7 +6,6 @@ import './index.css'
 ~function () {
   const button = document.querySelector("button");
   const input = document.querySelector("input");
-  const box = document.querySelector(".box");
   button.onclick = () => {
     let a = input.value;
     copyToClip(a);

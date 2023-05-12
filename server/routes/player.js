@@ -1,6 +1,6 @@
 const express = require('express'),
   fs = require('fs'),
-  { mediaurl } = require('../myconfig'),
+  { filepath } = require('../myconfig'),
   route = express.Router();
 const { insertData, updateData, queryData } = require('../sqlite');
 const {
@@ -29,7 +29,7 @@ const {
 route.get('/lrc', async (req, res) => {
   try {
     let { artist, name } = req.query,
-      url = `${mediaurl.filepath}/music/${artist}-${name}.lrc`;
+      url = `${filepath}/music/${artist}-${name}.lrc`;
     if (fs.existsSync(url)) {
       let str = (await _readFile(url, true)).toString();
       let lrcs = str.split('\n'),
@@ -52,7 +52,7 @@ route.get('/lrc', async (req, res) => {
         _success(res, 'ok', [
           {
             t: 0,
-            p: '未找到歌词~',
+            p: '未找到歌词',
             fy: '',
           },
         ]);
@@ -63,7 +63,7 @@ route.get('/lrc', async (req, res) => {
       _success(res, 'ok', [
         {
           t: 0,
-          p: '未找到歌词~',
+          p: '未找到歌词',
           fy: '',
         },
       ]);
@@ -73,7 +73,7 @@ route.get('/lrc', async (req, res) => {
     _success(res, 'ok', [
       {
         t: 0,
-        p: '未找到歌词~',
+        p: '未找到歌词',
         fy: '',
       },
     ]);
@@ -87,7 +87,7 @@ route.get('/musicshare', async (req, res) => {
       'music',
     ]);
     if (arr.length === 0) {
-      _err(res, '分享已被取消~');
+      _err(res, '分享已被取消');
       return;
     }
     let obj = JSON.parse(arr[0].data);
@@ -313,7 +313,7 @@ route.post('/listmove', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { fromId, toId } = req.body,
@@ -347,7 +347,7 @@ route.post('/dellist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { id } = req.body,
@@ -381,7 +381,7 @@ route.post('/editlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { id, name, index } = req.body,
@@ -421,7 +421,7 @@ route.post('/addsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { id, arr: ar } = req.body,
@@ -438,7 +438,7 @@ route.post('/addsong', async (req, res) => {
       }
     }
     // 刷新歌曲数据
-    let musicfilearr = await _readdir(`${mediaurl.filepath}/music`);
+    let musicfilearr = await _readdir(`${filepath}/music`);
     let mp4arr = musicfilearr.filter((v) => {
       return extname(v)[1].toLowerCase() === 'mp4';
     });
@@ -476,7 +476,7 @@ route.post('/addlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { name } = req.body,
@@ -510,7 +510,7 @@ route.post('/songmove', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { a, b, id } = req.body,
@@ -561,7 +561,7 @@ route.post('/collectsong', async (req, res) => {
       return `${item.artist}-${item.name}`;
     });
     await writelog(req, `收藏歌曲[${strarr.join(',')}]`);
-    _success(res, '收藏歌曲成功~');
+    _success(res, '收藏歌曲成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -587,7 +587,7 @@ route.post('/closecollectsong', async (req, res) => {
       [account]
     );
     await writelog(req, `移除收藏歌曲[${obj.artist}-${obj.name}]`);
-    _success(res, '移除歌曲成功~');
+    _success(res, '移除歌曲成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -640,7 +640,7 @@ route.post('/songtolist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { id, tid, ar } = req.body,
@@ -680,7 +680,7 @@ route.post('/delmv', async (req, res) => {
   try {
     const account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { id, sobj } = req.body,
@@ -717,7 +717,7 @@ route.post('/delmv', async (req, res) => {
 route.get('/getlrc', async (req, res) => {
   try {
     let { name, artist } = req.query,
-      url = `${mediaurl.filepath}/music/${artist}-${name}.lrc`;
+      url = `${filepath}/music/${artist}-${name}.lrc`;
     if (fs.existsSync(url)) {
       let str = (await _readFile(url, true)).toString();
       _success(res, 'ok', str);
@@ -734,14 +734,14 @@ route.post('/editlrc', async (req, res) => {
   try {
     const account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { name, artist, val } = req.body,
-      url = `${mediaurl.filepath}/music/${artist}-${name}.lrc`;
+      url = `${filepath}/music/${artist}-${name}.lrc`;
     _writeFile(url, val);
     await writelog(req, `更新歌词[${artist}-${name}.lrc]`);
-    _success(res, '更新成功~');
+    _success(res, '更新成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -771,10 +771,10 @@ route.post('/up', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
-    let path = `${mediaurl.filepath}/tem/${req.query.HASH}`;
+    let path = `${filepath}/tem/${req.query.HASH}`;
     await _mkdir(path);
     await receiveFiles(req, path, req.query.name);
     _success(res);
@@ -788,7 +788,7 @@ route.post('/mergefile', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { HASH, count, name } = req.body;
@@ -796,19 +796,19 @@ route.post('/mergefile', async (req, res) => {
       _err(res);
       return;
     }
-    await delDir(`${mediaurl.filepath}/music/${name}`);
-    await delDir(`${mediaurl.filepath}/musicys/${name}`);
+    await delDir(`${filepath}/music/${name}`);
+    await delDir(`${filepath}/musicys/${name}`);
     if (isImgFile(name)) {
       await _rename(
-        `${mediaurl.filepath}/tem/${HASH}/_hello`,
-        `${mediaurl.filepath}/musicys/${name}`
+        `${filepath}/tem/${HASH}/_hello`,
+        `${filepath}/musicys/${name}`
       );
       --count;
     }
     await mergefile(
       count,
-      `${mediaurl.filepath}/tem/${HASH}`,
-      `${mediaurl.filepath}/music/${name}`
+      `${filepath}/tem/${HASH}`,
+      `${filepath}/music/${name}`
     );
     _success(res);
   } catch (error) {
@@ -821,11 +821,11 @@ route.post('/breakpoint', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { HASH } = req.body,
-      path = `${mediaurl.filepath}/tem/${HASH}`,
+      path = `${filepath}/tem/${HASH}`,
       arr = await _readdir(path);
     _success(res, 'ok', arr);
   } catch (error) {
@@ -838,11 +838,11 @@ route.post('/repeatfile', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作~');
+      _err(res, '当前账号没有权限执行该操作');
       return;
     }
     let { name } = req.body;
-    let u = `${mediaurl.filepath}/music/${name}`;
+    let u = `${filepath}/music/${name}`;
     if (/(\.MP3|\.MP4)$/gi.test(name) && fs.existsSync(u)) {
       _success(res);
       return;

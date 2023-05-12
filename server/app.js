@@ -14,13 +14,10 @@ const bodyParser = require('body-parser');
 // 获取访问设备信息
 const UAParser = require('ua-parser-js');
 
-// 跨域
-// const cors = require('cors')
-
 // 操作SQLite数据库
 let { updateData, queryData } = require('./sqlite.js');
 // 配置
-let { mediaurl, port, AllowOrigin } = require('./myconfig');
+let { filepath, port } = require('./myconfig');
 let {
   writelog,
   _readdir,
@@ -33,37 +30,32 @@ let {
   readMenu,
 } = require('./utils');
 
-if (fs.existsSync(mediaurl.filepath)) {
+if (fs.existsSync(filepath)) {
   app.listen(port, () => {
     let arr = getLocahost().map(
       (item) => `http://${item}${port == 80 ? '' : `:${port}`}`
     );
     console.log(`服务开启成功，访问地址为：\n${arr.join('\n')}`);
   });
-  _mkdir(`${mediaurl.filepath}/music`);
-  _mkdir(`${mediaurl.filepath}/musicys`);
-  _mkdir(`${mediaurl.filepath}/bg/bg`);
-  _mkdir(`${mediaurl.filepath}/bg/bgxs`);
-  _mkdir(`${mediaurl.filepath}/bgys/bg`);
-  _mkdir(`${mediaurl.filepath}/bgys/bgxs`);
-  _mkdir(`${mediaurl.filepath}/upload`);
-  _mkdir(`${mediaurl.filepath}/uploadys`);
-  _mkdir(`${mediaurl.filepath}/pic`);
-  _mkdir(`${mediaurl.filepath}/picys`);
-  _mkdir(`${mediaurl.filepath}/logo`);
-  _mkdir(`${mediaurl.filepath}/font`);
-  _mkdir(`${mediaurl.filepath}/tem`);
+  _mkdir(`${filepath}/music`);
+  _mkdir(`${filepath}/musicys`);
+  _mkdir(`${filepath}/bg/bg`);
+  _mkdir(`${filepath}/bg/bgxs`);
+  _mkdir(`${filepath}/bgys/bg`);
+  _mkdir(`${filepath}/bgys/bgxs`);
+  _mkdir(`${filepath}/upload`);
+  _mkdir(`${filepath}/uploadys`);
+  _mkdir(`${filepath}/pic`);
+  _mkdir(`${filepath}/picys`);
+  _mkdir(`${filepath}/logo`);
+  _mkdir(`${filepath}/font`);
+  _mkdir(`${filepath}/tem`);
 } else {
   console.log(`请在myconfig.js文件中设置正确的文件存放目录`);
 }
 
 //Cookie
 app.use(cookieParser());
-//跨域
-// app.use(cors({
-//   origin: AllowOrigin,
-//   credentials: true //允许携带cookie
-// }))
 //设置bodyParser
 app.use(bodyParser.json({ limit: '50mb', parameterLimit: 1000000 }));
 app.use(
@@ -138,20 +130,20 @@ let _timer = setInterval(async () => {
     if (newDate('{3}{4}{5}') === '000000') {
       ipobj = {};
       //删除upload超20天的文件
-      let upload = await readMenu(`${mediaurl.filepath}/upload`);
+      let upload = await readMenu(`${filepath}/upload`);
       let now = Date.now();
       upload.forEach(async (v) => {
         let { name, time } = v;
-        let p = `${mediaurl.filepath}/upload/${name}`;
-        let pys = `${mediaurl.filepath}/uploadys/${name}`;
+        let p = `${filepath}/upload/${name}`;
+        let pys = `${filepath}/uploadys/${name}`;
         if (now - time >= 20 * 24 * 60 * 60 * 1000) {
           await delDir(p);
           await delDir(pys);
         }
       });
       //每日切换壁纸
-      let bgarr = await _readdir(`${mediaurl.filepath}/bg/bg`),
-        bgxsarr = await _readdir(`${mediaurl.filepath}/bg/bgxs`);
+      let bgarr = await _readdir(`${filepath}/bg/bg`),
+        bgxsarr = await _readdir(`${filepath}/bg/bgxs`);
       let num = Math.round(Math.random() * (bgarr.length - 1 - 0) + 0),
         xsnum = Math.round(Math.random() * (bgxsarr.length - 1 - 0) + 0);
 

@@ -7,29 +7,16 @@ import {
   myOpen,
   _setData,
   _getData,
-  _delData,
   _setTimeout,
   throttle,
   debounce,
-  _getTarget,
-  _mySlide,
-  _postAjax,
   _getAjax,
-  _upFile,
   encodeHtml,
-  _each,
-  _imgSize,
-  _position,
-  _offset,
-  _myOpen,
-  _progressBar,
+  _myOpen
 } from '../../utils/utils'
 import { _speed } from "../../config";
 import '../../js/common'
-import { _err, _success } from "../../plugins/message";
-import { _loadingBar } from '../../plugins/loadingBar'
 import { pagination } from '../../plugins/pagination'
-
 
 ~(async function () {
   let $mbg = $('.mbg'),

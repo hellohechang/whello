@@ -1117,7 +1117,7 @@ export function imgPreview(arr, idx = 0) {
   function hdError() {
     _loadingBar.end();
     image.style.opacity = 0
-    _err('图片加载失败~');
+    _err('图片加载失败');
   }
   function hdMove(e) {
     if (e.target !== image) return

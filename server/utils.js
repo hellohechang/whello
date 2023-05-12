@@ -1,8 +1,4 @@
 const fs = require('fs');
-// 压缩图片
-// const sharp = require('sharp');
-// 发送邮件
-const nodemailer = require('nodemailer');
 // token加密
 const jwt = require('jsonwebtoken');
 // 接收上传文件
@@ -290,33 +286,6 @@ function _err(res, codeText = '操作失败，请稍后再试~', data = null) {
     codeText,
   });
 }
-function sendEmail(code, toemail) {
-  return new Promise((resolve, reject) => {
-    let transporter = nodemailer.createTransport({
-      host: myconfig.emailHost,
-      secureConnection: true,
-      port: 465,
-      auth: {
-        user: myconfig.sendEmail,
-        pass: myconfig.emailKey,
-      },
-    });
-    let options = {
-      from: myconfig.sendEmail,
-      to: toemail,
-      subject: 'From hello',
-      html: `验证码为 <span style="font size: 20px;color:rgba(255,71,162,1);">${code}</span>，10分钟内有效。如非本人操作，请忽略此邮件!`,
-    };
-    transporter.sendMail(options, function (err, msg) {
-      if (err) {
-        reject();
-        return;
-      }
-      resolve(msg);
-      transporter.close();
-    });
-  });
-}
 // 定时器
 function _setTimeout(callback, time) {
   let timer = setTimeout(() => {
@@ -435,14 +404,14 @@ function isChinese(str) {
 // 更新歌单图
 function handleMusicList(arr) {
   arr.forEach((v, i) => {
-    if (i === 0) return;
+    if (i === 0) {
+      v.pic = '/img/history.jpg'
+      return
+    };
     if (v.item.length != 0) {
-      v.pic = encodeURI(
-        `${myconfig.mediaurl.fileurl || ''}/musicys/${v.item[0].artist}-${v.item[0].name
-        }.jpg`
-      );
+      v.pic = encodeURI(`/musicys/${v.item[0].artist}-${v.item[0].name}.jpg`);
     } else {
-      v.pic = 'img/music.jpg';
+      v.pic = '/img/music.jpg';
     }
   });
   return arr;
@@ -556,7 +525,6 @@ module.exports = {
   _nologin,
   _nothing,
   _err,
-  sendEmail,
   _setTimeout,
   jwten,
   jwtde,
