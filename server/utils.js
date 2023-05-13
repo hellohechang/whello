@@ -204,6 +204,7 @@ function isUserName(str) {
     /^[\u2E80-\u2FDF\u3040-\u318F\u31A0-\u31BF\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FFF\uA960-\uA97F\uAC00-\uD7FF\w -]+$/g;
   return reg.test(str);
 }
+
 // 获取扩展名
 function extname(str) {
   let idx = str.lastIndexOf('.'),
@@ -419,9 +420,16 @@ function handleMusicList(arr) {
 function bookSort(arr) {
   return arr.sort((a, b) => a.num - b.num);
 }
+// 判断网址
+function isurl(url) {
+  let reg =
+    /^(?:(http|https|ftp):\/\/)((?:[\w-]+\.)+[a-z0-9]+)(:[0-9]+)?((?:\/[^/?#]*)+)?(\?[^#]+)?(#.+)?$/i;
+  return reg.test(url);
+}
 // 获取url域名
 function getHost(url) {
-  return url.match(/([^\/]{1,}\.)+([a-zA-Z]{2,})/)[0];
+  let res = url.match(/\/\/([^/?#]+)/)[1]
+  return res || 'hello.com';
 }
 // 读取目录文件
 function readMenu(path) {
@@ -519,6 +527,7 @@ module.exports = {
   isUserName,
   extname,
   encryption,
+  isurl,
   qucong,
   _send,
   _success,

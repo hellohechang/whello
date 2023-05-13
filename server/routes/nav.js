@@ -14,6 +14,7 @@ const {
   _err,
   nanoid,
   getHost,
+  isurl,
 } = require('../utils');
 
 route.get('/share', async (req, res) => {
@@ -237,6 +238,10 @@ route.post('/addbmk', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id, obj } = req.body;
+    if (!isurl(obj.link)) {
+      _err(res)
+      return
+    }
     let total =
       (
         await queryData(
@@ -267,6 +272,10 @@ route.post('/editbmk', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { pid, cid, name, logo, link, des } = req.body;
+    if (!isurl(link)) {
+      _err(res)
+      return
+    }
     await updateData(
       'bookmk',
       { name, logo, link, des },

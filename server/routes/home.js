@@ -17,6 +17,7 @@ const {
   _err,
   receiveFiles,
   nanoid,
+  isurl,
 } = require('../utils');
 
 //拦截器
@@ -167,6 +168,10 @@ route.post('/editbmk', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id, name, link, logo, des } = req.body;
+    if (!isurl(link)) {
+      _err(res)
+      return
+    }
     await updateData(
       'bookmk',
       { name, logo, link, des },
@@ -205,6 +210,10 @@ route.post('/addbmk', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let obj = req.body;
+    if (!isurl(obj.link)) {
+      _err(res)
+      return
+    }
     let total =
       (
         await queryData(
