@@ -3484,8 +3484,8 @@ input:-ms-input-placeholder {
     position: absolute;
     bottom: 100px;
     left: 100px;
-    height: 60px;
-    width: 60px;
+    height: 100px;
+    width: 100px;
     background-repeat: no-repeat;
     background-size: cover;
     box-shadow: 3px 3px 8px #000;
@@ -3493,13 +3493,18 @@ input:-ms-input-placeholder {
   }
 
   #hplay {
-    width: 30px;
-    height: 30px;
-    font-size: 30px;
-    line-height: 30px;
-    margin: 15px auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    line-height: 40px;
+    margin: auto;
     text-align: center;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .playbox {
@@ -3507,11 +3512,7 @@ input:-ms-input-placeholder {
     position: absolute;
     right: 0;
     top: 0;
-    width: 20px;
-    font-size: 20px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
+    font-size: 25px;
     color: #ff5500;
   }
 
@@ -3520,35 +3521,33 @@ input:-ms-input-placeholder {
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 17px;
-    font-size: 15px;
-    height: 17px;
-    line-height: 17px;
-    text-align: center;
+    font-size: 22px;
     color: #ff5500;
   }
 
   .nextm,
   .prevm {
     display: none;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 25px;
+    font-size: 30px;
   }
 
   .nextm {
     position: absolute;
-    top: 15px;
-    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    right: -40px;
   }
 
   .prevm {
     position: absolute;
-    top: 15px;
-    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: -40px;
   }
 
   .mvoffxs,
