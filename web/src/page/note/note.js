@@ -104,7 +104,7 @@ import iconlogo from '../../img/icon.png'
           username,
           own,
         };
-        let logoUrl = `${mediaURL}/logo/${account}/${account}.png`;
+        let logoUrl = `${mediaURL}/logo/${account}/${account}.png?v=${Math.random()}`;
         $from
           .find('.logo')
           .attr('title', username)
@@ -175,7 +175,7 @@ import iconlogo from '../../img/icon.png'
                 _myOpen(url, username);
                 close();
               } else if (_getTarget(e, '.mtcitem')) {
-                imgPreview([{ u1: `${mediaURL}/logo/${account}/${account}.png` }]);
+                imgPreview([{ u1: `${mediaURL}/logo/${account}/${account}.png?v=${Math.random()}` }]);
               } else if (_getTarget(e, '.mtcitem2')) {
                 _setData('toUser', {
                   account,

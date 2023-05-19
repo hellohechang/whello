@@ -55,7 +55,7 @@ import { _err } from "../../plugins/message";
   let mobj = await _getAjax('/player/musicshare', { id: HASH });
   if (mobj.code == 0) {
     musicobj = mobj.data;
-    let url = `${mediaURL}/logo/${musicobj.account}/${musicobj.account}.png`
+    let url = `${mediaURL}/logo/${musicobj.account}/${musicobj.account}.png?v=${Math.random()}`
     $userLogo.css('background-image', `url(${url})`)
     if (musicobj.mv == 'y') {
       $mvon.stop().show(100);

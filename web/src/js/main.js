@@ -6031,7 +6031,7 @@ import { UpProgress } from '../plugins/UpProgress'
             });
           } else if (_getTarget(e, '.mtcitem1')) {
             imgPreview(
-              [{ u1: `${mediaURL}/logo/${_userinfo.account}/${_userinfo.account}.png` }]
+              [{ u1: `${mediaURL}/logo/${_userinfo.account}/${_userinfo.account}.png?v=${Math.random()}` }]
             );
           }
         },
@@ -6504,7 +6504,7 @@ import { UpProgress } from '../plugins/UpProgress'
         obj = deepClone(chatobj);
       //忽略自己点自己头像或在私聊
       if (a === _userinfo.account) {
-        imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png` }]);
+        imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png?v=${Math.random()}` }]);
         return;
       }
       let str = `
@@ -6539,7 +6539,7 @@ import { UpProgress } from '../plugins/UpProgress'
               openIframe(url, b);
               close();
             } else if (_getTarget(e, '.mtcitem2')) {
-              imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png` }]);
+              imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png?v=${Math.random()}` }]);
             }
           },
           1000,
@@ -7217,7 +7217,7 @@ import { UpProgress } from '../plugins/UpProgress'
       a = $(this).attr('xxx');
     if (!b || !a) return;
     if (_getTarget(e, '.cylogo')) {
-      imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png` }]);
+      imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png?v=${Math.random()}` }]);
       return;
     }
     if (_userinfo.account == a) return;
@@ -7258,7 +7258,7 @@ import { UpProgress } from '../plugins/UpProgress'
               $chengyuanwrap.html('');
             });
           } else if (_getTarget(e, '.mtcitem2')) {
-            imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png` }]);
+            imgPreview([{ u1: `${mediaURL}/logo/${a}/${a}.png?v=${Math.random()}` }]);
           }
         },
         1000,
