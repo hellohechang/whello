@@ -29,6 +29,7 @@ route.get('/history', async (req, res) => {
         '0',
         account,
       ]);
+    arr.reverse();
     if (a) {
       let sArr = [];
       arr.forEach((v) => {
@@ -47,8 +48,6 @@ route.get('/history', async (req, res) => {
         });
       }
       arr = sArr;
-    } else {
-      arr = arr.reverse();
     }
     arr = arr.map((item) => {
       delete item.state;
@@ -98,8 +97,9 @@ route.get('/getsearchdata', async (req, res) => {
         '0',
         account,
       ]); //搜索历史
+    se.reverse()
     if (!a) {
-      _success(res, 'ok', se.reverse().slice(0, 10));
+      _success(res, 'ok', se.slice(0, 10));
       return;
     }
     let arr = [],
@@ -112,7 +112,8 @@ route.get('/getsearchdata', async (req, res) => {
         '0',
         account,
       ]);
-
+    note.reverse()
+    bmk.reverse()
     note.forEach((item) => {
       //笔记名包含搜索词的笔记
       let { name, id } = item;
