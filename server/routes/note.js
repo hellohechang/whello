@@ -52,6 +52,7 @@ route.get('/allsearchlist', async (req, res) => {
         `WHERE state=? AND share=? AND account = ?`,
         ['0', 'y', acc]
       );
+    aa.reverse()
     if (a) {
       let arr = [];
       aa.forEach((item) => {
@@ -78,8 +79,6 @@ route.get('/allsearchlist', async (req, res) => {
         });
       }
       aa = arr;
-    } else {
-      aa.reverse();
     }
 
     aa = aa.map((v) => {
@@ -146,6 +145,7 @@ route.get('/searchlist', async (req, res) => {
         '0',
         account,
       ]);
+    aa.reverse()
     if (a) {
       let arr = [];
       aa.forEach((item) => {
@@ -172,8 +172,6 @@ route.get('/searchlist', async (req, res) => {
         });
       }
       aa = arr;
-    } else {
-      aa.reverse();
     }
 
     aa = aa.map((v) => {
