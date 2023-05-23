@@ -3123,17 +3123,6 @@ import { UpProgress } from '../plugins/UpProgress'
     if (_getData('lastplaysd')) {
       $myAudio[0].playbackRate = _getData('lastplaysd')[1];
     }
-    //处理收藏按钮
-    if (
-      _music &&
-      _music[1].item.some(
-        (v) => v.name + v.artist === musicobj.name + musicobj.artist
-      )
-    ) {
-      $shoucang.addClass('sccolor');
-    } else {
-      $shoucang.removeClass('sccolor');
-    }
   }
 
   function videoPause() {
@@ -3662,15 +3651,21 @@ import { UpProgress } from '../plugins/UpProgress'
     $musicimgid.css('animation', 'none');
     csfz();
     musicInitial();
+    //处理收藏按钮
+    if (_music && _music[1].item.some((v) => v.name + v.artist === musicobj.name + musicobj.artist)) {
+      $shoucang.addClass('sccolor');
+    } else {
+      $shoucang.removeClass('sccolor');
+    }
+    // mv图标
+    if (musicobj.mv == 'y') {
+      $mvpid.stop().show(_speed);
+    } else {
+      $mvpid.stop().hide(_speed);
+    }
     playtimer = setTimeout(() => {
       playtimer = null;
       audioPlay();
-      // mv图标
-      if (musicobj.mv == 'y') {
-        $mvpid.stop().show(_speed);
-      } else {
-        $mvpid.stop().hide(_speed);
-      }
       if (!$musicmv.is(':hidden')) {
         videoPause();
         $musicmv.stop().fadeOut(_speed);
@@ -4285,13 +4280,7 @@ import { UpProgress } from '../plugins/UpProgress'
     } else {
       $mvpid.stop().hide(_speed);
     }
-    if (
-      _music &&
-      musicobj &&
-      _music[1].item.some(
-        (v) => v.name + v.artist === musicobj.name + musicobj.artist
-      )
-    ) {
+    if (_music && musicobj && _music[1].item.some((v) => v.name + v.artist === musicobj.name + musicobj.artist)) {
       $shoucang.addClass('sccolor');
     } else {
       $shoucang.removeClass('sccolor');
@@ -4544,14 +4533,14 @@ import { UpProgress } from '../plugins/UpProgress'
     $mmmlist._duoxuan = false;
     musicarrjl = marr.item;
     gaoliang(false);
+    if ($mmmlist[0].scrollTop > 115) {
+      $('.songlisttop').addClass('sct');
+    } else {
+      $('.songlisttop').removeClass('sct');
+    }
     _setTimeout(() => {
-      if ($mmmlist[0].scrollTop > 115) {
-        $('.songlisttop').addClass('sct');
-      } else {
-        $('.songlisttop').removeClass('sct');
-      }
     });
-    lazyImg($mmmlist, '.songlist', '.songlistlogo');
+    lazyImg($mmmlist, '.songlist', '.songlistlogo', 1);
   }
 
   //打开列表
@@ -5015,8 +5004,9 @@ import { UpProgress } from '../plugins/UpProgress'
       let str = ``;
       _music.forEach((item, i) => {
         if (item.id !== id && i > 1) {
-          let name = encodeHtml(item.name);
-          str += `<div data-name="${name}" cursor class="mtcitem" data-id="${item.id}"><img style="width: 40px;height: 40px;" src="${item.pic}"><span style="margin-left:10px;">${name}</span></div>`;
+          let name = encodeHtml(item.name),
+            pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic;
+          str += `<div data-name="${name}" cursor class="mtcitem" data-id="${item.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
         }
       });
       rightMenu(
@@ -5137,7 +5127,7 @@ import { UpProgress } from '../plugins/UpProgress'
                 `;
         } else {
           str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
-                <div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>
+                ${_music && _music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist) ? '' : '<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>'}
                 <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
             ${_userinfo.account === 'root'
               ? `<div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">移动到</span></div>
@@ -5205,8 +5195,9 @@ import { UpProgress } from '../plugins/UpProgress'
                   id = $mmlist._flagId;
                 _music.forEach((v, i) => {
                   if (i > 1 && v.id !== id) {
-                    let name = encodeHtml(v.name);
-                    str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><img style="width: 40px;height: 40px;" src="${v.pic}"><span style="margin-left:10px;">${name}</span></div>`;
+                    let name = encodeHtml(v.name),
+                      pic = !/^\/img/.test(v.pic) ? `${mediaURL}${v.pic}` : v.pic;
+                    str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
                   }
                 });
                 let flagClose = close

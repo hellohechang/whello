@@ -43,7 +43,7 @@ body {
 }
 
 .hideBox {
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 0;
   transform: translateX(-50%);
@@ -241,7 +241,7 @@ body {
   display: none;
   width: 100%;
   height: 100%;
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -547,7 +547,7 @@ body {
   width: 100%;
   max-width: 500px;
   max-height: 1000px;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -820,7 +820,7 @@ body {
   box-sizing: border-box;
   padding: 5px 10px;
   overflow: hidden;
-  background-color: #ffffffc9;
+  background-color: #ffffff;
 }
 
 .onoffbox div {
@@ -1265,15 +1265,16 @@ body {
   display: flex;
   box-sizing: border-box;
   padding: 0 5px;
-  transition: .5s;
+  transition: background .5s;
 }
 
 .sct {
   position: fixed;
-  top: 39px;
+  top: 40px;
   right: 0px;
   z-index: 10;
-  background-color: rgb(238, 235, 235);
+  background-color: rgb(255, 255, 255);
+  border-top: 1px solid #efefef;
 }
 
 
@@ -1337,7 +1338,7 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: row;
-  background-color: #ffffffc9;
+  background-color: #ffffff;
 }
 
 .musicboxleft {
@@ -1524,7 +1525,7 @@ body {
 .editlrc {
   display: none;
   flex-flow: column;
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -1780,7 +1781,7 @@ body {
   display: none;
   width: 100%;
   max-width: 600px;
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -1823,7 +1824,7 @@ body {
 
 .allbgwrap {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
@@ -1915,7 +1916,7 @@ body {
 .logdata {
   display: none;
   flex-flow: column;
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -2065,7 +2066,7 @@ body {
 /* 聊天 */
 .guestbooklist {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -2870,7 +2871,7 @@ body {
   width: 700px;
   font-size: 30px;
   color: #a1a3a4;
-  position: absolute;
+  position: fixed;
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
@@ -3481,7 +3482,7 @@ input:-ms-input-placeholder {
   /* 最小化播放器 */
   .musichide {
     display: none;
-    position: absolute;
+    position: fixed;
     bottom: 100px;
     left: 100px;
     height: 100px;

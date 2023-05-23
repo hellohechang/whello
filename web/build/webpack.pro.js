@@ -47,6 +47,14 @@ module.exports = merge(require('./webpack.base'), {
         }
       ],
     }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: resolve(__dirname, '..', 'src/favicon.ico'),
+          to: resolve(__dirname, '..', 'static')
+        }
+      ],
+    }),
   ],
   performance: { hints: false },
   optimization: {
