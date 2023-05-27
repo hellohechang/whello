@@ -4548,14 +4548,14 @@ import { UpProgress } from '../plugins/UpProgress'
     .on(
       'click',
       '.gedanlist',
-      throttle(function (e) {
+      debounce(function (e) {
         $mmlist._flagId = $(this).attr('data-id');
         rendermusicitemdefault();
         $mmlist.addClass('open');
         $mmmlist.addClass('open');
         $mmmlist.scrollTop(0);
-        _setTimeout(renderMusicItem, 600);
-      }, 1000)
+        _setTimeout(renderMusicItem, 800);
+      }, 1000, true)
     )
     .on(
       'scroll',

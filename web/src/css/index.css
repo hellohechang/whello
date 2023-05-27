@@ -81,7 +81,7 @@ body {
 
 /* 时钟 */
 .clock {
-  position: absolute;
+  position: fixed;
   top: 100px;
   left: 100px;
   width: 200px;

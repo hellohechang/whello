@@ -173,13 +173,14 @@ pre code:hover+.codeCopy {
 .markdownbox {
   margin: 0 auto;
   width: 98%;
-  max-width: 1000px;
+  max-width: 1200px;
   padding: 50px 0;
   position: relative;
 }
 
 .markdownbox .from {
-  line-height: 50px;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .markdownbox .from .logo {

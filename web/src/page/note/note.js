@@ -19,6 +19,8 @@ import {
   _position,
   _myOpen,
   imgPreview,
+  getPageScrollTop,
+  // setPageScrollTop,
 } from '../../utils/utils'
 import { _speed, mediaURL } from "../../config";
 import '../../js/common'
@@ -49,12 +51,11 @@ import iconlogo from '../../img/icon.png'
     });
   }, 600)
   $totop.click(function () {
-    $html.stop().animate(
-      {
-        scrollTop: 0,
-      },
-      _speed
-    );
+    // setPageScrollTop(0);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    })
   });
   let $fsbg = $('.fsbg'),
     $notebotlist = $('.notebotlist'),
@@ -125,12 +126,11 @@ import iconlogo from '../../img/icon.png'
         BlogDirectory();
         $notetitle.text(name);
         $notebotlist.addClass('open');
-        $html.stop().animate(
-          {
-            scrollTop: 0,
-          },
-          _speed
-        );
+        // setPageScrollTop(0);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
         if (HASH) {
           HASH = decodeURIComponent(HASH);
           $markdown.highlight(HASH);
@@ -303,17 +303,17 @@ import iconlogo from '../../img/icon.png'
 
   //高亮定位
   function highlightPosition(num) {
-    let DH = $(window).height(),
-      _top = _position($highlight.eq(num)[0], true).top + $html.scrollTop();
+    let pageTop = getPageScrollTop();
+    let DH = window.innerHeight,
+      _top = _position($highlight.eq(num)[0], true).top + pageTop;
     $highlight.removeClass('active').eq(num).addClass('active');
-    if (_top > $html.scrollTop() && _top < $html.scrollTop() + DH) {
+    if (_top > pageTop && _top < pageTop + DH) {
     } else {
-      $html.stop().animate(
-        {
-          scrollTop: _top - 60,
-        },
-        _speed
-      );
+      // setPageScrollTop(_top - 60);
+      window.scrollTo({
+        top: _top - 60,
+        behavior: "smooth"
+      })
     }
   }
   if (_getData('editlistmdobj')) {
@@ -386,7 +386,7 @@ import iconlogo from '../../img/icon.png'
   window.addEventListener(
     'scroll',
     throttle(function () {
-      let p = document.documentElement.scrollTop;
+      let p = getPageScrollTop();
       if (p <= 100) {
         $totop.stop().slideUp(_speed);
       } else {
@@ -430,17 +430,13 @@ import iconlogo from '../../img/icon.png'
       $this.addClass('open');
       let id = $this.attr('data-id'),
         el = $html.find(`#${id}`),
-        _top = _position(el[0], true).top + $html.scrollTop();
-      $html.stop().animate(
-        {
-          scrollTop: _top - 60,
-        },
-        _speed
-      );
+        _top = _position(el[0], true).top + getPageScrollTop();
+      // setPageScrollTop(_top - 60);
+      window.scrollTo({
+        top: _top - 60,
+        behavior: "smooth"
+      })
     });
-    // .on('click', '.navClose', function () {
-    //   $navwrap.removeClass('open');
-    // })
     _mySlide({
       el: '.navwrap',
       right() {

@@ -12,7 +12,9 @@ import {
   debounce,
   _postAjax,
   _getAjax,
-  encodeHtml
+  encodeHtml,
+  getPageScrollTop,
+  setPageScrollTop
 } from '../../utils/utils'
 import { _speed } from "../../config";
 import '../../js/common'
@@ -24,7 +26,6 @@ import { pagination } from '../../plugins/pagination'
     $toplist = $('.toplist'),
     $menu = $('.menu'),
     $footer = $('footer'),
-    $html = $(document.documentElement),
     $showpage = $(".showpage");
 
   _setTimeout(() => {
@@ -40,7 +41,7 @@ import { pagination } from '../../plugins/pagination'
       str += `<ul style="pointer-events: none;height:20px;background-color: #ffffff5c;margin:6px" class="itemBox"></ul>`
     });
     $menu.html(str)
-    $html.scrollTop(0)
+    setPageScrollTop(0);
   }
   function renderlist(y) {
     if (y) {
@@ -89,7 +90,7 @@ import { pagination } from '../../plugins/pagination'
         $menu.html(str)
         $footer.stop().slideUp(_speed)
         if (y) {
-          $html.scrollTop(0)
+          setPageScrollTop(0);
         }
       }
     }).catch(err => { })
@@ -146,9 +147,10 @@ import { pagination } from '../../plugins/pagination'
         $menu.pagenum = val;
         renderlist(true)
       } else if (flag === 'gotop') {
-        $html.stop().animate({
-          scrollTop: 0
-        }, _speed)
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        })
       } else {
         $menu.pagenum = +flag;
         renderlist(true)
@@ -227,7 +229,7 @@ import { pagination } from '../../plugins/pagination'
   ~function () {
     let p = 0, t = 0;
     window.addEventListener('scroll', throttle(function () {
-      p = document.documentElement.scrollTop
+      p = getPageScrollTop();
       if (p <= 200) {
         t = p
         $toplist.addClass('open')

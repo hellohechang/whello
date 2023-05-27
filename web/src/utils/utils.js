@@ -1317,3 +1317,12 @@ export function getPreUrl() {
   const reg = /^(https?:\/\/)([^\/#]+)/;
   return myOpen().match(reg)[0];
 }
+export function setPageScrollTop(top) {
+  document.documentElement.scrollTop /* 标准 */ = top;
+  window.pageYOffset /* Safari */ = top;
+  document.body.scrollTop /* IE6/7/8 */ = top;
+}
+export function getPageScrollTop() {
+  let doc = document;
+  return doc.documentElement.scrollTop /* 标准 */ || window.pageYOffset /* Safari */ || doc.body.scrollTop /* IE6/7/8 */ || 0;
+}

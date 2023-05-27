@@ -13,6 +13,8 @@ import {
   _getAjax,
   encodeHtml,
   _myOpen,
+  setPageScrollTop,
+  getPageScrollTop,
 } from '../../utils/utils'
 import { _speed } from "../../config";
 import '../../js/common'
@@ -28,7 +30,6 @@ import iconlogo from '../../img/icon.png'
     $searchinput = $('.toplist').find('input'),
     $menu = $('.menu'),
     $footer = $('footer'),
-    $html = $(document.documentElement),
     $showpage = $('.showpage');
   let $icon = $("link[rel*='icon']");
   document.addEventListener('visibilitychange', async function () {
@@ -55,7 +56,7 @@ import iconlogo from '../../img/icon.png'
       str += `<ul style="pointer-events: none;height:20px;background-color: #ffffff5c;margin:6px" class="itemBox"></ul>`;
     });
     $menu.html(str);
-    $html.scrollTop(0);
+    setPageScrollTop(0)
   }
   function renderlist(y) {
     if (y) {
@@ -109,7 +110,7 @@ import iconlogo from '../../img/icon.png'
           $toplist._flag = false;
           $footer.stop().slideUp(_speed);
           if (y) {
-            $html.scrollTop(0);
+            setPageScrollTop(0)
           }
         }
       }
@@ -235,12 +236,10 @@ import iconlogo from '../../img/icon.png'
               $menu.pagenum = val;
               renderlist(true);
             } else if (flag === 'gotop') {
-              $html.stop().animate(
-                {
-                  scrollTop: 0,
-                },
-                _speed
-              );
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+              })
             } else {
               $menu.pagenum = +flag;
               renderlist(true);
@@ -390,7 +389,7 @@ import iconlogo from '../../img/icon.png'
     window.addEventListener(
       'scroll',
       throttle(function () {
-        p = document.documentElement.scrollTop;
+        p = getPageScrollTop();
         if (p <= 200) {
           t = p;
           $toplist.addClass('open');

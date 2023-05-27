@@ -286,7 +286,7 @@ import { pagination } from '../../plugins/pagination'
     window.addEventListener(
       'scroll',
       throttle(function () {
-        p = document.documentElement.scrollTop;
+        p = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
         if (p <= 200) {
           t = p;
           $toplist.addClass('open');
