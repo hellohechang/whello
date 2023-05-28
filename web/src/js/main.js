@@ -1143,7 +1143,8 @@ import { UpProgress } from '../plugins/UpProgress'
   }
   //操作书签
   function sidenavbtnmenu(e, obj) {
-    let str = `<div cursor class="mtcitem1">更换图标</div>
+    let str = `<div cursor class="mtcitem">弹窗打开</div>
+                  <div cursor class="mtcitem1">更换图标</div>
                   ${$footmenu.is(':hidden')
         ? '<div cursor class="mtcitem2">批量操作</div>'
         : ''
@@ -1156,7 +1157,11 @@ import { UpProgress } from '../plugins/UpProgress'
       str,
       debounce(
         function ({ close, e }) {
-          if (_getTarget(e, '.mtcitem1')) {
+          if (_getTarget(e, '.mtcitem')) {
+            close();
+            menuoff();
+            openIframe(obj.link, obj.name)
+          } else if (_getTarget(e, '.mtcitem1')) {
             //上传图标
             close();
             let input = document.createElement('input');
@@ -1765,8 +1770,9 @@ import { UpProgress } from '../plugins/UpProgress'
   // 编辑书签
   function folderitemmenu(e, obj) {
     if (!obj.id) return;
-    let str = `<div cursor class="mtcitem1">更换图标</div>
-            ${$homefootmenu.is(':hidden')
+    let str = `<div cursor class="mtcitem">弹窗打开</div>
+                <div cursor class="mtcitem1">更换图标</div>
+                  ${$homefootmenu.is(':hidden')
         ? '<div cursor class="mtcitem2">批量操作</div>'
         : ''
       }
@@ -1779,7 +1785,10 @@ import { UpProgress } from '../plugins/UpProgress'
       str,
       debounce(
         function ({ close, e }) {
-          if (_getTarget(e, '.mtcitem1')) {
+          if (_getTarget(e, '.mtcitem')) {
+            close();
+            openIframe(obj.link, obj.name)
+          } else if (_getTarget(e, '.mtcitem1')) {
             // 自定义图标
             close();
             let input = document.createElement('input');
