@@ -290,8 +290,9 @@ import { _err, _success } from "../../plugins/message";
       }
     })
     .on('click', '.textname', function () {
-      let name = $(this).parent().attr('data-name');
-      _myOpen(`/page/edit/#${name}`, name);
+      let $this = $(this);
+      let name = $this.parent().attr('data-name');
+      _myOpen(`/page/edit/#${name}`, $this.text());
     })
     .on('click', '.delete', function () {
       let $this = $(this),
