@@ -2018,48 +2018,7 @@ import { UpProgress } from '../plugins/UpProgress'
       action: searchlink,
     });
   })();
-  $state.on('click', function (e) {
-    let str = ``;
-    searchengine.forEach((v, i) => {
-      str += `<div title="${v.name}" cursor class="mtcitem" xi=${i}><img style="width: 40px;height: 40px;" src="${v.icon}"><span style="margin-left:10px;">${v.name}</span></div>`;
-    });
-    rightMenu(
-      e,
-      str,
-      debounce(
-        function ({ close, e }) {
-          let _this = _getTarget(e, '.mtcitem');
-          if (_this) {
-            $state.removeClass('statem');
-            let xi = $(_this).attr('xi'),
-              { icon, logo, searchlink } = searchengine[xi];
-            _loadingBar.start();
-            close();
-            imgjz(
-              logo,
-              () => {
-                _loadingBar.end();
-                $imgid.attr({ src: logo });
-                $state.addClass('statem');
-                $searchboxon.attr({ src: icon });
-                $inputTextid.attr({
-                  placeholder: '输入搜索内容或网址',
-                  action: searchlink,
-                });
-                _setData('searchengine', searchengine[xi]);
-              },
-              () => {
-                _err();
-                _loadingBar.end();
-              }
-            );
-          }
-        },
-        1000,
-        true
-      )
-    );
-  });
+
   // 翻译
   $ydfy.click(
     debounce(function () {
@@ -2109,16 +2068,20 @@ import { UpProgress } from '../plugins/UpProgress'
               searchstr += `<li title="${name}(${link})" x="${type}" xxx="${link}" cursor xx="${name}" class="tscitem">${name}<div class="miaoxu iconfont icon-shuqian1"></div></li>`;
             }
           });
-          $listid.html(searchstr);
         }
+        $listid.html(searchstr);
       }
-      const script = document.createElement('script');
-      script.src = `https://www.baidu.com/su?wd=${val}&cb=showMsg`;
-      document.body.appendChild(script);
-      document.body.removeChild(script);
+      let callWord = _getData('callword') || 'y';
+      if (callWord === 'y') {
+        const script = document.createElement('script');
+        script.src = `https://www.baidu.com/su?wd=${val}&cb=showMsg`;
+        document.body.appendChild(script);
+        document.body.removeChild(script);
+      };
     }).catch(err => { })
   }
-  function showMsg(msg) {
+
+  window.showMsg = function (msg) {
     var str = '';
     for (var i = 0; i < msg.s.length; i++) {
       let name = encodeHtml(msg.s[i]);
@@ -2126,8 +2089,7 @@ import { UpProgress } from '../plugins/UpProgress'
     }
     str = searchstr += str;
     $listid.html(str);
-  }
-  window.showMsg = showMsg;
+  };
   $inputTextid.on(
     'input',
     debounce(function () {
@@ -2232,17 +2194,77 @@ import { UpProgress } from '../plugins/UpProgress'
     $listid.html(str);
   }
 
-  $searchbox.on(
-    'click',
-    '.manageHistory',
-    debounce(
-      function () {
+  $searchbox.on('click', '.search-box-setting', debounce(function (e) {
+    e.stopPropagation();
+    let callWord = _getData('callword') || 'y';
+    let str = `
+    <div cursor data-callword="${callWord}" class="mtcitem">百度提示词 [${callWord === 'y' ? '开' : '关'}]</div>
+    <div cursor class="mtcitem1">历史记录管理</div>
+    <div cursor class="mtcitem2">切换搜索引擎</div>
+    `;
+    rightMenu(e, str, debounce(function ({ e, close }) {
+      let item = _getTarget(e, '.mtcitem');
+      if (item) {
+        let _this = $(item);
+        let flag = _this.attr('data-callword');
+        if (flag === 'y') {
+          _this.attr('data-callword', 'n');
+          _this.text('百度提示词 [关]');
+          _setData('callword', 'n');
+        } else {
+          _this.attr('data-callword', 'y');
+          _this.text('百度提示词 [开]');
+          _setData('callword', 'y');
+        }
+      } else if (_getTarget(e, '.mtcitem1')) {
+        close();
         openIframe('/page/history/', 'History');
-      },
-      1000,
-      true
-    )
-  );
+      } else if (_getTarget(e, '.mtcitem2')) {
+        let _close = close;
+        let str = ``;
+        searchengine.forEach((v, i) => {
+          str += `<div title="${v.name}" cursor class="mtcitem" xi=${i}><img style="width: 40px;height: 40px;" src="${v.icon}"><span style="margin-left:10px;">${v.name}</span></div>`;
+        });
+        rightMenu(
+          e,
+          str,
+          debounce(
+            function ({ close, e }) {
+              let _this = _getTarget(e, '.mtcitem');
+              if (_this) {
+                $state.removeClass('statem');
+                let xi = $(_this).attr('xi'),
+                  { icon, logo, searchlink } = searchengine[xi];
+                _loadingBar.start();
+                close();
+                _close();
+                imgjz(
+                  logo,
+                  () => {
+                    _loadingBar.end();
+                    $imgid.attr({ src: logo });
+                    $state.addClass('statem');
+                    $searchboxon.attr({ src: icon });
+                    $inputTextid.attr({
+                      placeholder: '输入搜索内容或网址',
+                      action: searchlink,
+                    });
+                    _setData('searchengine', searchengine[xi]);
+                  },
+                  () => {
+                    _err();
+                    _loadingBar.end();
+                  }
+                );
+              }
+            },
+            1000,
+            true
+          )
+        );
+      }
+    }, 1000, true))
+  }, 1000, true))
 
   //壁纸相关
   //壁纸模糊处理

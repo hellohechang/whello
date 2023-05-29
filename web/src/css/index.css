@@ -301,10 +301,10 @@ body {
   color: #0f6ce6;
 }
 
-.search-box .manageHistory {
+.search-box .search-box-setting {
   position: absolute;
   top: 0px;
-  right: 0px;
+  left: 0px;
   font-size: 30px;
   line-height: 50px;
   text-align: center;
@@ -313,7 +313,7 @@ body {
   height: 50px;
 }
 
-.search-box .manageHistory:hover {
+.search-box .search-box-setting:hover {
   color: #fff;
 }
 
@@ -3778,7 +3778,6 @@ input:-ms-input-placeholder {
 .logpagingbox li[cursor]:active,
 .pagingbox li[cursor]:active,
 .musichide div:active,
-#img:active,
 .liimusic:active,
 .yyfs:active,
 .sctupic:active,
@@ -3810,7 +3809,6 @@ input:-ms-input-placeholder {
 .addslist:active,
 .folder-item .folder-item-box:active,
 button:active,
-.search-box .manageHistory:active,
 .playtingtopright:active {
   transition: 0s;
   opacity: .2;
