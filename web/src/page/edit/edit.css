@@ -52,6 +52,70 @@ button {
   font-family: inherit;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 1.1em;
+  transform: translateX(-10px);
+}
+
+h1::before {
+  content: 'H1';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h2::before {
+  content: 'H2';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h3::before {
+  content: 'H3';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h4::before {
+  content: 'H4';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h5::before {
+  content: 'H5';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h6::before {
+  content: 'H6';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
 pre {
   position: relative;
 }
@@ -193,7 +257,9 @@ pre code:hover+.codeCopy {
 }
 
 .markdownBox img {
-  max-width: 100%;
+  display: block;
+  width: 100%;
+  max-width: 400px;
 }
 
 .navwrap {

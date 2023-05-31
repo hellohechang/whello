@@ -70,15 +70,84 @@ button {
   background-color: #FF9632;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 1.1em;
+  transform: translateX(-10px);
+}
+
+h1::before {
+  content: 'H1';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h2::before {
+  content: 'H2';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h3::before {
+  content: 'H3';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h4::before {
+  content: 'H4';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h5::before {
+  content: 'H5';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
+h6::before {
+  content: 'H6';
+  color: #4595d5d6;
+  font-size: .8em;
+  font-weight: normal;
+  box-sizing: border-box;
+  padding-right: 6px;
+}
+
 pre {
   position: relative;
+}
+
+pre code {
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 pre .codeCopy {
   display: none;
   position: absolute;
   top: 40px;
-  right: 10px;
+  right: 20px;
   color: #ccc;
   font-size: 26px;
 }
@@ -193,6 +262,8 @@ pre code:hover+.codeCopy {
   background-position: center;
   background-color: #aaa;
   transition: .5s;
+  position: relative;
+  z-index: 2;
 }
 
 .markdownbox .from .logo:hover {
@@ -225,8 +296,8 @@ pre code:hover+.codeCopy {
 
 .markdownbox .markdown img {
   display: block;
-  margin: 0 auto;
-  max-width: 100%;
+  width: 100%;
+  max-width: 400px;
 }
 
 .notebotlist {

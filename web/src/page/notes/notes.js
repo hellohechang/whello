@@ -15,6 +15,7 @@ import {
   _myOpen,
   setPageScrollTop,
   getPageScrollTop,
+  myOpen,
 } from '../../utils/utils'
 import { _speed } from "../../config";
 import '../../js/common'
@@ -123,14 +124,22 @@ import iconlogo from '../../img/icon.png'
     .on('click', '.notemenu', function (e) {
       let id = $(this).parent().attr('data-id'),
         name = $(this).parent().attr('x'),
-        str = `<div cursor class="mtcitem1">编辑笔记</div>
-              <div cursor class="mtcitem2">删除</div>`;
+        str = `
+        <div cursor class="mtcitem">在新标签页打开</div>
+        <div cursor class="mtcitem1">编辑笔记</div>
+        <div cursor class="mtcitem2">删除</div>`;
       rightMenu(
         e,
         str,
         debounce(
           function ({ close, e }) {
-            if (_getTarget(e, '.mtcitem1')) {
+            if (_getTarget(e, '.mtcitem')) {
+              close();
+              let val = $searchinput.val().trim();
+              val = val.split(' ')[0];
+              val = encodeURIComponent(val);
+              myOpen(`/page/note/?v=${id}${val ? '#' + val : ''}`, name);
+            } else if (_getTarget(e, '.mtcitem1')) {
               close();
               _myOpen(`/page/edit/#${id}`, name);
             } else if (_getTarget(e, '.mtcitem2')) {

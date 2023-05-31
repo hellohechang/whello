@@ -121,7 +121,13 @@ import iconlogo from '../../img/icon.png'
           .prepend(
             `<div data-flag="y" cursor class="shrink iconfont icon-Down"><div>`
           );
-        $markdown.find('a').attr('target', '_blank')
+        $markdown.find('a').attr({
+          'target': '_blank',
+          cursor: ''
+        })
+        $markdown.find('img').attr({
+          cursor: ''
+        })
         // hljs.initHighlightingOnLoad();
         BlogDirectory();
         $notetitle.text(name);

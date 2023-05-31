@@ -140,7 +140,13 @@ import { _err, _success } from "../../plugins/message";
       .prepend(
         `<div data-flag="y" cursor class="shrink iconfont icon-Down"><div>`
       );
-    $showBox.find('a').attr('target', '_blank')
+    $showBox.find('a').attr({
+      'target': '_blank',
+      cursor: ''
+    })
+    $showBox.find('img').attr({
+      cursor: ''
+    })
   }
   // 处理保存按钮
   function handleSave() {

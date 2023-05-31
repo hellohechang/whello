@@ -2218,7 +2218,7 @@ import { UpProgress } from '../plugins/UpProgress'
         }
       } else if (_getTarget(e, '.mtcitem1')) {
         close();
-        openIframe('/page/history/', 'History');
+        openIframe('/page/history/', '历史记录管理');
       } else if (_getTarget(e, '.mtcitem2')) {
         let _close = close;
         let str = ``;
@@ -4239,7 +4239,7 @@ import { UpProgress } from '../plugins/UpProgress'
       }
       // 跳到历史记录
       if (key === 'h') {
-        $searchbox.find('.manageHistory').click();
+        openIframe('/page/history', '历史记录管理')
       }
       // 跳到笔记
       if (key === 'n') {

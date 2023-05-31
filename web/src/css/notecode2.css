@@ -15,7 +15,7 @@ code,
   background: #e1e1d3;
   border-radius: 4px;
   padding: 0px 6px;
-  border: 1px solid transparent;
+  border: 1px solid #ccc;
 }
 
 .hljs-keyword,
@@ -66,11 +66,6 @@ code,
 
 .hljs-emphasis {
   font-style: italic
-}
-
-
-table {
-  margin: 10px auto;
 }
 
 table,
