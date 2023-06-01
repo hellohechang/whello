@@ -47,6 +47,7 @@ import {
   fileLogoType,
   downloadFile,
   imgPreview,
+  qucong,
 } from '../utils/utils.js'
 import { _speed, serverURL, mediaURL } from "../config";
 import '../js/common'
@@ -3746,30 +3747,44 @@ import { UpProgress } from '../plugins/UpProgress'
     });
     $playingbot.html(str);
   }
+  let $playinglist = $playingwrap.find('.playinglist');
   $ksbfxsid.click(function (e) {
     defaultdqplaying();
     $playingwrap.stop().fadeIn(100, () => {
-      $playingwrap
-        .find('.playinglist')
+      $playinglist
         .stop()
         .slideDown(_speed, () => {
+          let idx = _playinglist.findIndex((v) => musicobj.artist + musicobj.name === v.artist + v.name);
+          if (idx >= 0) {
+            playingPageNum = Math.ceil(idx / playingSize);
+          };
           dqplaying();
           gaolianging(true);
         });
     });
   });
   //处理播放列表
+  let playingPageNum = 1;
+  let playingSize = 200;
   function dqplaying() {
+    if ($playinglist.is(':hidden')) return;
     let str = '';
     if (!_playinglist) {
       $playtingtopleft.text(`正在播放(0)`);
       return;
     }
     $playtingtopleft.text(`正在播放(${_playinglist.length})`);
-    _playinglist.forEach((v, i) => {
-      let { name, artist, mv } = v;
-      str += `<li cursor data-name="${name}" data-artist="${artist}" data-mv="${mv}" class = "liimusic">
-          <div class="liimusicnum">${i + 1}</div>
+    let playarr = _playinglist.map((item, idx) => {
+      item.idx = idx;
+      return item;
+    })
+    let totalPage = Math.ceil(playarr.length / playingSize);
+    playingPageNum < 1 ? playingPageNum = 1 : (playingPageNum > totalPage ? playingPageNum = totalPage : null);
+    let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize)
+    arr.forEach((v) => {
+      let { name, artist, mv, idx } = v;
+      str += `<li cursor data-name="${name}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}" class = "liimusic">
+          <div class="liimusicnum">${idx + 1}</div>
           <div class="liimusiccen">
           <span class = "liimusicname">${name}</span>
           <span class="liimusicartist">${artist}</span>
@@ -3777,6 +3792,11 @@ import { UpProgress } from '../plugins/UpProgress'
           <div cursor class="dleplaying iconfont icon-guanbi"></div>
         </li>`;
     });
+    str += `<div style="padding:20px 0;text-align:center;" class="playingListbot">
+      ${totalPage > 1 ? `<span style="${playingPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="playingListpre iconfont icon-prev"></span>
+      <span style="padding:0 30px">${playingPageNum}/${totalPage}</span>
+      <span style="${playingPageNum == totalPage ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="playingListnext iconfont icon-page-next"></span>` : ''}
+    </div>`
     $playingbot.html(str);
   }
   //清空播放列表
@@ -3806,25 +3826,17 @@ import { UpProgress } from '../plugins/UpProgress'
       return;
     }
     musicPlay(obj);
-  });
-
-  function gaolianging(a) {
-    if (!musicobj) return;
-    if (!_playinglist) return;
-    $('.liimusicnum').removeClass('pling');
-    $('.liimusic').removeClass('songlisttwo');
-    let y = _playinglist.findIndex(
-      (v) => musicobj.artist + musicobj.name === v.artist + v.name
-    );
-    if (y < 0) return;
-    var n = y / _playinglist.length;
-    if (a) {
-      $playingbot.scrollTop(n * ($playingbot[0].scrollHeight - 40));
-    }
-    $('.liimusicnum').eq(y).addClass('pling');
-    $('.liimusic').eq(y).addClass('songlisttwo');
-  }
-  $playingbot.on('click', '.dleplaying', function (e) {
+  }).on('click', '.playingListpre', function () {
+    playingPageNum--;
+    $playingbot[0].scrollTop = 0;
+    dqplaying();
+    gaolianging()
+  }).on('click', '.playingListnext', function () {
+    playingPageNum++;
+    $playingbot[0].scrollTop = 0;
+    dqplaying();
+    gaolianging()
+  }).on('click', '.dleplaying', function (e) {
     e.stopPropagation();
     let $this = $(this),
       mobj = {
@@ -3839,7 +3851,7 @@ import { UpProgress } from '../plugins/UpProgress'
       (v) => v.artist + v.name !== mobj.artist + mobj.name
     );
     dqplaying();
-    gaolianging(false);
+    gaolianging();
     _postAjax('/player/updateplaying', { data: _playinglist }).then(
       (result) => {
         if (parseInt(result.code) === 0) {
@@ -3850,18 +3862,33 @@ import { UpProgress } from '../plugins/UpProgress'
     ).catch(err => { })
   });
 
+  function gaolianging(a) {
+    if ($playinglist.is(':hidden') || !musicobj || !_playinglist) return;
+    let $liimusic = $playingbot.find('.liimusic');
+    $liimusic.removeClass('songlisttwo').find('.liimusicnum').removeClass('pling');
+    let y = Array.prototype.findIndex.call($liimusic, (item) => item.dataset.artist + item.dataset.name == musicobj.artist + musicobj.name);
+    if (y < 0) return;
+    let cur = $liimusic.eq(y);
+    if (a) {
+      let sp = $playingbot.scrollTop() + cur.position().top - 42;
+      $playingbot.scrollTop(sp);
+    }
+    cur.addClass('songlisttwo').find('.liimusicnum').addClass('pling');
+  }
+
   //隐藏播放列表
   $playingwrap.click(function (e) {
     if (_getTarget(e, '.playingwrap', 1)) {
       $playingbot.html('');
-      $playingwrap
-        .find('.playinglist')
+      $playinglist
         .stop()
         .slideUp(_speed, () => {
           $playingwrap.stop().fadeOut(100);
         });
     }
   });
+  let $mmmitemwrap = $mmmlist.children('.mmmitemwrap');
+  let $mmitemwrap = $mmlist.children('.mmitemwrap');
   // 音乐返回按钮
   $mmlistsxid.click(function (e) {
     if (!$searchlistwrap.is(':hidden')) {
@@ -3873,14 +3900,14 @@ import { UpProgress } from '../plugins/UpProgress'
       $mmlist.removeClass('open');
       $mmmlist.removeClass('open');
       _setTimeout(() => {
-        $mmmlist.children('.mmmitemwrap').html('');
+        $mmmitemwrap.html('');
       }, 800);
       $gedantname.css('opacity', 0);
     } else if (!$mmlistid.is(':hidden')) {
       if (dmwidth < 800) {
         $mmlistid.stop().fadeOut(_speed, () => {
-          $mmmlist.children('.mmmitemwrap').html('');
-          $mmlist.children('.mmitemwrap').html('');
+          $mmmitemwrap.html('');
+          $mmitemwrap.html('');
         });
       } else {
         $mmlisthide.click();
@@ -3890,8 +3917,8 @@ import { UpProgress } from '../plugins/UpProgress'
   $mmlistoff.click(function (e) {
     if (dmwidth > 800) {
       $mmlistid.stop().fadeOut(_speed, () => {
-        $mmmlist.children('.mmmitemwrap').html('');
-        $mmlist.children('.mmitemwrap').html('');
+        $mmmitemwrap.html('');
+        $mmitemwrap.html('');
       });
     }
     $musicmv.stop().fadeOut(_speed);
@@ -3906,8 +3933,8 @@ import { UpProgress } from '../plugins/UpProgress'
       $musichide.stop().show(_speed);
       setZindex($musichide);
       $mmlistid.stop().fadeOut(_speed, () => {
-        $mmmlist.children('.mmmitemwrap').html('');
-        $mmlist.children('.mmitemwrap').html('');
+        $mmmitemwrap.html('');
+        $mmitemwrap.html('');
       });
       if (!$lrcbotwrap._isone) {
         $lrcbotwrap.stop().fadeIn(_speed);
@@ -3960,6 +3987,7 @@ import { UpProgress } from '../plugins/UpProgress'
       _musicsea();
     }
   });
+  let searchMusicList = [];
   $msearchlistid.on('click', '.limusic', function (e) {
     let $this = $(this);
     let obj = {
@@ -3969,9 +3997,9 @@ import { UpProgress } from '../plugins/UpProgress'
     };
     musicarr =
       randomplay === false
-        ? myShuffle(deepClone(musicarrjl))
-        : deepClone(musicarrjl);
-    _playinglist = deepClone(musicarrjl);
+        ? myShuffle(deepClone(searchMusicList))
+        : deepClone(searchMusicList);
+    _playinglist = deepClone(searchMusicList);
     _postAjax('/player/updateplaying', { data: _playinglist }).then(
       (result) => {
         if (parseInt(result.code) === 0) {
@@ -3997,7 +4025,7 @@ import { UpProgress } from '../plugins/UpProgress'
           let str = '';
           let arr = result.data;
           let num = 1;
-          musicarrjl = arr;
+          searchMusicList = arr;
           if (arr.length > 0) {
             arr.forEach((v) => {
               str += `<li title="${v.artist}-${v.name}" data-name="${v.name}" data-artist="${v.artist}" data-mv="${v.mv}" cursor class = "limusic">
@@ -4352,7 +4380,7 @@ import { UpProgress } from '../plugins/UpProgress'
   //处理歌曲列表
   function renderMusicList() {
     if ($mmlistid.is(':hidden')) return;
-    let a = $mmlist.children('.mmitemwrap').children();
+    let a = $mmitemwrap.children();
     if (a.length === 0) {
       rendermusiclistdefault();
     }
@@ -4365,6 +4393,8 @@ import { UpProgress } from '../plugins/UpProgress'
           let { currentTime = 0, duration = 0, lastplay } = _musicinfo;
           if (lastplay) {
             musicobjInit(lastplay);
+            dqplaying();
+            gaolianging();
             csfz();
           } else {
             _getAjax('/player/getall').then((result) => {
@@ -4372,6 +4402,8 @@ import { UpProgress } from '../plugins/UpProgress'
                 let musics = result.data;
                 if (musics.length > 0) {
                   musicobjInit(musics[0]);
+                  dqplaying();
+                  gaolianging();
                   csfz();
                 }
                 return;
@@ -4410,7 +4442,7 @@ import { UpProgress } from '../plugins/UpProgress'
       <div class="gdiwrap" style="background-color:${color};background-image:none;box-shadow: none;"></div>
       </li>`;
     });
-    $mmlist.children('.mmitemwrap').html(str);
+    $mmitemwrap.html(str);
   }
   function rendermusiclist() {
     if ($mmlistid.is(':hidden')) return;
@@ -4418,7 +4450,7 @@ import { UpProgress } from '../plugins/UpProgress'
       str = '';
     arr.forEach((item) => {
       let name = encodeHtml(item.name);
-      let pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic
+      let pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic;
       str += `<li title="${name}" data-id="${item.id}" data-name="${name}" cursor draggable="true" class="gedanlist">
       <div class="gdiwrap">
         <img class="gedimg" data-src="${pic}"></div>
@@ -4429,7 +4461,7 @@ import { UpProgress } from '../plugins/UpProgress'
       ? '<li cursor class="addslist"><img src="/img/tianjia.png"></li>'
       : ''
       }`;
-    $mmlist.children('.mmitemwrap').html(str);
+    $mmitemwrap.html(str);
     lazyImg($mmlist, '.gedanlist', 'img', true);
     if (!$mmlist._flagId) {
       $mmlist._flagId = arr[0].id;
@@ -4438,6 +4470,8 @@ import { UpProgress } from '../plugins/UpProgress'
       rendermusicitem();
     }
   }
+  let musicPageNum = 1;
+  let musicPageSize = _getData('musicpagenum') || 50;
   function renderMusicItem() {
     if ($mmlistid.is(':hidden') || $mmmlist.css('transform') !== 'none') return;
     let id = $mmlist._flagId;
@@ -4472,9 +4506,9 @@ import { UpProgress } from '../plugins/UpProgress'
         <div style="background-color:${color};width:100px;height: 40px;margin: 10px 0 0 10px;" class="sxx"></div>
       </div>`;
     });
-    $mmmlist.children('.mmmitemwrap').html(str);
+    $mmmitemwrap.html(str);
   }
-  function rendermusicitem() {
+  function rendermusicitem(gao) {
     if ($mmlistid.is(':hidden') || $mmmlist.css('transform') !== 'none') return;
     let id = $mmlist._flagId,
       listpx = _getData('lastpx') || 'default';
@@ -4519,9 +4553,16 @@ import { UpProgress } from '../plugins/UpProgress'
         : ''
       }
      </div>`;
-    marr.item.forEach((item) => {
+    marr.item = marr.item.map((item, idx) => {
+      item.idx = idx;
+      return item;
+    })
+    let pageTotal = Math.ceil(marr.item.length / musicPageSize);
+    musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null)
+    let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize)
+    sliceList.forEach((item) => {
       str += `<div title="${item.artist}-${item.name}" draggable="true" m="${item.mv
-        }" xn="${item.name}" xa="${item.artist}" cursor class="songlist">
+        }" xn="${item.name}" data-idx="${item.idx}" xa="${item.artist}" cursor class="songlist">
         <div cursor check="n" class="duoxuan"></div>
         <div class="songlistnum">
           <img class="songlistlogo" data-src=${encodeURI(
@@ -4542,11 +4583,12 @@ import { UpProgress } from '../plugins/UpProgress'
         <div class="sxx iconfont icon-icon"></div>
       </div>`;
     });
-    str += `<div class="topbottomwrap">
-        <div cursor id="mmtop" class="iconfont icon-up"></div>
-        <div cursor id="mmcon" class="iconfont icon-dingwei"></div>
-      <div cursor id="mmbot" class="iconfont icon-Down"></div>
-      </div>
+    str += `<div style="padding:20px 0;text-align:center;" class="musicListbot">
+      ${pageTotal > 1 ? `<span style="${musicPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="musicListpre iconfont icon-prev"></span>
+      <span style="padding:0 30px">${musicPageNum}/${pageTotal}</span>
+      <span style="${musicPageNum == pageTotal ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="musicListnext iconfont icon-page-next"></span>` : ''}
+    </div>`
+    str += `
       <div class="qxcz">
         <div cursor x='1' class="qxbtn">全选</div>
         ${_userinfo.account === 'root' && ind > 1
@@ -4560,10 +4602,14 @@ import { UpProgress } from '../plugins/UpProgress'
         : ''
       }
       </div>`;
-    $mmmlist.children('.mmmitemwrap').html(str);
+    $mmmitemwrap.html(str);
     $mmmlist._duoxuan = false;
     musicarrjl = marr.item;
-    gaoliang(false);
+    if (!gao) {
+      gaoliang();
+    } else {
+      gaoliang(1);
+    }
     if ($mmmlist[0].scrollTop > 115) {
       $('.songlisttop').addClass('sct');
     } else {
@@ -4585,6 +4631,7 @@ import { UpProgress } from '../plugins/UpProgress'
         $mmlist.addClass('open');
         $mmmlist.addClass('open');
         $mmmlist.scrollTop(0);
+        musicPageNum = 1;
         _setTimeout(renderMusicItem, 800);
       }, 1000, true)
     )
@@ -4698,8 +4745,9 @@ import { UpProgress } from '../plugins/UpProgress'
     ).catch(err => { })
     musicPlay(musicarr[0]);
   }
+  let $topbottomwrap = $mmmlist.find('.topbottomwrap');
   let topbottomwraphide = debounce(function () {
-    $mmmlist.find('.topbottomwrap').stop().fadeOut(_speed);
+    $topbottomwrap.stop().fadeOut(_speed);
   }, 10000);
   // 歌单列表编辑
   $mmmlist
@@ -4897,7 +4945,7 @@ import { UpProgress } from '../plugins/UpProgress'
     })
     .on('scroll', function () {
       //列表滚动
-      $mmmlist.find('.topbottomwrap').stop().fadeIn(_speed);
+      $topbottomwrap.stop().fadeIn(_speed);
       topbottomwraphide();
       if (this.scrollTop > 115) {
         $('.songlisttop').addClass('sct');
@@ -4925,6 +4973,12 @@ import { UpProgress } from '../plugins/UpProgress'
       };
       _playinglist.push(mobj);
       musicarr.push(mobj);
+      _playinglist.reverse();
+      musicarr.reverse();
+      _playinglist = qucong(_playinglist);
+      musicarr = qucong(musicarr);
+      _playinglist.reverse();
+      musicarr.reverse();
       _postAjax('/player/updateplaying', { data: _playinglist }).then(
         (result) => {
           if (parseInt(result.code) === 0) {
@@ -5100,6 +5154,12 @@ import { UpProgress } from '../plugins/UpProgress'
       });
       _playinglist = [..._playinglist, ...arr];
       musicarr = [...musicarr, ...arr];
+      _playinglist.reverse();
+      musicarr.reverse();
+      _playinglist = qucong(_playinglist);
+      musicarr = qucong(musicarr);
+      _playinglist.reverse();
+      musicarr.reverse();
       _postAjax('/player/updateplaying', { data: _playinglist }).then(
         (result) => {
           if (parseInt(result.code) === 0) {
@@ -5146,6 +5206,19 @@ import { UpProgress } from '../plugins/UpProgress'
       } else if (_getTarget(e, '.mvplay')) {
         e.stopPropagation();
         setZindex($musicmv);
+        musicarr =
+          randomplay === false
+            ? myShuffle(deepClone(musicarrjl))
+            : deepClone(musicarrjl);
+        _playinglist = deepClone(musicarrjl);
+        _postAjax('/player/updateplaying', { data: _playinglist }).then(
+          (result) => {
+            if (parseInt(result.code) === 0) {
+              sendCommand({ type: 'updatedata', flag: 'playinglist' });
+              return;
+            }
+          }
+        ).catch(err => { })
         musicMv(sobj);
       } else if (_getTarget(e, '.sxx')) {
         let ii = _music.findIndex((item) => item.id === $mmlist._flagId);
@@ -5342,7 +5415,34 @@ import { UpProgress } from '../plugins/UpProgress'
       );
     })
     .on('click', '#mmcon', function () {
-      gaoliang(true);
+      let idx = musicarrjl.findIndex(item => item.artist + item.name === musicobj.artist + musicobj.name);
+      if (idx >= 0) {
+        let page = Math.ceil((idx + 1) / musicPageSize);
+        if (page != musicPageNum) {
+          musicPageNum = page;
+          rendermusicitem(1);
+          return;
+        }
+        gaoliang(true);
+      }
+    }).on('click', '#musicListSetting', function (e) {
+      let str = `
+      <div cursor data-val="50" class="mtcitem">50条/页</div>
+      <div cursor data-val="100" class="mtcitem">100条/页</div>
+      <div cursor data-val="200" class="mtcitem">200条/页</div>
+      `;
+      rightMenu(e, str, debounce(function ({ e, close }) {
+        let item = _getTarget(e, '.mtcitem');
+        if (item) {
+          close();
+          let val = +item.dataset.val;
+          musicPageSize = val;
+          _setData('musicpagenum', val);
+          musicPageNum = 1;
+          $mmmlist[0].scrollTop = 0;
+          rendermusicitem();
+        }
+      }, 1000, true))
     })
     .on('click', '.duoxuan', function (e) {
       let $this = $(this),
@@ -5355,6 +5455,14 @@ import { UpProgress } from '../plugins/UpProgress'
       let $duoxuan = $('.duoxuan'),
         $checkArr = $duoxuan.filter((_, item) => $(item).attr('check') === 'y');
       _success(`选中：${$checkArr.length}`, true);
+    }).on('click', '.musicListpre', function () {
+      musicPageNum--;
+      $mmmlist[0].scrollTop = 0;
+      rendermusicitem();
+    }).on('click', '.musicListnext', function () {
+      musicPageNum++;
+      $mmmlist[0].scrollTop = 0;
+      rendermusicitem();
     });
   if (isios()) {
     $mmmlist[0]._longPress('.songlist', function (e) {
@@ -5371,8 +5479,8 @@ import { UpProgress } from '../plugins/UpProgress'
       })
       .on('drop', '.songlist', function (e) {
         if (_userinfo.account !== 'root') return;
-        let a = $(fromDom).index('.songlist'),
-          b = $(this).index('.songlist'),
+        let a = $(fromDom).attr('data-idx'),
+          b = $(this).attr('data-idx'),
           id = $mmlist._flagId,
           index = _music.findIndex((item) => item.id === id);
         if (fromDom) {
@@ -5380,7 +5488,7 @@ import { UpProgress } from '../plugins/UpProgress'
             _postAjax('/player/songmove', { id, a, b }).then((result) => {
               if (parseInt(result.code) === 0) {
                 sendCommand({ type: 'updatedata', flag: 'music' });
-                if (a === 0 || b === 0) {
+                if (a == 0 || b == 0) {
                   renderMusicList();
                 } else {
                   renderMusicItem();
@@ -5460,11 +5568,17 @@ import { UpProgress } from '../plugins/UpProgress'
   }
 
   //定位播放歌曲
+  let $mmcon = $('#mmcon');
   function gaoliang(a) {
-    $('.songlist').removeClass('songlisttwo');
-    $('.songlistdq').removeClass('songlistdqshow');
+    if ($mmlistid.is(':hidden') || $mmmlist.css('transform') !== 'none') return;
     if (musicarrjl != undefined && musicobj) {
-      let $songlist = $('.songlist');
+      if (musicarrjl.some(item => item.artist + item.name === musicobj.artist + musicobj.name)) {
+        $mmcon.stop().slideDown(_speed);
+      } else {
+        $mmcon.stop().slideUp(_speed);
+      }
+      let $songlist = $mmmlist.find('.songlist');
+      $songlist.removeClass('songlisttwo').find('.songlistdq').removeClass('songlistdqshow');
       let ii = [].findIndex.call($songlist, (item) => {
         let $item = $(item);
         return (
@@ -5472,10 +5586,8 @@ import { UpProgress } from '../plugins/UpProgress'
           musicobj.artist + musicobj.name
         );
       });
-      if (ii < 0) {
-        $('#mmcon').stop().slideUp(_speed);
-      } else {
-        $('#mmcon').stop().slideDown(_speed);
+
+      if (ii >= 0) {
         if (a) {
           let sp = $mmmlist.scrollTop() + $songlist.eq(ii).position().top - 100;
           $mmmlist.stop().animate(
@@ -5485,7 +5597,7 @@ import { UpProgress } from '../plugins/UpProgress'
             _speed
           );
         }
-        $('.songlist')
+        $songlist
           .eq(ii)
           .addClass('songlisttwo')
           .find('.songlistdq')
@@ -5837,8 +5949,7 @@ import { UpProgress } from '../plugins/UpProgress'
     el: '.playingwrap',
     right() {
       $playingbot.html('');
-      $playingwrap
-        .find('.playinglist')
+      $playinglist
         .stop()
         .slideUp(_speed, () => {
           $playingwrap.stop().fadeOut(_speed);
@@ -7578,6 +7689,8 @@ import { UpProgress } from '../plugins/UpProgress'
                       randomplay === false
                         ? myShuffle(deepClone(_playinglist))
                         : deepClone(_playinglist);
+                    dqplaying();
+                    gaolianging();
                     return;
                   }
                 }, true).catch(err => { })

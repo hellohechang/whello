@@ -1013,10 +1013,6 @@ body {
   padding-top: 5px;
 }
 
-.mmmlist .mmmitemwrap {
-  padding-bottom: 50px;
-}
-
 .mmmlist.open {
   transform: none;
 }
@@ -2929,39 +2925,6 @@ body {
 
 
 /* 列表定位顶部底部正在播放 */
-
-#mmtop {
-  border-radius: 10px 10px 0 0;
-}
-
-#mmbot {
-  border-radius: 0 0 10px 10px;
-}
-
-#mmtop,
-#mmcon,
-#mmbot {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  line-height: 30px;
-  font-size: 15px;
-  font-weight: bold;
-  color: #868686;
-  background-color: #f0f0f0;
-}
-
-#mmcon {
-  font-size: 17px;
-}
-
-#mmtop:hover,
-#mmcon:hover,
-#mmbot:hover {
-  color: rgb(209, 20, 178);
-
-}
-
 .topbottomwrap {
   display: none;
   width: 30px;
@@ -2972,9 +2935,31 @@ body {
   border-radius: 10px;
   box-shadow: 2px 2px 5px #868686;
   opacity: 0.8;
+  overflow: hidden;
 }
 
+.topbottomwrap div {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #868686;
+  background-color: #f0f0f0;
+}
 
+.musicListbot .musicListpre:hover,
+.musicListbot .musicListnext:hover,
+.playingListbot .playingListpre:hover,
+.playingListbot .playingListnext:hover,
+.topbottomwrap div:hover {
+  color: rgb(209, 20, 178);
+}
+
+#mmcon {
+  font-size: 17px;
+}
 
 /* 右上功能键 */
 .youtopwrap {

@@ -1326,3 +1326,14 @@ export function getPageScrollTop() {
   let doc = document;
   return doc.documentElement.scrollTop /* 标准 */ || window.pageYOffset /* Safari */ || doc.body.scrollTop /* IE6/7/8 */ || 0;
 }
+// 音乐去重
+export function qucong(arr) {
+  var hash = {};
+  arr = arr.reduce((item, next) => {
+    hash.hasOwnProperty(next.name + next.artist)
+      ? ''
+      : ((hash[next.name + next.artist] = true), item.push(next));
+    return item;
+  }, []);
+  return arr;
+}
