@@ -165,6 +165,7 @@ route.get('/logsearch', async (req, res) => {
       sArr.sort((a, b) => b.sNum - a.sNum);
       arr = sArr.map((v) => v.item);
     }
+    showpage > 200 ? showpage = 200 : null;
     let pagenum = Math.ceil(arr.length / showpage);
     page > pagenum ? (page = pagenum) : page <= 0 ? (page = 1) : null;
     let arr1 = arr.slice(showpage * (page - 1), showpage * page);

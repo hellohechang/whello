@@ -88,7 +88,7 @@ route.get('/allsearchlist', async (req, res) => {
       delete v.share;
       return v;
     });
-
+    showpage > 200 ? showpage = 200 : null;
     let pagenum = Math.ceil(aa.length / showpage);
     page > pagenum ? (page = pagenum) : page <= 0 ? (page = 1) : null;
     let sdata = aa.slice(showpage * (page - 1), showpage * page);
@@ -180,7 +180,7 @@ route.get('/searchlist', async (req, res) => {
       delete v.state;
       return v;
     });
-
+    showpage > 200 ? showpage = 200 : null;
     let pagenum = Math.ceil(aa.length / showpage);
     page > pagenum ? (page = pagenum) : page <= 0 ? (page = 1) : null;
     let sdata = aa.slice(showpage * (page - 1), showpage * page);

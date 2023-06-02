@@ -146,14 +146,14 @@ route.get('/getmsg', async (req, res) => {
     if (carr.length > 0) {
       if (+stu === 0) {
         //打开聊天框
-        sarr = carr.slice(-20);
+        sarr = carr.slice(-50);
       } else if (+stu === 1) {
         //向上滚动
         let ci = carr.findIndex((v) => v.id === flag);
         if (ci < 0) {
           sarr = [];
         } else {
-          let st = ci - 20 <= 0 ? 0 : ci - 20;
+          let st = ci - 50 <= 0 ? 0 : ci - 50;
           sarr = carr.slice(st, ci);
         }
       } else if (+stu === 2) {

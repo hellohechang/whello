@@ -54,6 +54,7 @@ route.get('/history', async (req, res) => {
       delete item.flag;
       return item;
     });
+    showpage > 200 ? showpage = 200 : null;
     let pagenum = Math.ceil(arr.length / showpage);
     page > pagenum ? (page = pagenum) : page <= 0 ? (page = 1) : null;
     let sdata = arr.slice(showpage * (page - 1), showpage * page);

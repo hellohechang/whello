@@ -30,8 +30,9 @@ route.use((req, res, next) => {
 // 获取
 route.get('/getlist', async (req, res) => {
   try {
-    let { page, showpage = 40 } = req.query,
-      bgarr = await readMenu(`${filepath}/pic`),
+    let { page, showpage = 40 } = req.query
+    showpage > 100 ? showpage = 100 : null;
+    let bgarr = await readMenu(`${filepath}/pic`),
       pagenum = Math.ceil(bgarr.length / showpage);
     bgarr.sort((a, b) => {
       return b.time - a.time;

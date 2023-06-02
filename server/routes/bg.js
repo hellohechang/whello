@@ -67,8 +67,9 @@ route.post('/updatabg', async (req, res) => {
 // 壁纸获取
 route.get('/getbg', async (req, res) => {
   try {
-    let { flag, page, showpage = 40 } = req.query,
-      bgarr = await readMenu(`${filepath}/bg/${flag}`),
+    let { flag, page, showpage = 40 } = req.query;
+    showpage > 100 ? showpage = 100 : null;
+    let bgarr = await readMenu(`${filepath}/bg/${flag}`),
       pagenum = Math.ceil(bgarr.length / showpage);
     // 创建时间排序
     bgarr.sort((a, b) => {

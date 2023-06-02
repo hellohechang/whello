@@ -7,9 +7,7 @@ module.exports = {
     login: './src/page/login/login.js',
     allnote: './src/page/allnote/allnote.js',
     edit: './src/page/edit/edit.js',
-    bomb: './src/page/bomb/bomb.js',
     history: './src/page/history/history.js',
-    color: './src/page/color/color.js',
     note: './src/page/note/note.js',
     notes: './src/page/notes/notes.js',
     pic: './src/page/pic/pic.js',
@@ -18,7 +16,6 @@ module.exports = {
     sharebm: './src/page/sharebm/sharebm.js',
     sharelist: './src/page/sharelist/sharelist.js',
     sharemusic: './src/page/sharemusic/sharemusic.js',
-    suduku: './src/page/suduku/js/sudo.js',
   },
   output: {
     filename: 'js/[name][hash].js',
@@ -52,28 +49,6 @@ module.exports = {
       template: './src/page/allnote/index.html',
       filename: 'page/allnote/index.html',
       chunks: ['allnote'],
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true
-      }
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/page/aria2/index.html',
-      filename: 'page/aria2/index.html',
-      chunks: [],
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true
-      }
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/page/bomb/index.html',
-      filename: 'page/bomb/index.html',
-      chunks: ['bomb'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -148,17 +123,6 @@ module.exports = {
       }
     }),
     new HtmlWebpackPlugin({
-      template: './src/page/color/index.html',
-      filename: 'page/color/index.html',
-      chunks: ['color'],
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true
-      }
-    }),
-    new HtmlWebpackPlugin({
       template: './src/page/recycle/index.html',
       filename: 'page/recycle/index.html',
       chunks: ['recycle'],
@@ -206,17 +170,6 @@ module.exports = {
       template: './src/page/sharelist/index.html',
       filename: 'page/sharelist/index.html',
       chunks: ['sharelist'],
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true
-      }
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/page/suduku/index.html',
-      filename: 'page/suduku/index.html',
-      chunks: ['suduku'],
       minify: {
         removeComments: true,
         collapseWhitespace: true,

@@ -5488,11 +5488,7 @@ import { UpProgress } from '../plugins/UpProgress'
             _postAjax('/player/songmove', { id, a, b }).then((result) => {
               if (parseInt(result.code) === 0) {
                 sendCommand({ type: 'updatedata', flag: 'music' });
-                if (a == 0 || b == 0) {
-                  renderMusicList();
-                } else {
-                  renderMusicItem();
-                }
+                renderMusicList();
                 return;
               }
             }).catch(err => { })
