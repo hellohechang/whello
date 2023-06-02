@@ -5468,7 +5468,7 @@ import { UpProgress } from '../plugins/UpProgress'
     $mmmlist[0]._longPress('.songlist', function (e) {
       $('#mmlistqx').click();
     });
-  }
+  };
   // 移动歌曲
   (function () {
     let fromDom = null;

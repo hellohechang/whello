@@ -18,7 +18,7 @@ module.exports = {
     sharemusic: './src/page/sharemusic/sharemusic.js',
   },
   output: {
-    filename: 'js/[name][hash].js',
+    filename: 'js/[name].[chunkhash:8].js',
     path: resolve(__dirname, '..', 'static'),
     clean: true,
   },

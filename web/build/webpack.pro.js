@@ -29,7 +29,7 @@ module.exports = merge(require('./webpack.base'), {
     autoprefixer,
     // 抽取css
     new MiniCssExtractPlugin({
-      filename: '[name][hash].css',
+      filename: '[name].[contenthash:8].css',
     }),
     new CopyWebpackPlugin({
       patterns: [
