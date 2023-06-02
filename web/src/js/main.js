@@ -5232,7 +5232,7 @@ import { UpProgress } from '../plugins/UpProgress'
         } else {
           str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
           <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>`;
-          if (_music && _music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist)) {
+          if (!_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist)) {
             str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
           }
           if (_userinfo.account === 'root') {
