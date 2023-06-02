@@ -5230,19 +5230,19 @@ import { UpProgress } from '../plugins/UpProgress'
                 <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>
                 `;
         } else {
-          str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
-                ${_music && _music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist) ? '' : '<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>'}
-                <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
-            ${_userinfo.account === 'root'
-              ? `<div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">移动到</span></div>
-            ${sobj.mv === 'y'
-                ? '<div cursor  class="mtcitem4"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除 MV</span></div>'
-                : ''
-              }
-            <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`
-              : ''
+          str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>`;
+          if (_music && _music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist)) {
+            str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
+          }
+          if (_userinfo.account === 'root') {
+            str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑</span></div>
+            <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">移动到</span></div>
+            <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`;
+            if (sobj.mv === 'y') {
+              str += `<div cursor  class="mtcitem4"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除 MV</span></div>`;
             }
-          `;
+          }
         }
         rightMenu(
           e,
@@ -5255,9 +5255,9 @@ import { UpProgress } from '../plugins/UpProgress'
                   artist: sobj.artist,
                   mv: sobj.mv,
                 };
+                close();
                 _postAjax('/player/musicshare', obj).then((result) => {
                   if (parseInt(result.code) === 0) {
-                    close();
                     openIframe(`/page/sharelist`, '分享列表')
                   }
                 }).catch(err => { })
@@ -5366,6 +5366,40 @@ import { UpProgress } from '../plugins/UpProgress'
               } else if (_getTarget(e, '.mtcitem5')) {
                 close()
                 copyText(`${sobj.artist}-${sobj.name}`)
+              } else if (_getTarget(e, '.mtcitem6')) {
+                let str = `<div class="mtcinp">
+                <input autocomplete="off" value="${encodeHtml(sobj.artist)}" >
+                  </div>
+                  <div class="mtcinp1">
+                    <input autocomplete="off" value="${encodeHtml(sobj.name)}">
+                  </div>
+                <button cursor class="mtcbtn">提交</button>`;
+                rightMenu(e, str, debounce(function ({ e, close, inp }) {
+                  if (_getTarget(e, '.mtcbtn')) {
+                    let newName = inp[1];
+                    let newArtist = inp[0];
+                    let arr = [
+                      {
+                        name: sobj.name,
+                        artist: sobj.artist
+                      },
+                      {
+                        name: newName,
+                        artist: newArtist
+                      }
+                    ];
+                    if (newName + newArtist == sobj.name + sobj.artist) return;
+                    _postAjax('/player/editsong', arr).then(res => {
+                      if (res.code == 0) {
+                        sobj.name = newName;
+                        sobj.artist = newArtist;
+                        close();
+                        sendCommand({ type: 'updatedata', flag: 'music' });
+                        renderMusicItem();
+                      }
+                    }).catch(err => { })
+                  }
+                }, 1000, true))
               }
             },
             1000,

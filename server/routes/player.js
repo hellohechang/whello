@@ -416,6 +416,48 @@ route.post('/editlist', async (req, res) => {
     _err(res);
   }
 });
+// 歌单歌曲
+route.post('/editsong', async (req, res) => {
+  try {
+    let account = req._userInfo.account;
+    if (account !== 'root') {
+      _err(res, '当前账号没有权限执行该操作');
+      return;
+    }
+    let [oldObj, newObj] = req.body;
+    let arr = JSON.parse(
+      (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
+        .data
+    );
+    arr.forEach((v, i) => {
+      if (i < 2) return;
+      v.item.forEach((y) => {
+        if (y.artist + y.name == oldObj.artist + oldObj.name) {
+          y.artist = newObj.artist;
+          y.name = newObj.name;
+        }
+      });
+    });
+    await updateData(
+      'musicinfo',
+      {
+        data: JSON.stringify(arr),
+      },
+      `WHERE account=?`,
+      [account]
+    );
+    await writelog(req, `编辑歌曲[${newObj.artist}-${newObj.name}]`);
+    _success(res);
+    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp3`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp3`).catch(err => { });
+    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp4`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp4`).catch(err => { });
+    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/music/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
+    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.lrc`, `${filepath}/music/${newObj.artist}-${newObj.name}.lrc`).catch(err => { });
+    _rename(`${filepath}/musicys/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/musicys/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+});
 // 上传歌曲
 route.post('/addsong', async (req, res) => {
   try {
