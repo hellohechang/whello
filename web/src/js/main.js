@@ -3187,12 +3187,15 @@ import { UpProgress } from '../plugins/UpProgress'
         }
         let str = '';
         rod.forEach((item) => {
+          let { p, fy } = item;
+          p = encodeHtml(p);
+          fy = encodeHtml(fy);
           str += `<div>
           <p style="text-align:${lrcstatu.statu};font-size:${lrcstatu.size + 'px'
-            };line-height:${lrcstatu.size + 6 + 'px'}" class="elrc">${item.p}</p>
+            };line-height:${lrcstatu.size + 6 + 'px'}" class="elrc">${p}</p>
           <p style="display: ${showlrcfy && hasfy ? 'block' : 'none'
             };text-align:${lrcstatu.statu};font-size:${lrcstatu.size - 2 + 'px'
-            };line-height:${lrcstatu.size + 4 + 'px'}" class="lrcfy">${item.fy
+            };line-height:${lrcstatu.size + 4 + 'px'}" class="lrcfy">${fy
             }</p></div>`;
         });
         $lrc.html(str);
@@ -3472,6 +3475,7 @@ import { UpProgress } from '../plugins/UpProgress'
             if (_userinfo.account !== 'root') {
               $editlrc.find('.save').remove();
             }
+            $editlrc.find('.lrceditspace').text(`${musicobj.artist}-${musicobj.name}`);
             setZindex($editlrc);
             $editlrc.stop().fadeIn(_speed, () => {
               $editlrc.css('display', 'flex').find('textarea').val('');
@@ -3783,6 +3787,8 @@ import { UpProgress } from '../plugins/UpProgress'
     let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize)
     arr.forEach((v) => {
       let { name, artist, mv, idx } = v;
+      name = encodeHtml(name);
+      artist = encodeHtml(artist);
       str += `<li cursor data-name="${name}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}" class = "liimusic">
           <div class="liimusicnum">${idx + 1}</div>
           <div class="liimusiccen">
@@ -3988,8 +3994,8 @@ import { UpProgress } from '../plugins/UpProgress'
     }
   });
   let searchMusicList = [];
-  $msearchlistid.on('click', '.limusic', function (e) {
-    let $this = $(this);
+  $msearchlistid.on('click', '.limusiccen', function (e) {
+    let $this = $(this).parent();
     let obj = {
       name: $this.attr('data-name'),
       artist: $this.attr('data-artist'),
@@ -4013,7 +4019,143 @@ import { UpProgress } from '../plugins/UpProgress'
       return;
     }
     musicPlay(obj);
-  });
+  }).on('click', '.search-musiclist-menu', function (e) {
+    let $this = $(this).parent();
+    let sobj = {
+      name: $this.attr('data-name'),
+      artist: $this.attr('data-artist'),
+      mv: $this.attr('data-mv'),
+    };
+    let str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
+          <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>`;
+    if (_music && !_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist)) {
+      str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
+    };
+    if (_userinfo.account === 'root') {
+      str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>`;
+    };
+    rightMenu(
+      e,
+      str,
+      debounce(
+        function ({ close, e }) {
+          if (_getTarget(e, '.mtcitem')) {
+            let obj = {
+              name: sobj.name,
+              artist: sobj.artist,
+              mv: sobj.mv,
+            };
+            close();
+            _postAjax('/player/musicshare', obj).then((result) => {
+              if (parseInt(result.code) === 0) {
+                openIframe(`/page/sharelist`, '分享列表')
+              }
+            }).catch(err => { })
+          } else if (_getTarget(e, '.mtcitem2')) {
+            let ssobj = deepClone(sobj);
+            let ar = [];
+            ar.push(ssobj);
+            _postAjax('/player/collectsong', { ar }).then((result) => {
+              if (parseInt(result.code) === 0) {
+                close();
+                sendCommand({ type: 'updatedata', flag: 'music' });
+                renderMusicList();
+                _success();
+                return;
+              }
+            }).catch(err => { })
+          } else if (_getTarget(e, '.mtcitem5')) {
+            close()
+            copyText(`${sobj.artist}-${sobj.name}`)
+          } else if (_getTarget(e, '.mtcitem6')) {
+            let str = `<div class="mtcinp">
+            <input autocomplete="off" value="${encodeHtml(sobj.artist)}" >
+              </div>
+              <div class="mtcinp1">
+                <input autocomplete="off" value="${encodeHtml(sobj.name)}">
+              </div>
+            <button cursor class="mtcbtn">提交</button>`;
+            rightMenu(e, str, debounce(function ({ e, close, inp }) {
+              if (_getTarget(e, '.mtcbtn')) {
+                let newName = inp[1];
+                let newArtist = inp[0];
+                let arr = [
+                  {
+                    name: sobj.name,
+                    artist: sobj.artist
+                  },
+                  {
+                    name: newName,
+                    artist: newArtist
+                  }
+                ];
+                if (newName + newArtist == sobj.name + sobj.artist) return;
+                _postAjax('/player/editsong', arr).then(res => {
+                  if (res.code == 0) {
+                    sobj.name = newName;
+                    sobj.artist = newArtist;
+                    close();
+                    sendCommand({ type: 'updatedata', flag: 'music' });
+                    _musicsea();
+                    renderMusicItem();
+
+                  }
+                }).catch(err => { })
+              }
+            }, 1000, true))
+          } else if (_getTarget(e, '.mtcitem7')) {
+            if (_userinfo.account !== 'root') {
+              $editlrc.find('.save').remove();
+            }
+            $editlrc.find('.lrceditspace').text(`${sobj.artist}-${sobj.name}`);
+            setZindex($editlrc);
+            $editlrc.stop().fadeIn(_speed, () => {
+              $editlrc.css('display', 'flex').find('textarea').val('');
+              $editlrc._mobj = deepClone(sobj);
+              _getAjax('/player/getlrc', {
+                name: sobj.name,
+                artist: sobj.artist,
+              }).then((result) => {
+                if (parseInt(result.code) === 0) {
+                  close();
+                  $editlrc._val = result.data;
+                  $editlrc.find('textarea').val(result.data);
+                  return;
+                }
+              }).catch(err => { })
+            });
+          };
+        },
+        1000,
+        true
+      )
+    );
+  }).on('click', '.limusicnum', function () {
+    let $this = $(this).parent();
+    let mobj = {
+      name: $this.attr('data-name'),
+      artist: $this.attr('data-artist'),
+      mv: $this.attr('data-mv'),
+    };
+    _playinglist.push(mobj);
+    musicarr.push(mobj);
+    _playinglist.reverse();
+    musicarr.reverse();
+    _playinglist = qucong(_playinglist);
+    musicarr = qucong(musicarr);
+    _playinglist.reverse();
+    musicarr.reverse();
+    _postAjax('/player/updateplaying', { data: _playinglist }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          _success('已添加到播放列表');
+          return;
+        }
+      }
+    ).catch(err => { })
+  })
   let _musicsea = debounce(musicsea, 1000);
   function musicsea() {
     let a = $musictextid.val().trim();
@@ -4024,18 +4166,20 @@ import { UpProgress } from '../plugins/UpProgress'
           if ($mmlistid.is(':hidden')) return;
           let str = '';
           let arr = result.data;
-          let num = 1;
           searchMusicList = arr;
           if (arr.length > 0) {
             arr.forEach((v) => {
-              str += `<li title="${v.artist}-${v.name}" data-name="${v.name}" data-artist="${v.artist}" data-mv="${v.mv}" cursor class = "limusic">
-                    <div class="limusicnum">${num}</div>
+              let { artist, name, mv } = v;
+              artist = encodeHtml(artist);
+              name = encodeHtml(name);
+              str += `<li data-name="${name}" data-artist="${artist}" data-mv="${mv}" cursor class = "limusic">
+                    <div class="limusicnum iconfont icon-icon-test"></div>
                     <div class="limusiccen">
-                      <span class="limusicname">${v.name}</span>
-                      <span class="limusicartist">${v.artist}</span>
+                      <span class="limusicname">${name}</span>
+                      <span class="limusicartist">${artist}</span>
                     </div>
+                    <div class="search-musiclist-menu iconfont icon-icon"></div>
                   </li>`;
-              num++;
             });
             $msearchlistid.html(str);
           } else {
@@ -4544,12 +4688,12 @@ import { UpProgress } from '../plugins/UpProgress'
           <div cursor class="bfdq iconfont icon-65zanting"></div>
           <div class="asnum">播放全部<span>(${marr.item.length})</span></div>
           ${_userinfo.account === 'root' && ind > 1
-        ? `<div cursor title="Upload songs" class="addmusic"><i class="iconfont icon-shangchuan1"></i></div>`
+        ? `<div cursor class="addmusic"><i class="iconfont icon-shangchuan1"></i></div>`
         : ''
       }
-          <div cursor title="Check" id="mmlistqx"><i class="iconfont icon-quanxuan1"></i></div>
+          <div cursor id="mmlistqx"><i class="iconfont icon-quanxuan1"></i></div>
           ${ind > 0
-        ? `<div data-type="${listpx}" cursor class="listps"><i class="iconfont icon-paixu"></i></div>`
+        ? `<div cursor class="listps"><i class="iconfont icon-paixu"></i></div>`
         : ''
       }
      </div>`;
@@ -4561,21 +4705,24 @@ import { UpProgress } from '../plugins/UpProgress'
     musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null)
     let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize)
     sliceList.forEach((item) => {
-      str += `<div title="${item.artist}-${item.name}" draggable="true" m="${item.mv
-        }" xn="${item.name}" data-idx="${item.idx}" xa="${item.artist}" cursor class="songlist">
+      let { name, artist, mv, idx } = item;
+      name = encodeHtml(name);
+      artist = encodeHtml(artist);
+      str += `<div draggable="true" m="${mv
+        }" xn="${name}" data-idx="${idx}" xa="${artist}" cursor class="songlist">
         <div cursor check="n" class="duoxuan"></div>
         <div class="songlistnum">
           <img class="songlistlogo" data-src=${encodeURI(
-          `${mediaURL}/musicys/${item.artist}-${item.name}.jpg`
+          `${mediaURL}/musicys/${artist}-${name}.jpg`
         )}>
           <img class="songlistdq" src="/img/wave.gif">
         </div>
         <div class="songms">
-          <span class="divmusicname">${item.name}</span>
-          <span class="musicartist"><i class="viptu iconfont icon-vip1"></i>${item.artist
+          <span class="divmusicname">${name}</span>
+          <span class="musicartist"><i class="viptu iconfont icon-vip1"></i>${artist
         }</span>
         </div>
-        ${item.mv === 'y'
+        ${mv === 'y'
           ? ` <div class="mvplay iconfont icon-shipin"></div>`
           : ''
         }
@@ -5227,16 +5374,21 @@ import { UpProgress } from '../plugins/UpProgress'
         if (ii < 2) {
           str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
                 <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
-                <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>
+                <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>`;
+          if (_music && !_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist) && ii != 1) {
+            str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
+          }
+          str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>
                 `;
         } else {
           str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
-          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>`;
-          if (!_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist)) {
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
+          <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>`;
+          if (_music && !_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist) && ii != 1) {
             str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
           }
           if (_userinfo.account === 'root') {
-            str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑</span></div>
+            str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>
             <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">移动到</span></div>
             <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`;
             if (sobj.mv === 'y') {
@@ -5400,7 +5552,28 @@ import { UpProgress } from '../plugins/UpProgress'
                     }).catch(err => { })
                   }
                 }, 1000, true))
-              }
+              } else if (_getTarget(e, '.mtcitem7')) {
+                if (_userinfo.account !== 'root') {
+                  $editlrc.find('.save').remove();
+                }
+                $editlrc.find('.lrceditspace').text(`${sobj.artist}-${sobj.name}`);
+                setZindex($editlrc);
+                $editlrc.stop().fadeIn(_speed, () => {
+                  $editlrc.css('display', 'flex').find('textarea').val('');
+                  $editlrc._mobj = deepClone(sobj);
+                  _getAjax('/player/getlrc', {
+                    name: sobj.name,
+                    artist: sobj.artist,
+                  }).then((result) => {
+                    if (parseInt(result.code) === 0) {
+                      close();
+                      $editlrc._val = result.data;
+                      $editlrc.find('textarea').val(result.data);
+                      return;
+                    }
+                  }).catch(err => { })
+                });
+              };
             },
             1000,
             true
@@ -5412,24 +5585,19 @@ import { UpProgress } from '../plugins/UpProgress'
       e.preventDefault();
       $('#mmlistqx').click();
     })
-    .on('click', '.listps', function () {
+    .on('click', '.listps', function (e) {
       //歌曲排序
-      let $this = $(this),
-        px,
-        tz;
-      if ($this.attr('data-type') == 'default') {
-        px = 'artist';
-        tz = '按歌手名排序';
-      } else if ($this.attr('data-type') == 'artist') {
-        px = 'name';
-        tz = '按歌曲名排序';
-      } else if ($this.attr('data-type') == 'name') {
-        px = 'default';
-        tz = '默认排序';
-      }
-      _setData('lastpx', px);
-      _success(tz);
-      rendermusicitem();
+      let str = `<div cursor data-type="default" class="mtcitem">默认排序</div>
+      <div cursor data-type="artist" class="mtcitem">按歌手名排序</div>
+      <div cursor data-type="name" class="mtcitem">按歌曲名排序</div>`;
+      rightMenu(e, str, debounce(function ({ e }) {
+        let _this = _getTarget(e, '.mtcitem');
+        if (_this) {
+          let t = _this.dataset.type;
+          _setData('lastpx', t);
+          rendermusicitem();
+        }
+      }, 1000, true))
     })
     .on('click', '#mmtop', function () {
       //列表回到顶部底部和定位到当前播放歌曲
@@ -5518,7 +5686,8 @@ import { UpProgress } from '../plugins/UpProgress'
           id = $mmlist._flagId,
           index = _music.findIndex((item) => item.id === id);
         if (fromDom) {
-          if ($('.listps').attr('data-type') === 'default' && index > 0) {
+          let t = _getData('lastpx') || 'default';
+          if (t === 'default' && index > 0) {
             _postAjax('/player/songmove', { id, a, b }).then((result) => {
               if (parseInt(result.code) === 0) {
                 sendCommand({ type: 'updatedata', flag: 'music' });

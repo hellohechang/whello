@@ -11,7 +11,8 @@ import {
   throttle,
   debounce,
   imgjz,
-  _getAjax
+  _getAjax,
+  encodeHtml
 } from '../../utils/utils'
 import { _speed, mediaURL } from "../../config";
 import '../../js/common'
@@ -145,12 +146,15 @@ import { _err } from "../../plugins/message";
         }
         let str = '';
         rod.forEach((item) => {
+          let { p, fy } = item;
+          p = encodeHtml(p);
+          fy = encodeHtml(fy);
           str += `<div>
           <p style="text-align:${lrcstatu.statu};font-size:${lrcstatu.size + 'px'
-            };line-height:${lrcstatu.size + 6 + 'px'}" class="elrc">${item.p}</p>
+            };line-height:${lrcstatu.size + 6 + 'px'}" class="elrc">${p}</p>
           <p style="display: ${showlrcfy && hasfy ? 'block' : 'none'
             };text-align:${lrcstatu.statu};font-size:${lrcstatu.size - 2 + 'px'
-            };line-height:${lrcstatu.size + 4 + 'px'}" class="lrcfy">${item.fy
+            };line-height:${lrcstatu.size + 4 + 'px'}" class="lrcfy">${fy
             }</p></div>`;
         });
         $lrc.html(str);

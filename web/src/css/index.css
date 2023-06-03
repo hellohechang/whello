@@ -790,12 +790,18 @@ body {
   background-color: transparent;
 }
 
+.search-musiclist-menu,
 .limusicnum {
   flex: none;
   width: 50px;
   line-height: 50px;
   text-align: center;
-  font-size: 15px;
+  font-size: 18px;
+}
+
+.limusicnum:hover,
+.search-musiclist-menu:hover {
+  color: rgb(209, 20, 178);
 }
 
 .limusiccen {
@@ -810,6 +816,7 @@ body {
 .limusicartist {
   font-size: 12px;
 }
+
 
 /* 顶部栏wrap */
 .onoffbox {
@@ -1557,6 +1564,16 @@ body {
 
 .editlrc .editlrcbtn button:hover {
   color: #0f6ce6;
+}
+
+.editlrc .lrceditspace {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .editlrc textarea {

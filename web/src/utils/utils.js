@@ -602,7 +602,7 @@ export function encodeHtml(str) {
       .replace(/>/g, '&gt;')
       .replace(/\\/g, '&#92;')
       .replace(/\//g, '&#x2F;')
-      .replace(/ /g, '&nbsp;')
+      // .replace(/ /g, '&nbsp;')
       .replace(/\'/g, '&#39;')
       .replace(/\"/g, '&quot;')
     : str;
