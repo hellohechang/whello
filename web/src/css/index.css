@@ -656,6 +656,7 @@ body {
   color: rgb(202, 40, 181);
 }
 
+.liimusic .icon-icon-,
 .dleplaying {
   flex: none;
   text-align: center;
@@ -667,7 +668,6 @@ body {
   font-weight: bold;
   color: #fff;
 }
-
 
 .liimusiccen {
   flex: auto;
@@ -790,6 +790,7 @@ body {
   background-color: transparent;
 }
 
+.limusic .icon-icon-,
 .search-musiclist-menu,
 .limusicnum {
   flex: none;
@@ -1097,6 +1098,7 @@ body {
 }
 
 .songlist .mvplay,
+.songlist .icon-icon-,
 .songlist .addtop,
 .songlist .sxx {
   flex: none;
@@ -1104,6 +1106,10 @@ body {
   line-height: 60px;
   text-align: center;
   width: 45px;
+}
+
+.songlist .icon-icon- {
+  font-size: 18px;
 }
 
 .songlist .mvplay:hover,
@@ -1268,7 +1274,6 @@ body {
   display: flex;
   box-sizing: border-box;
   padding: 0 5px;
-  transition: background .5s;
 }
 
 .sct {
@@ -1786,7 +1791,7 @@ body {
 }
 
 .sccolor {
-  color: #e24242;
+  color: #fd4747;
 }
 
 /* MV */

@@ -499,7 +499,7 @@ import { UpProgress } from '../plugins/UpProgress'
           $bgmain.css(
             'background-image',
             `url(${mediaURL}/bgys/bg/${_userinfo.bg})`
-          );
+          ).attr('data-bg', _userinfo.bg);
           imgjz(
             `${mediaURL}/bgys/bg/${_userinfo.bg}`,
             () => {
@@ -522,7 +522,7 @@ import { UpProgress } from '../plugins/UpProgress'
             }
           );
         } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`);
+          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
           imgjz(
             `/img/bg.jpg`,
             () => {
@@ -538,7 +538,7 @@ import { UpProgress } from '../plugins/UpProgress'
           $bgmain.css(
             'background-image',
             `url(${mediaURL}/bgys/bgxs/${_userinfo.bgxs})`
-          );
+          ).attr('data-bg', _userinfo.bgxs);
           imgjz(
             `${mediaURL}/bgys/bgxs/${_userinfo.bgxs}`,
             () => {
@@ -561,7 +561,7 @@ import { UpProgress } from '../plugins/UpProgress'
             }
           );
         } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`);
+          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
           imgjz(
             `/img/bg.jpg`,
             () => {
@@ -2286,7 +2286,7 @@ import { UpProgress } from '../plugins/UpProgress'
           () => {
             $xzbg.find('img').removeClass('open');
             $xzbg.removeClass('open');
-            $bgmain.css('background-image', `url(${url})`);
+            $bgmain.css('background-image', `url(${url})`).attr('data-bg', result.data.link);
             _userinfo[_flag] = result.data.link;
             _postAjax(
               '/bg/updatabg',
@@ -2473,7 +2473,7 @@ import { UpProgress } from '../plugins/UpProgress'
               () => {
                 $xzbg.find('img').removeClass('open');
                 $xzbg.removeClass('open');
-                $bgmain.css('background-image', `url(${xx})`);
+                $bgmain.css('background-image', `url(${xx})`).attr('data-bg', url);
               },
               () => {
                 _err('加载失败');
@@ -2910,11 +2910,31 @@ import { UpProgress } from '../plugins/UpProgress'
       true
     )
   );
-  $xzbg.click(
-    throttle(function () {
-      bgInterval();
-    }, 500)
-  );
+  $xzbg.on('click', throttle(function () {
+    bgInterval();
+  }, 1000)).on('contextmenu', function (e) {
+    let url = $bgmain.attr('data-bg');
+    if (_userinfo.account !== 'root' || !url) return;
+    e.preventDefault();
+    let str = `<div cursor class="mtcitem">删除壁纸</div>`;
+    rightMenu(e, str, debounce(function ({ e, close }) {
+      if (_getTarget(e, '.mtcitem')) {
+        alert('确认删除？', {
+          confirm: true,
+          handled: (m) => {
+            if (m !== 'confirm') return;
+            _postAjax('/bg/delbg', { url }).then((result) => {
+              if (parseInt(result.code) === 0) {
+                close();
+                bgInterval();
+                return;
+              }
+            }).catch(err => { })
+          },
+        });
+      }
+    }, 1000, true))
+  })
 
   $allbgoff.click(function () {
     $allbgwrap.stop().fadeOut(_speed, () => {
@@ -3772,6 +3792,10 @@ import { UpProgress } from '../plugins/UpProgress'
   let playingSize = 200;
   function dqplaying() {
     if ($playinglist.is(':hidden')) return;
+    let scObj = _music[1].item.reduce((total, item) => {
+      total[`h${item.artist}${item.name}`] = 'y';
+      return total;
+    }, {});
     let str = '';
     if (!_playinglist) {
       $playtingtopleft.text(`正在播放(0)`);
@@ -3787,6 +3811,7 @@ import { UpProgress } from '../plugins/UpProgress'
     let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize)
     arr.forEach((v) => {
       let { name, artist, mv, idx } = v;
+      let issc = scObj.hasOwnProperty(`h${artist}${name}`);
       name = encodeHtml(name);
       artist = encodeHtml(artist);
       str += `<li cursor data-name="${name}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}" class = "liimusic">
@@ -3795,6 +3820,7 @@ import { UpProgress } from '../plugins/UpProgress'
           <span class = "liimusicname">${name}</span>
           <span class="liimusicartist">${artist}</span>
           </div>
+          ${issc ? '<div style="color:#fd4747" class="iconfont icon-icon-"></div>' : ''}
           <div cursor class="dleplaying iconfont icon-guanbi"></div>
         </li>`;
     });
@@ -3820,8 +3846,8 @@ import { UpProgress } from '../plugins/UpProgress'
     ).catch(err => { })
   });
   //选择播放列表歌曲播放
-  $playingbot.on('click', '.liimusic', function () {
-    let $this = $(this);
+  $playingbot.on('click', '.liimusiccen', function () {
+    let $this = $(this).parent();
     let obj = {
       name: $this.attr('data-name'),
       artist: $this.attr('data-artist'),
@@ -3832,6 +3858,8 @@ import { UpProgress } from '../plugins/UpProgress'
       return;
     }
     musicPlay(obj);
+  }).on('click', '.liimusicnum', function () {
+    $(this).parent().find('.liimusiccen').click();
   }).on('click', '.playingListpre', function () {
     playingPageNum--;
     $playingbot[0].scrollTop = 0;
@@ -4025,13 +4053,12 @@ import { UpProgress } from '../plugins/UpProgress'
       name: $this.attr('data-name'),
       artist: $this.attr('data-artist'),
       mv: $this.attr('data-mv'),
+      issc: $this.attr('data-issc'),
     };
-    let str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
+    let str = '';
+    str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
           <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>`;
-    if (_music && !_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist)) {
-      str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
-    };
     if (_userinfo.account === 'root') {
       str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>`;
     };
@@ -4050,19 +4077,6 @@ import { UpProgress } from '../plugins/UpProgress'
             _postAjax('/player/musicshare', obj).then((result) => {
               if (parseInt(result.code) === 0) {
                 openIframe(`/page/sharelist`, '分享列表')
-              }
-            }).catch(err => { })
-          } else if (_getTarget(e, '.mtcitem2')) {
-            let ssobj = deepClone(sobj);
-            let ar = [];
-            ar.push(ssobj);
-            _postAjax('/player/collectsong', { ar }).then((result) => {
-              if (parseInt(result.code) === 0) {
-                close();
-                sendCommand({ type: 'updatedata', flag: 'music' });
-                renderMusicList();
-                _success();
-                return;
               }
             }).catch(err => { })
           } else if (_getTarget(e, '.mtcitem5')) {
@@ -4155,6 +4169,36 @@ import { UpProgress } from '../plugins/UpProgress'
         }
       }
     ).catch(err => { })
+  }).on('click', '.icon-icon-', function () {
+    let $this = $(this).parent();
+    let sobj = {
+      name: $this.attr('data-name'),
+      artist: $this.attr('data-artist'),
+      mv: $this.attr('data-mv'),
+      issc: $this.attr('data-issc'),
+    };
+    if (sobj.issc == 'true') {
+      _postAjax('/player/closecollectsong', sobj).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'music' });
+          _musicsea();
+          renderMusicList();
+          return;
+        }
+      }).catch(err => { })
+    } else {
+      let ssobj = deepClone(sobj);
+      let ar = [];
+      ar.push(ssobj);
+      _postAjax('/player/collectsong', { ar }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'music' });
+          _musicsea();
+          renderMusicList();
+          return;
+        }
+      }).catch(err => { })
+    }
   })
   let _musicsea = debounce(musicsea, 1000);
   function musicsea() {
@@ -4164,20 +4208,26 @@ import { UpProgress } from '../plugins/UpProgress'
       _getAjax('/player/search', { a }).then((result) => {
         if (parseInt(result.code) === 0) {
           if ($mmlistid.is(':hidden')) return;
+          let scObj = _music[1].item.reduce((total, item) => {
+            total[`h${item.artist}${item.name}`] = 'y';
+            return total;
+          }, {});
           let str = '';
           let arr = result.data;
           searchMusicList = arr;
           if (arr.length > 0) {
             arr.forEach((v) => {
               let { artist, name, mv } = v;
+              let issc = scObj.hasOwnProperty(`h${artist}${name}`);
               artist = encodeHtml(artist);
               name = encodeHtml(name);
-              str += `<li data-name="${name}" data-artist="${artist}" data-mv="${mv}" cursor class = "limusic">
+              str += `<li data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-mv="${mv}" cursor class = "limusic">
                     <div class="limusicnum iconfont icon-icon-test"></div>
                     <div class="limusiccen">
                       <span class="limusicname">${name}</span>
                       <span class="limusicartist">${artist}</span>
                     </div>
+                    <div style="color:${issc ? '#fd4747' : '#ccc'};" class="iconfont icon-icon-"></div>
                     <div class="search-musiclist-menu iconfont icon-icon"></div>
                   </li>`;
             });
@@ -4666,7 +4716,10 @@ import { UpProgress } from '../plugins/UpProgress'
         marr.item = arrSortMinToMax(marr.item, 'name');
       }
     }
-
+    let scObj = ind == 1 ? {} : _music[1].item.reduce((total, item) => {
+      total[`h${item.artist}${item.name}`] = 'y';
+      return total;
+    }, {});
     let str = '';
     let name = encodeHtml(marr.name);
     let pic = !/^\/img/.test(marr.pic) ? `${mediaURL}${marr.pic}` : marr.pic
@@ -4706,9 +4759,10 @@ import { UpProgress } from '../plugins/UpProgress'
     let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize)
     sliceList.forEach((item) => {
       let { name, artist, mv, idx } = item;
+      let issc = scObj.hasOwnProperty(`h${artist}${name}`);
       name = encodeHtml(name);
       artist = encodeHtml(artist);
-      str += `<div draggable="true" m="${mv
+      str += `<div draggable="true" data-issc="${issc}" m="${mv
         }" xn="${name}" data-idx="${idx}" xa="${artist}" cursor class="songlist">
         <div cursor check="n" class="duoxuan"></div>
         <div class="songlistnum">
@@ -4723,9 +4777,10 @@ import { UpProgress } from '../plugins/UpProgress'
         }</span>
         </div>
         ${mv === 'y'
-          ? ` <div class="mvplay iconfont icon-shipin"></div>`
+          ? `<div class="mvplay iconfont icon-shipin"></div>`
           : ''
         }
+        ${ind == 1 ? '' : `<div style="color:${issc ? '#fd4747' : '#ccc'};" class="iconfont icon-icon-"></div>`}
         <div title="添加到播放列表" class="addtop iconfont icon-icon-test"></div>
         <div class="sxx iconfont icon-icon"></div>
       </div>`;
@@ -4757,13 +4812,7 @@ import { UpProgress } from '../plugins/UpProgress'
     } else {
       gaoliang(1);
     }
-    if ($mmmlist[0].scrollTop > 115) {
-      $('.songlisttop').addClass('sct');
-    } else {
-      $('.songlisttop').removeClass('sct');
-    }
-    _setTimeout(() => {
-    });
+    $mmmlist.scroll();
     lazyImg($mmmlist, '.songlist', '.songlistlogo', 1);
   }
 
@@ -4897,775 +4946,772 @@ import { UpProgress } from '../plugins/UpProgress'
     $topbottomwrap.stop().fadeOut(_speed);
   }, 10000);
   // 歌单列表编辑
-  $mmmlist
-    .on('click', '.editlb', function (e) {
-      if (_userinfo.account !== 'root') return;
-      let index = _music.findIndex((item) => item.id === $mmlist._flagId);
-      let { id, name } = _music[index];
-      let str = `<div class="mtcinp">
+  $mmmlist.on('click', '.editlb', function (e) {
+    if (_userinfo.account !== 'root') return;
+    let index = _music.findIndex((item) => item.id === $mmlist._flagId);
+    let { id, name } = _music[index];
+    let str = `<div class="mtcinp">
             <input autocomplete="off" placeholder='num: ${+index + 1
-        }' type="text">
+      }' type="text">
           </div>
           <div class="mtcinp1">
             <input autocomplete="off" value="${encodeHtml(name)}" type="text">
           </div>
         <button cursor class="mtcbtn">提交</button>`;
-      rightMenu(
-        e,
-        str,
-        debounce(
-          function ({ close, e, inp }) {
-            if (_getTarget(e, '.mtcbtn')) {
-              let wz = inp[0];
-              let nn = inp[1];
-              if (nn === '') {
-                _err('请输入歌单名');
-                return;
-              }
-              if ((wz === '' || wz === index) && nn === name) return;
-              if (wz == '') {
-                wz = index;
-              } else {
-                wz = parseInt(wz) - 1;
-              }
-              if (isNaN(wz)) return;
-              _postAjax('/player/editlist', { id, name: nn, index: wz }).then(
-                (result) => {
-                  if (parseInt(result.code) === 0) {
-                    close();
-                    sendCommand({ type: 'updatedata', flag: 'music' });
-                    renderMusicList();
-                    return;
-                  }
-                }
-              ).catch(err => { })
-            }
-          },
-          1000,
-          true
-        )
-      );
-    })
-    .on('click', '.addmusic', async function (e) {
-      // 上传歌曲
-      let listid = $mmlist._flagId;
-      if (_userinfo.account !== 'root') return;
-      let arr = [],
-        input = document.createElement('input');
-      input.type = 'file';
-      input.multiple = 'multiple';
-      input.accept = '.jpg,.mp3,.lrc,.mp4';
-      input.style.display = 'none';
-      document.body.appendChild(input);
-      input.click();
-      let $input = $(input);
-      $input.change((e) => {
-        let files = [...e.target.files];
-        $input.remove();
-        if (files.length == 0) return;
-        ~(async function fn(num) {
-          if (num >= files.length) {
-            _postAjax('/player/addsong', { id: listid, arr }).then((result) => {
-              if (parseInt(result.code) === 0) {
-                sendCommand({ type: 'updatedata', flag: 'music' });
-                renderMusicList();
-                return;
-              }
-            }).catch(err => { })
-            return;
-          }
-          let { name, size } = files[num];
-          let pro = new UpProgress(name);
-          if (size === 0) {
-            pro.fail();
-            _err(`${name} 为空文件`);
-            num++;
-            fn(num);
-            return;
-          }
-          if (
-            !/^[^\-]*[^\s\-]\-[^\s\-][^\-]*\.(jpg|mp3|lrc|mp4)$/i.test(name)
-          ) {
-            pro.fail();
-            _err(`${name} 格式错误`);
-            num++;
-            fn(num);
-            return;
-          }
-
-          try {
-            //文件切片
-            let { chunks, count, suffix, HASH } = await fileSlice(
-              files[num],
-              (pes) => {
-                pro.loading(pes);
-              }
-            );
-
-            if (isImgFile(name)) {
-              // 压缩图片
-              chunks.push({
-                file: await compressionImg(files[num]),
-                filename: `_hello`,
-              });
-              ++count;
-            }
-
-            let breakpointarr = (
-              await _postAjax('/player/breakpoint', { HASH })
-            ).data; //断点续传
-            let isrepeat = await _postAjax('/player/repeatfile', { name }); //是否已经存在文件
-
-            let [a, b] = extname(name);
-
-            function compale(index) {
-              pro.update(index / count);
-            }
-
-            if (parseInt(isrepeat.code) === 0) {
-              //文件已经存在操作
-              let d = a.split('-');
-              if (b === 'mp3') {
-                let obj = {
-                  name: d[1],
-                  artist: d[0],
-                  mv: '',
-                };
-                arr.push(obj);
-              }
-              pro.close('文件已存在');
-              num++;
-              fn(num);
+    rightMenu(
+      e,
+      str,
+      debounce(
+        function ({ close, e, inp }) {
+          if (_getTarget(e, '.mtcbtn')) {
+            let wz = inp[0];
+            let nn = inp[1];
+            if (nn === '') {
+              _err('请输入歌单名');
               return;
             }
-
-            let index = breakpointarr.length;
-            compale(index);
-
-            ~(async function fnn(numm) {
-              if (numm >= chunks.length) {
-                let aa = await _postAjax('/player/mergefile', {
-                  HASH,
-                  count,
-                  name,
-                }); //合并切片
-                if (parseInt(aa.code) === 0) {
-                  pro.close();
-                  let d = a.split('-');
-                  if (b === 'mp3') {
-                    let obj = {
-                      name: d[1],
-                      artist: d[0],
-                      mv: '',
-                    };
-                    arr.push(obj);
-                  }
-                } else {
-                  pro.fail();
+            if ((wz === '' || wz === index) && nn === name) return;
+            if (wz == '') {
+              wz = index;
+            } else {
+              wz = parseInt(wz) - 1;
+            }
+            if (isNaN(wz)) return;
+            _postAjax('/player/editlist', { id, name: nn, index: wz }).then(
+              (result) => {
+                if (parseInt(result.code) === 0) {
+                  close();
+                  sendCommand({ type: 'updatedata', flag: 'music' });
+                  renderMusicList();
+                  return;
                 }
-                num++;
-                fn(num);
-                return;
               }
-              let { filename, file } = chunks[numm];
-              if (breakpointarr.includes(filename)) {
-                numm++;
-                fnn(numm);
-                return;
-              }
-              _upFile(`/player/up?name=${filename}&HASH=${HASH}`, file).finally(
-                () => {
-                  index++;
-                  compale(index);
-                  numm++;
-                  fnn(numm);
-                }
-              );
-            })(0);
-          } catch (error) {
-            pro.fail();
-            num++;
-            fn(num);
+            ).catch(err => { })
           }
-        })(0);
-      });
-    })
-    .on('scroll', function () {
-      //列表滚动
-      $topbottomwrap.stop().fadeIn(_speed);
-      topbottomwraphide();
-      if (this.scrollTop > 115) {
-        $('.songlisttop').addClass('sct');
-        $('.lbxianshi').addClass('lbxma');
-        $gedantname.text($('.lbming').text()).css('opacity', 1);
-      } else {
-        $('.songlisttop').removeClass('sct');
-        $('.lbxianshi').removeClass('lbxma');
-        $gedantname.css('opacity', 0);
-      }
-    })
-    .on('click', '.bfdq', playList)
-    .on(
-      'scroll',
-      debounce(function () {
-        lazyImg($mmmlist, '.songlist', '.songlistlogo');
-      }, 100)
-    )
-    .on('click', '.addtop', function (e) {
-      //添加到播放列表
-      let mobj = {
-        name: $(this).parent().attr('xn'),
-        artist: $(this).parent().attr('xa'),
-        mv: $(this).parent().attr('m'),
-      };
-      _playinglist.push(mobj);
-      musicarr.push(mobj);
-      _playinglist.reverse();
-      musicarr.reverse();
-      _playinglist = qucong(_playinglist);
-      musicarr = qucong(musicarr);
-      _playinglist.reverse();
-      musicarr.reverse();
-      _postAjax('/player/updateplaying', { data: _playinglist }).then(
-        (result) => {
-          if (parseInt(result.code) === 0) {
-            sendCommand({ type: 'updatedata', flag: 'playinglist' });
-            _success('已添加到播放列表');
-            return;
-          }
-        }
-      ).catch(err => { })
-    })
-    .on('click', '#mmlistqx', () => {
-      //多选操作
-      let $qxcz = $('.qxcz'),
-        $duoxuan = $('.duoxuan');
-      if ($mmmlist._duoxuan) {
-        $qxcz.stop().fadeOut(_speed);
-        $duoxuan.stop().fadeOut(_speed);
-        $mmmlist._duoxuan = false;
-      } else {
-        $qxcz.stop().fadeIn(_speed);
-        $duoxuan.stop().fadeIn(_speed);
-        $mmmlist._duoxuan = true;
-      }
-      $duoxuan.attr('check', 'n').css('background-color', 'transparent');
-      $('.qxbtn').attr('x', '1');
-    })
-    .on('click', '.qxbtn', function () {
-      //全选/全不选
-      let $this = $(this),
-        $duoxuan = $('.duoxuan');
-      let num = 0;
-      if ($this.attr('x') === '1') {
-        $duoxuan.attr('check', 'y').css('background-color', checkColor);
-        $this.attr('x', '2');
-        num = $duoxuan.length;
-      } else {
-        $duoxuan.attr('check', 'n').css('background-color', 'transparent');
-        $this.attr('x', '1');
-        num = 0;
-      }
-      _success(`选中：${num}`, true);
-    })
-    .on('click', '.schxbtn', function (e) {
-      //收藏选中
-      let $songlist = $('.songlist'),
-        $selectarr = $songlist.filter(
-          (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
-        );
-      if ($selectarr.length === 0) return;
-      let arr = [];
-      $selectarr.each((i, v) => {
-        let $v = $(v);
-        arr.push({
-          name: $v.attr('xn'),
-          artist: $v.attr('xa'),
-          mv: $v.attr('m'),
-        });
-      });
-      _postAjax('/player/collectsong', { ar: arr }).then((result) => {
-        if (parseInt(result.code) === 0) {
-          sendCommand({ type: 'updatedata', flag: 'music' });
-          renderMusicList();
-          _success();
-          return;
-        }
-      }).catch(err => { })
-    })
-    .on('click', '.qxycbtn', function (e) {
-      // 移除全选
-      let $songlist = $('.songlist'),
-        id = $mmlist._flagId,
-        $selectarr = $songlist.filter(
-          (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
-        );
-      if ($selectarr.length === 0) return;
-      alert(`确认删除？`, {
-        confirm: true,
-        handled: (m) => {
-          if (m !== 'confirm') return;
-          let arr = [];
-          $selectarr.each((i, v) => {
-            let $v = $(v);
-            arr.push({
-              name: $v.attr('xn'),
-              artist: $v.attr('xa'),
-              mv: $v.attr('m'),
-            });
-          });
-          _postAjax('/player/delsong', { id, ar: arr }).then((result) => {
+        },
+        1000,
+        true
+      )
+    );
+  }).on('click', '.addmusic', async function (e) {
+    // 上传歌曲
+    let listid = $mmlist._flagId;
+    if (_userinfo.account !== 'root') return;
+    let arr = [],
+      input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = 'multiple';
+    input.accept = '.jpg,.mp3,.lrc,.mp4';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.click();
+    let $input = $(input);
+    $input.change((e) => {
+      let files = [...e.target.files];
+      $input.remove();
+      if (files.length == 0) return;
+      ~(async function fn(num) {
+        if (num >= files.length) {
+          _postAjax('/player/addsong', { id: listid, arr }).then((result) => {
             if (parseInt(result.code) === 0) {
               sendCommand({ type: 'updatedata', flag: 'music' });
               renderMusicList();
               return;
             }
           }).catch(err => { })
-        },
-      });
-    })
-    .on('click', '.qxydbtn', function (e) {
-      // 全选移动
-      if (_userinfo.account !== 'root') return;
-      let $songlist = $('.songlist'),
-        id = $mmlist._flagId,
-        $selectarr = $songlist.filter(
-          (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
-        );
-      if ($selectarr.length === 0) return;
-      let str = ``;
-      _music.forEach((item, i) => {
-        if (item.id !== id && i > 1) {
-          let name = encodeHtml(item.name),
-            pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic;
-          str += `<div data-name="${name}" cursor class="mtcitem" data-id="${item.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
+          return;
         }
-      });
-      rightMenu(
-        e,
-        str,
-        debounce(
-          function ({ close, e }) {
-            let _this = _getTarget(e, '.mtcitem');
-            if (_this) {
-              let $this = $(_this),
-                tid = $this.attr('data-id'),
-                listname = $this.attr('data-name'),
-                arr = [];
-              $selectarr.each((i, v) => {
-                let $v = $(v);
-                arr.push({
-                  name: $v.attr('xn'),
-                  artist: $v.attr('xa'),
-                  mv: $v.attr('m'),
-                });
-              });
-              alert(`确认移动到 ${listname}?`, {
-                confirm: true,
-                handled: (m) => {
-                  if (m !== 'confirm') return;
-                  _postAjax('/player/songtolist', { id, tid, ar: arr }).then(
-                    (result) => {
-                      if (parseInt(result.code) === 0) {
-                        close();
-                        sendCommand({ type: 'updatedata', flag: 'music' });
-                        renderMusicList();
-                        return;
-                      }
-                    }
-                  ).catch(err => { })
-                },
-              });
+        let { name, size } = files[num];
+        let pro = new UpProgress(name);
+        if (size === 0) {
+          pro.fail();
+          _err(`${name} 为空文件`);
+          num++;
+          fn(num);
+          return;
+        }
+        if (
+          !/^[^\-]*[^\s\-]\-[^\s\-][^\-]*\.(jpg|mp3|lrc|mp4)$/i.test(name)
+        ) {
+          pro.fail();
+          _err(`${name} 格式错误`);
+          num++;
+          fn(num);
+          return;
+        }
+
+        try {
+          //文件切片
+          let { chunks, count, suffix, HASH } = await fileSlice(
+            files[num],
+            (pes) => {
+              pro.loading(pes);
             }
-          },
-          1000,
-          true
-        )
-      );
-    })
-    .on('click', '.alladdtop', function (e) {
-      // 选中添加到播放列表
-      let $songlist = $('.songlist');
-      let $selectarr = $songlist.filter(
-        (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
-      );
-      if ($selectarr.length === 0) return;
-      let arr = [];
-      $selectarr.each((i, v) => {
-        let $v = $(v);
-        arr.push({
-          name: $v.attr('xn'),
-          artist: $v.attr('xa'),
-          mv: $v.attr('m'),
-        });
-      });
-      _playinglist = [..._playinglist, ...arr];
-      musicarr = [...musicarr, ...arr];
-      _playinglist.reverse();
-      musicarr.reverse();
-      _playinglist = qucong(_playinglist);
-      musicarr = qucong(musicarr);
-      _playinglist.reverse();
-      musicarr.reverse();
-      _postAjax('/player/updateplaying', { data: _playinglist }).then(
-        (result) => {
-          if (parseInt(result.code) === 0) {
-            sendCommand({ type: 'updatedata', flag: 'playinglist' });
-            _success('已添加到播放列表');
-            $('#mmlistqx').click();
+          );
+
+          if (isImgFile(name)) {
+            // 压缩图片
+            chunks.push({
+              file: await compressionImg(files[num]),
+              filename: `_hello`,
+            });
+            ++count;
+          }
+
+          let breakpointarr = (
+            await _postAjax('/player/breakpoint', { HASH })
+          ).data; //断点续传
+          let isrepeat = await _postAjax('/player/repeatfile', { name }); //是否已经存在文件
+
+          let [a, b] = extname(name);
+
+          function compale(index) {
+            pro.update(index / count);
+          }
+
+          if (parseInt(isrepeat.code) === 0) {
+            //文件已经存在操作
+            let d = a.split('-');
+            if (b === 'mp3') {
+              let obj = {
+                name: d[1],
+                artist: d[0],
+                mv: '',
+              };
+              arr.push(obj);
+            }
+            pro.close('文件已存在');
+            num++;
+            fn(num);
             return;
           }
+
+          let index = breakpointarr.length;
+          compale(index);
+
+          ~(async function fnn(numm) {
+            if (numm >= chunks.length) {
+              let aa = await _postAjax('/player/mergefile', {
+                HASH,
+                count,
+                name,
+              }); //合并切片
+              if (parseInt(aa.code) === 0) {
+                pro.close();
+                let d = a.split('-');
+                if (b === 'mp3') {
+                  let obj = {
+                    name: d[1],
+                    artist: d[0],
+                    mv: '',
+                  };
+                  arr.push(obj);
+                }
+              } else {
+                pro.fail();
+              }
+              num++;
+              fn(num);
+              return;
+            }
+            let { filename, file } = chunks[numm];
+            if (breakpointarr.includes(filename)) {
+              numm++;
+              fnn(numm);
+              return;
+            }
+            _upFile(`/player/up?name=${filename}&HASH=${HASH}`, file).finally(
+              () => {
+                index++;
+                compale(index);
+                numm++;
+                fnn(numm);
+              }
+            );
+          })(0);
+        } catch (error) {
+          pro.fail();
+          num++;
+          fn(num);
         }
-      ).catch(err => { })
-    })
-    .on('click', '.songlist', function (e) {
-      //播放列表
-      if (!$('.duoxuan').is(':hidden')) {
+      })(0);
+    });
+  }).on('scroll', function () {
+    //列表滚动
+    $topbottomwrap.stop().fadeIn(_speed);
+    topbottomwraphide();
+    if (this.scrollTop > 115) {
+      $('.songlisttop').addClass('sct');
+      $('.lbxianshi').addClass('lbxma');
+      $gedantname.text($('.lbming').text()).css('opacity', 1);
+    } else {
+      $('.songlisttop').removeClass('sct');
+      $('.lbxianshi').removeClass('lbxma');
+      $gedantname.css('opacity', 0);
+    }
+  }).on('click', '.bfdq', playList).on(
+    'scroll',
+    debounce(function () {
+      lazyImg($mmmlist, '.songlist', '.songlistlogo');
+    }, 100)
+  ).on('click', '.addtop', function (e) {
+    //添加到播放列表
+    let mobj = {
+      name: $(this).parent().attr('xn'),
+      artist: $(this).parent().attr('xa'),
+      mv: $(this).parent().attr('m'),
+    };
+    _playinglist.push(mobj);
+    musicarr.push(mobj);
+    _playinglist.reverse();
+    musicarr.reverse();
+    _playinglist = qucong(_playinglist);
+    musicarr = qucong(musicarr);
+    _playinglist.reverse();
+    musicarr.reverse();
+    _postAjax('/player/updateplaying', { data: _playinglist }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          _success('已添加到播放列表');
+          return;
+        }
+      }
+    ).catch(err => { })
+  }).on('click', '#mmlistqx', () => {
+    //多选操作
+    let $qxcz = $('.qxcz'),
+      $duoxuan = $('.duoxuan');
+    if ($mmmlist._duoxuan) {
+      $qxcz.stop().fadeOut(_speed);
+      $duoxuan.stop().fadeOut(_speed);
+      $mmmlist._duoxuan = false;
+    } else {
+      $qxcz.stop().fadeIn(_speed);
+      $duoxuan.stop().fadeIn(_speed);
+      $mmmlist._duoxuan = true;
+    }
+    $duoxuan.attr('check', 'n').css('background-color', 'transparent');
+    $('.qxbtn').attr('x', '1');
+  }).on('click', '.qxbtn', function () {
+    //全选/全不选
+    let $this = $(this),
+      $duoxuan = $('.duoxuan');
+    let num = 0;
+    if ($this.attr('x') === '1') {
+      $duoxuan.attr('check', 'y').css('background-color', checkColor);
+      $this.attr('x', '2');
+      num = $duoxuan.length;
+    } else {
+      $duoxuan.attr('check', 'n').css('background-color', 'transparent');
+      $this.attr('x', '1');
+      num = 0;
+    }
+    _success(`选中：${num}`, true);
+  }).on('click', '.schxbtn', function (e) {
+    //收藏选中
+    let $songlist = $('.songlist'),
+      $selectarr = $songlist.filter(
+        (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
+      );
+    if ($selectarr.length === 0) return;
+    let arr = [];
+    $selectarr.each((i, v) => {
+      let $v = $(v);
+      arr.push({
+        name: $v.attr('xn'),
+        artist: $v.attr('xa'),
+        mv: $v.attr('m'),
+      });
+    });
+    _postAjax('/player/collectsong', { ar: arr }).then((result) => {
+      if (parseInt(result.code) === 0) {
+        sendCommand({ type: 'updatedata', flag: 'music' });
+        renderMusicList();
+        _success();
         return;
       }
-      var sobj = {
-        name: $(this).attr('xn'),
-        artist: $(this).attr('xa'),
-        mv: $(this).attr('m'),
-      };
-      if (_getTarget(e, '.songms') || _getTarget(e, '.songlistnum')) {
-        musicarr =
-          randomplay === false
-            ? myShuffle(deepClone(musicarrjl))
-            : deepClone(musicarrjl);
-        _playinglist = deepClone(musicarrjl);
-        _postAjax('/player/updateplaying', { data: _playinglist }).then(
-          (result) => {
-            if (parseInt(result.code) === 0) {
-              sendCommand({ type: 'updatedata', flag: 'playinglist' });
-              return;
-            }
+    }).catch(err => { })
+  }).on('click', '.qxycbtn', function (e) {
+    // 移除全选
+    let $songlist = $('.songlist'),
+      id = $mmlist._flagId,
+      $selectarr = $songlist.filter(
+        (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
+      );
+    if ($selectarr.length === 0) return;
+    alert(`确认删除？`, {
+      confirm: true,
+      handled: (m) => {
+        if (m !== 'confirm') return;
+        let arr = [];
+        $selectarr.each((i, v) => {
+          let $v = $(v);
+          arr.push({
+            name: $v.attr('xn'),
+            artist: $v.attr('xa'),
+            mv: $v.attr('m'),
+          });
+        });
+        _postAjax('/player/delsong', { id, ar: arr }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            sendCommand({ type: 'updatedata', flag: 'music' });
+            renderMusicList();
+            return;
           }
-        ).catch(err => { })
-        if (musicobj.name == sobj.name && musicobj.artist == sobj.artist) {
-          $playid.click();
-        } else {
-          musicPlay(sobj);
-        }
-        if (_getTarget(e, '.songlistnum')) {
-          $musicimgid.click();
-        }
-      } else if (_getTarget(e, '.mvplay')) {
-        e.stopPropagation();
-        setZindex($musicmv);
-        musicarr =
-          randomplay === false
-            ? myShuffle(deepClone(musicarrjl))
-            : deepClone(musicarrjl);
-        _playinglist = deepClone(musicarrjl);
-        _postAjax('/player/updateplaying', { data: _playinglist }).then(
-          (result) => {
-            if (parseInt(result.code) === 0) {
-              sendCommand({ type: 'updatedata', flag: 'playinglist' });
-              return;
-            }
+        }).catch(err => { })
+      },
+    });
+  }).on('click', '.qxydbtn', function (e) {
+    // 全选移动
+    if (_userinfo.account !== 'root') return;
+    let $songlist = $('.songlist'),
+      id = $mmlist._flagId,
+      $selectarr = $songlist.filter(
+        (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
+      );
+    if ($selectarr.length === 0) return;
+    let str = ``;
+    _music.forEach((item, i) => {
+      if (item.id !== id && i > 1) {
+        let name = encodeHtml(item.name),
+          pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic;
+        str += `<div data-name="${name}" cursor class="mtcitem" data-id="${item.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
+      }
+    });
+    rightMenu(
+      e,
+      str,
+      debounce(
+        function ({ close, e }) {
+          let _this = _getTarget(e, '.mtcitem');
+          if (_this) {
+            let $this = $(_this),
+              tid = $this.attr('data-id'),
+              listname = $this.attr('data-name'),
+              arr = [];
+            $selectarr.each((i, v) => {
+              let $v = $(v);
+              arr.push({
+                name: $v.attr('xn'),
+                artist: $v.attr('xa'),
+                mv: $v.attr('m'),
+              });
+            });
+            alert(`确认移动到 ${listname}?`, {
+              confirm: true,
+              handled: (m) => {
+                if (m !== 'confirm') return;
+                _postAjax('/player/songtolist', { id, tid, ar: arr }).then(
+                  (result) => {
+                    if (parseInt(result.code) === 0) {
+                      close();
+                      sendCommand({ type: 'updatedata', flag: 'music' });
+                      renderMusicList();
+                      return;
+                    }
+                  }
+                ).catch(err => { })
+              },
+            });
           }
-        ).catch(err => { })
-        musicMv(sobj);
-      } else if (_getTarget(e, '.sxx')) {
-        let ii = _music.findIndex((item) => item.id === $mmlist._flagId);
-        if (ii < 0) return;
-        let str = '';
-        if (ii < 2) {
-          str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
+        },
+        1000,
+        true
+      )
+    );
+  }).on('click', '.alladdtop', function (e) {
+    // 选中添加到播放列表
+    let $songlist = $('.songlist');
+    let $selectarr = $songlist.filter(
+      (index, item) => $(item).find('.duoxuan').attr('check') === 'y'
+    );
+    if ($selectarr.length === 0) return;
+    let arr = [];
+    $selectarr.each((i, v) => {
+      let $v = $(v);
+      arr.push({
+        name: $v.attr('xn'),
+        artist: $v.attr('xa'),
+        mv: $v.attr('m'),
+      });
+    });
+    _playinglist = [..._playinglist, ...arr];
+    musicarr = [...musicarr, ...arr];
+    _playinglist.reverse();
+    musicarr.reverse();
+    _playinglist = qucong(_playinglist);
+    musicarr = qucong(musicarr);
+    _playinglist.reverse();
+    musicarr.reverse();
+    _postAjax('/player/updateplaying', { data: _playinglist }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          _success('已添加到播放列表');
+          $('#mmlistqx').click();
+          return;
+        }
+      }
+    ).catch(err => { })
+  }).on('click', '.songms', function () {
+    let $this = $(this).parent();
+    let sobj = {
+      name: $this.attr('xn'),
+      artist: $this.attr('xa'),
+      mv: $this.attr('m'),
+    };
+    musicarr = randomplay === false
+      ? myShuffle(deepClone(musicarrjl))
+      : deepClone(musicarrjl);
+    _playinglist = deepClone(musicarrjl);
+    _postAjax('/player/updateplaying', { data: _playinglist }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { })
+    if (musicobj.name == sobj.name && musicobj.artist == sobj.artist) {
+      $playid.click();
+    } else {
+      musicPlay(sobj);
+    }
+  }).on('click', '.songlistnum', function () {
+    $(this).parent().find('.songms').click();
+    $musicimgid.click();
+  }).on('click', '.mvplay', function (e) {
+    e.stopPropagation();
+    let $this = $(this).parent();
+    let sobj = {
+      name: $this.attr('xn'),
+      artist: $this.attr('xa'),
+      mv: $this.attr('m'),
+    };
+    setZindex($musicmv);
+    musicarr =
+      randomplay === false
+        ? myShuffle(deepClone(musicarrjl))
+        : deepClone(musicarrjl);
+    _playinglist = deepClone(musicarrjl);
+    _postAjax('/player/updateplaying', { data: _playinglist }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { })
+    musicMv(sobj);
+  }).on('click', '.icon-icon-', function () {
+    let $this = $(this).parent();
+    let sobj = {
+      name: $this.attr('xn'),
+      artist: $this.attr('xa'),
+      mv: $this.attr('m'),
+      issc: $this.attr('data-issc'),
+    };
+    if (sobj.issc == 'true') {
+      _postAjax('/player/closecollectsong', sobj).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'music' });
+          renderMusicList();
+          return;
+        }
+      }).catch(err => { });
+    } else {
+      let ssobj = deepClone(sobj);
+      let ar = [];
+      ar.push(ssobj);
+      _postAjax('/player/collectsong', { ar }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'music' });
+          renderMusicList();
+          return;
+        }
+      }).catch(err => { })
+    }
+  }).on('click', '.sxx', function (e) {
+    let $this = $(this).parent();
+    let sobj = {
+      name: $this.attr('xn'),
+      artist: $this.attr('xa'),
+      mv: $this.attr('m'),
+      issc: $this.attr('data-issc'),
+    };
+    let ii = _music.findIndex((item) => item.id === $mmlist._flagId);
+    if (ii < 0) return;
+    let str = '';
+    if (ii < 2) {
+      str = `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
                 <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
                 <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>`;
-          if (_music && !_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist) && ii != 1) {
-            str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
-          }
-          str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>
+      str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>
                 `;
-        } else {
-          str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
+    } else {
+      str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
           <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>`;
-          if (_music && !_music[1].item.some((v) => v.name + v.artist === sobj.name + sobj.artist) && ii != 1) {
-            str += `<div cursor class="mtcitem2"><i class="iconfont icon-icon-"></i><span style="margin-left: 10px;">收藏</span></div>`;
-          }
-          if (_userinfo.account === 'root') {
-            str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>
+      if (_userinfo.account === 'root') {
+        str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>
             <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">移动到</span></div>
             <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`;
-            if (sobj.mv === 'y') {
-              str += `<div cursor  class="mtcitem4"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除 MV</span></div>`;
-            }
-          }
+        if (sobj.mv === 'y') {
+          str += `<div cursor  class="mtcitem4"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除 MV</span></div>`;
         }
-        rightMenu(
-          e,
-          str,
-          debounce(
-            function ({ close, e }) {
-              if (_getTarget(e, '.mtcitem')) {
-                let obj = {
-                  name: sobj.name,
-                  artist: sobj.artist,
-                  mv: sobj.mv,
-                };
-                close();
-                _postAjax('/player/musicshare', obj).then((result) => {
-                  if (parseInt(result.code) === 0) {
-                    openIframe(`/page/sharelist`, '分享列表')
-                  }
-                }).catch(err => { })
-              } else if (_getTarget(e, '.mtcitem1')) {
-                alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
-                  confirm: true,
-                  handled: (m) => {
-                    if (m !== 'confirm') return;
-                    let ssobj = deepClone(sobj);
-                    let ar = [];
-                    let id = $mmlist._flagId;
-                    ar.push(ssobj);
-                    _postAjax('/player/delsong', { id, ar }).then((result) => {
-                      if (parseInt(result.code) === 0) {
-                        close();
-                        sendCommand({ type: 'updatedata', flag: 'music' });
-                        renderMusicList();
-                        return;
-                      }
-                    }).catch(err => { })
-                  },
-                });
-              } else if (_getTarget(e, '.mtcitem2')) {
+      }
+    }
+    rightMenu(
+      e,
+      str,
+      debounce(
+        function ({ close, e }) {
+          if (_getTarget(e, '.mtcitem')) {
+            let obj = {
+              name: sobj.name,
+              artist: sobj.artist,
+              mv: sobj.mv,
+            };
+            close();
+            _postAjax('/player/musicshare', obj).then((result) => {
+              if (parseInt(result.code) === 0) {
+                openIframe(`/page/sharelist`, '分享列表')
+              }
+            }).catch(err => { })
+          } else if (_getTarget(e, '.mtcitem1')) {
+            alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
+              confirm: true,
+              handled: (m) => {
+                if (m !== 'confirm') return;
                 let ssobj = deepClone(sobj);
                 let ar = [];
+                let id = $mmlist._flagId;
                 ar.push(ssobj);
-                _postAjax('/player/collectsong', { ar }).then((result) => {
+                _postAjax('/player/delsong', { id, ar }).then((result) => {
                   if (parseInt(result.code) === 0) {
                     close();
                     sendCommand({ type: 'updatedata', flag: 'music' });
                     renderMusicList();
-                    _success();
                     return;
                   }
                 }).catch(err => { })
-              } else if (_getTarget(e, '.mtcitem3')) {
-                if (_userinfo.account !== 'root') return;
-                let str = '',
-                  id = $mmlist._flagId;
-                _music.forEach((v, i) => {
-                  if (i > 1 && v.id !== id) {
-                    let name = encodeHtml(v.name),
-                      pic = !/^\/img/.test(v.pic) ? `${mediaURL}${v.pic}` : v.pic;
-                    str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
+              },
+            });
+          } else if (_getTarget(e, '.mtcitem3')) {
+            if (_userinfo.account !== 'root') return;
+            let str = '',
+              id = $mmlist._flagId;
+            _music.forEach((v, i) => {
+              if (i > 1 && v.id !== id) {
+                let name = encodeHtml(v.name),
+                  pic = !/^\/img/.test(v.pic) ? `${mediaURL}${v.pic}` : v.pic;
+                str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
+              }
+            });
+            let flagClose = close
+            rightMenu(
+              e,
+              str,
+              debounce(
+                function ({ close, e }) {
+                  let _this = _getTarget(e, '.mtcitem');
+                  if (_this) {
+                    let $this = $(_this),
+                      tid = $this.attr('data-id'),
+                      listname = $this.attr('data-name'),
+                      ssobj = deepClone(sobj),
+                      ar = [];
+                    ar.push(ssobj);
+                    alert(`确认移动到 ${listname}?`, {
+                      confirm: true,
+                      handled: (m) => {
+                        if (m !== 'confirm') return;
+                        _postAjax('/player/songtolist', {
+                          id,
+                          tid,
+                          ar,
+                        }).then((result) => {
+                          if (parseInt(result.code) === 0) {
+                            flagClose()
+                            close();
+                            sendCommand({
+                              type: 'updatedata',
+                              flag: 'music',
+                            });
+                            renderMusicList();
+                            return;
+                          }
+                        }).catch(err => { })
+                      },
+                    });
                   }
-                });
-                let flagClose = close
-                rightMenu(
-                  e,
-                  str,
-                  debounce(
-                    function ({ close, e }) {
-                      let _this = _getTarget(e, '.mtcitem');
-                      if (_this) {
-                        let $this = $(_this),
-                          tid = $this.attr('data-id'),
-                          listname = $this.attr('data-name'),
-                          ssobj = deepClone(sobj),
-                          ar = [];
-                        ar.push(ssobj);
-                        alert(`确认移动到 ${listname}?`, {
-                          confirm: true,
-                          handled: (m) => {
-                            if (m !== 'confirm') return;
-                            _postAjax('/player/songtolist', {
-                              id,
-                              tid,
-                              ar,
-                            }).then((result) => {
-                              if (parseInt(result.code) === 0) {
-                                flagClose()
-                                close();
-                                sendCommand({
-                                  type: 'updatedata',
-                                  flag: 'music',
-                                });
-                                renderMusicList();
-                                return;
-                              }
-                            }).catch(err => { })
-                          },
-                        });
-                      }
-                    },
-                    1000,
-                    true
-                  )
-                );
-              } else if (_getTarget(e, '.mtcitem4')) {
-                if (_userinfo.account !== 'root') return;
-                alert(`确认删除MV？`, {
-                  confirm: true,
-                  handled: (m) => {
-                    if (m !== 'confirm') return;
-                    let id = $mmlist._flagId;
-                    _postAjax('/player/delmv', { id, sobj }).then((result) => {
-                      if (parseInt(result.code) === 0) {
-                        close();
-                        sendCommand({ type: 'updatedata', flag: 'music' });
-                        renderMusicItem();
-                        return;
-                      }
-                    }).catch(err => { })
-                  },
-                });
-              } else if (_getTarget(e, '.mtcitem5')) {
-                close()
-                copyText(`${sobj.artist}-${sobj.name}`)
-              } else if (_getTarget(e, '.mtcitem6')) {
-                let str = `<div class="mtcinp">
+                },
+                1000,
+                true
+              )
+            );
+          } else if (_getTarget(e, '.mtcitem4')) {
+            if (_userinfo.account !== 'root') return;
+            alert(`确认删除MV？`, {
+              confirm: true,
+              handled: (m) => {
+                if (m !== 'confirm') return;
+                let id = $mmlist._flagId;
+                _postAjax('/player/delmv', { id, sobj }).then((result) => {
+                  if (parseInt(result.code) === 0) {
+                    close();
+                    sendCommand({ type: 'updatedata', flag: 'music' });
+                    renderMusicItem();
+                    return;
+                  }
+                }).catch(err => { })
+              },
+            });
+          } else if (_getTarget(e, '.mtcitem5')) {
+            close()
+            copyText(`${sobj.artist}-${sobj.name}`)
+          } else if (_getTarget(e, '.mtcitem6')) {
+            let str = `<div class="mtcinp">
                 <input autocomplete="off" value="${encodeHtml(sobj.artist)}" >
                   </div>
                   <div class="mtcinp1">
                     <input autocomplete="off" value="${encodeHtml(sobj.name)}">
                   </div>
                 <button cursor class="mtcbtn">提交</button>`;
-                rightMenu(e, str, debounce(function ({ e, close, inp }) {
-                  if (_getTarget(e, '.mtcbtn')) {
-                    let newName = inp[1];
-                    let newArtist = inp[0];
-                    let arr = [
-                      {
-                        name: sobj.name,
-                        artist: sobj.artist
-                      },
-                      {
-                        name: newName,
-                        artist: newArtist
-                      }
-                    ];
-                    if (newName + newArtist == sobj.name + sobj.artist) return;
-                    _postAjax('/player/editsong', arr).then(res => {
-                      if (res.code == 0) {
-                        sobj.name = newName;
-                        sobj.artist = newArtist;
-                        close();
-                        sendCommand({ type: 'updatedata', flag: 'music' });
-                        renderMusicItem();
-                      }
-                    }).catch(err => { })
-                  }
-                }, 1000, true))
-              } else if (_getTarget(e, '.mtcitem7')) {
-                if (_userinfo.account !== 'root') {
-                  $editlrc.find('.save').remove();
-                }
-                $editlrc.find('.lrceditspace').text(`${sobj.artist}-${sobj.name}`);
-                setZindex($editlrc);
-                $editlrc.stop().fadeIn(_speed, () => {
-                  $editlrc.css('display', 'flex').find('textarea').val('');
-                  $editlrc._mobj = deepClone(sobj);
-                  _getAjax('/player/getlrc', {
+            rightMenu(e, str, debounce(function ({ e, close, inp }) {
+              if (_getTarget(e, '.mtcbtn')) {
+                let newName = inp[1];
+                let newArtist = inp[0];
+                let arr = [
+                  {
                     name: sobj.name,
-                    artist: sobj.artist,
-                  }).then((result) => {
-                    if (parseInt(result.code) === 0) {
-                      close();
-                      $editlrc._val = result.data;
-                      $editlrc.find('textarea').val(result.data);
-                      return;
-                    }
-                  }).catch(err => { })
-                });
-              };
-            },
-            1000,
-            true
-          )
-        );
-      }
-    })
-    .on('contextmenu', '.songlist', function (e) {
-      e.preventDefault();
-      $('#mmlistqx').click();
-    })
-    .on('click', '.listps', function (e) {
-      //歌曲排序
-      let str = `<div cursor data-type="default" class="mtcitem">默认排序</div>
+                    artist: sobj.artist
+                  },
+                  {
+                    name: newName,
+                    artist: newArtist
+                  }
+                ];
+                if (newName + newArtist == sobj.name + sobj.artist) return;
+                _postAjax('/player/editsong', arr).then(res => {
+                  if (res.code == 0) {
+                    sobj.name = newName;
+                    sobj.artist = newArtist;
+                    close();
+                    sendCommand({ type: 'updatedata', flag: 'music' });
+                    renderMusicItem();
+                  }
+                }).catch(err => { })
+              }
+            }, 1000, true))
+          } else if (_getTarget(e, '.mtcitem7')) {
+            if (_userinfo.account !== 'root') {
+              $editlrc.find('.save').remove();
+            }
+            $editlrc.find('.lrceditspace').text(`${sobj.artist}-${sobj.name}`);
+            setZindex($editlrc);
+            $editlrc.stop().fadeIn(_speed, () => {
+              $editlrc.css('display', 'flex').find('textarea').val('');
+              $editlrc._mobj = deepClone(sobj);
+              _getAjax('/player/getlrc', {
+                name: sobj.name,
+                artist: sobj.artist,
+              }).then((result) => {
+                if (parseInt(result.code) === 0) {
+                  close();
+                  $editlrc._val = result.data;
+                  $editlrc.find('textarea').val(result.data);
+                  return;
+                }
+              }).catch(err => { })
+            });
+          };
+        },
+        1000,
+        true
+      )
+    );
+  }).on('contextmenu', '.songlist', function (e) {
+    e.preventDefault();
+    $mmmlist.find('#mmlistqx').click();
+  }).on('click', '.listps', function (e) {
+    //歌曲排序
+    let str = `<div cursor data-type="default" class="mtcitem">默认排序</div>
       <div cursor data-type="artist" class="mtcitem">按歌手名排序</div>
       <div cursor data-type="name" class="mtcitem">按歌曲名排序</div>`;
-      rightMenu(e, str, debounce(function ({ e }) {
-        let _this = _getTarget(e, '.mtcitem');
-        if (_this) {
-          let t = _this.dataset.type;
-          _setData('lastpx', t);
-          rendermusicitem();
-        }
-      }, 1000, true))
-    })
-    .on('click', '#mmtop', function () {
-      //列表回到顶部底部和定位到当前播放歌曲
-      $mmmlist.stop().animate(
-        {
-          scrollTop: 0,
-        },
-        _speed
-      );
-    })
-    .on('click', '#mmbot', function () {
-      $mmmlist.stop().animate(
-        {
-          scrollTop: $mmmlist.prop('scrollHeight'),
-        },
-        _speed
-      );
-    })
-    .on('click', '#mmcon', function () {
-      let idx = musicarrjl.findIndex(item => item.artist + item.name === musicobj.artist + musicobj.name);
-      if (idx >= 0) {
-        let page = Math.ceil((idx + 1) / musicPageSize);
-        if (page != musicPageNum) {
-          musicPageNum = page;
-          rendermusicitem(1);
-          return;
-        }
-        gaoliang(true);
+    rightMenu(e, str, debounce(function ({ e }) {
+      let _this = _getTarget(e, '.mtcitem');
+      if (_this) {
+        let t = _this.dataset.type;
+        _setData('lastpx', t);
+        rendermusicitem();
       }
-    }).on('click', '#musicListSetting', function (e) {
-      let str = `
+    }, 1000, true))
+  }).on('click', '#mmtop', function () {
+    //列表回到顶部底部和定位到当前播放歌曲
+    $mmmlist.stop().animate(
+      {
+        scrollTop: 0,
+      },
+      _speed
+    );
+  }).on('click', '#mmbot', function () {
+    $mmmlist.stop().animate(
+      {
+        scrollTop: $mmmlist.prop('scrollHeight'),
+      },
+      _speed
+    );
+  }).on('click', '#mmcon', function () {
+    let idx = musicarrjl.findIndex(item => item.artist + item.name === musicobj.artist + musicobj.name);
+    if (idx >= 0) {
+      let page = Math.ceil((idx + 1) / musicPageSize);
+      if (page != musicPageNum) {
+        musicPageNum = page;
+        rendermusicitem(1);
+        return;
+      }
+      gaoliang(true);
+    }
+  }).on('click', '#musicListSetting', function (e) {
+    let str = `
       <div cursor data-val="50" class="mtcitem">50条/页</div>
       <div cursor data-val="100" class="mtcitem">100条/页</div>
       <div cursor data-val="200" class="mtcitem">200条/页</div>
       `;
-      rightMenu(e, str, debounce(function ({ e, close }) {
-        let item = _getTarget(e, '.mtcitem');
-        if (item) {
-          close();
-          let val = +item.dataset.val;
-          musicPageSize = val;
-          _setData('musicpagenum', val);
-          musicPageNum = 1;
-          $mmmlist[0].scrollTop = 0;
-          rendermusicitem();
-        }
-      }, 1000, true))
-    })
-    .on('click', '.duoxuan', function (e) {
-      let $this = $(this),
-        check = $this.attr('check');
-      if (check === 'n') {
-        $this.attr('check', 'y').css('background-color', checkColor);
-      } else {
-        $this.attr('check', 'n').css('background-color', 'transparent');
+    rightMenu(e, str, debounce(function ({ e, close }) {
+      let item = _getTarget(e, '.mtcitem');
+      if (item) {
+        close();
+        let val = +item.dataset.val;
+        musicPageSize = val;
+        _setData('musicpagenum', val);
+        musicPageNum = 1;
+        $mmmlist[0].scrollTop = 0;
+        rendermusicitem();
       }
-      let $duoxuan = $('.duoxuan'),
-        $checkArr = $duoxuan.filter((_, item) => $(item).attr('check') === 'y');
-      _success(`选中：${$checkArr.length}`, true);
-    }).on('click', '.musicListpre', function () {
-      musicPageNum--;
-      $mmmlist[0].scrollTop = 0;
-      rendermusicitem();
-    }).on('click', '.musicListnext', function () {
-      musicPageNum++;
-      $mmmlist[0].scrollTop = 0;
-      rendermusicitem();
-    });
+    }, 1000, true))
+  }).on('click', '.duoxuan', function (e) {
+    let $this = $(this),
+      check = $this.attr('check');
+    if (check === 'n') {
+      $this.attr('check', 'y').css('background-color', checkColor);
+    } else {
+      $this.attr('check', 'n').css('background-color', 'transparent');
+    }
+    let $duoxuan = $('.duoxuan'),
+      $checkArr = $duoxuan.filter((_, item) => $(item).attr('check') === 'y');
+    _success(`选中：${$checkArr.length}`, true);
+  }).on('click', '.musicListpre', function () {
+    musicPageNum--;
+    $mmmlist[0].scrollTop = 0;
+    rendermusicitem();
+  }).on('click', '.musicListnext', function () {
+    musicPageNum++;
+    $mmmlist[0].scrollTop = 0;
+    rendermusicitem();
+  });
   if (isios()) {
     $mmmlist[0]._longPress('.songlist', function (e) {
       $('#mmlistqx').click();
@@ -5674,34 +5720,31 @@ import { UpProgress } from '../plugins/UpProgress'
   // 移动歌曲
   (function () {
     let fromDom = null;
-    $mmmlist
-      .on('dragstart', '.songlist', function (e) {
-        if (_userinfo.account !== 'root') return;
-        fromDom = this;
-      })
-      .on('drop', '.songlist', function (e) {
-        if (_userinfo.account !== 'root') return;
-        let a = $(fromDom).attr('data-idx'),
-          b = $(this).attr('data-idx'),
-          id = $mmlist._flagId,
-          index = _music.findIndex((item) => item.id === id);
-        if (fromDom) {
-          let t = _getData('lastpx') || 'default';
-          if (t === 'default' && index > 0) {
-            _postAjax('/player/songmove', { id, a, b }).then((result) => {
-              if (parseInt(result.code) === 0) {
-                sendCommand({ type: 'updatedata', flag: 'music' });
-                renderMusicList();
-                return;
-              }
-            }).catch(err => { })
-          }
-          fromDom = null;
+    $mmmlist.on('dragstart', '.songlist', function (e) {
+      if (_userinfo.account !== 'root') return;
+      fromDom = this;
+    }).on('drop', '.songlist', function (e) {
+      if (_userinfo.account !== 'root') return;
+      let a = $(fromDom).attr('data-idx'),
+        b = $(this).attr('data-idx'),
+        id = $mmlist._flagId,
+        index = _music.findIndex((item) => item.id === id);
+      if (fromDom) {
+        let t = _getData('lastpx') || 'default';
+        if (t === 'default' && index > 0) {
+          _postAjax('/player/songmove', { id, a, b }).then((result) => {
+            if (parseInt(result.code) === 0) {
+              sendCommand({ type: 'updatedata', flag: 'music' });
+              renderMusicList();
+              return;
+            }
+          }).catch(err => { })
         }
-      })
-      .on('dragover', '.songlist', function (e) {
-        e.preventDefault();
-      });
+        fromDom = null;
+      }
+    }).on('dragover', '.songlist', function (e) {
+      e.preventDefault();
+    });
   })();
 
   $shoucang.click(function (e) {
@@ -7639,9 +7682,9 @@ import { UpProgress } from '../plugins/UpProgress'
           $bgmain.css(
             'background-image',
             `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})`
-          );
+          ).attr('data-bg', _userinfo.bgxs);
         } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`);
+          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
         }
         $('.iframeBox').css({
           top: '50%',
@@ -7690,9 +7733,9 @@ import { UpProgress } from '../plugins/UpProgress'
           $bgmain.css(
             'background-image',
             `url(${mediaURL}/bg/bg/${_userinfo.bg})`
-          );
+          ).attr('data-bg', _userinfo.bg);
         } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`);
+          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
         }
         if (lrcbotwrap.isshow) {
           lrcbotwrap.style.display = 'block';
@@ -7729,12 +7772,12 @@ import { UpProgress } from '../plugins/UpProgress'
           $bgmain.css(
             'background-image',
             _userinfo.bg ? `url(${mediaURL}/bg/bg/${_userinfo.bg})` : '/img/bg.jpg'
-          );
+          ).attr('data-bg', _userinfo.bg ? _userinfo.bg : '');
         } else {
           $bgmain.css(
             'background-image',
             _userinfo.bgxs ? `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})` : '/img/bg.jpg'
-          );
+          ).attr('data-bg', _userinfo.bgxs ? _userinfo.bgxs : '');
         }
         handleUserinfo();
         return;
