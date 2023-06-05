@@ -697,7 +697,6 @@ body {
   width: 0;
   padding: 5px;
   box-sizing: border-box;
-  padding-left: 10px;
 }
 
 .liimusiccen span {
@@ -712,6 +711,7 @@ body {
 .liimusic .liimusicdq {
   display: none;
   position: absolute;
+  width: 18px;
 }
 
 .liimusic .liimusicdq.show {
@@ -1177,11 +1177,11 @@ body {
 }
 
 .songlist .songlistnum .songlistdq {
+  bottom: 6px;
   display: none;
+  left: 6px;
   position: absolute;
-  left: 5px;
-  bottom: 5px;
-  width: 10px;
+  width: 14px;
 }
 
 .songlist .songlistnum .songlistdq.songlistdqshow {
