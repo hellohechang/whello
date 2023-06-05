@@ -384,20 +384,15 @@ route.post('/editlist', async (req, res) => {
       _err(res, '当前账号没有权限执行该操作');
       return;
     }
-    let { id, name, index } = req.body,
+    let { id, name, des } = req.body,
       arr = JSON.parse(
         (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
           .data
       );
     let i = arr.findIndex((item) => item.id === id);
     if (i > 1) {
-      index < 2
-        ? (index = 2)
-        : index > arr.length - 1
-          ? (index = arr.length - 1)
-          : null;
       arr[i].name = name;
-      arr.splice(index, 0, ...arr.splice(i, 1));
+      arr[i].des = des;
       await updateData(
         'musicinfo',
         {
@@ -406,7 +401,7 @@ route.post('/editlist', async (req, res) => {
         `WHERE account=?`,
         [account]
       );
-      await writelog(req, `修改歌单名[${name}(${id})]`);
+      await writelog(req, `修改歌单信息[${name}(${id})]`);
       _success(res);
       return;
     }
@@ -521,7 +516,7 @@ route.post('/addlist', async (req, res) => {
       _err(res, '当前账号没有权限执行该操作');
       return;
     }
-    let { name } = req.body,
+    let { name, des } = req.body,
       arr = JSON.parse(
         (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
           .data
@@ -529,6 +524,7 @@ route.post('/addlist', async (req, res) => {
     let id = nanoid();
     arr.push({
       name,
+      des,
       item: [],
       id,
     });

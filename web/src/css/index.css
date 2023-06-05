@@ -602,22 +602,20 @@ body {
   overflow: hidden;
   border-radius: 5px 5px 0 0;
   box-sizing: border-box;
-  padding: 0 5px 5px 5px;
+  padding: 0 2px;
   background-color: rgba(255, 255, 255);
 }
 
 .playingtop {
   width: 100%;
   height: 40px;
-  padding: 5px 8px;
+  padding: 5px;
   box-sizing: border-box;
-  border-bottom: 1px solid #e9e9e9;
 }
 
 .playtingtopleft {
   float: left;
   line-height: 30px;
-  margin-left: 10px;
 }
 
 .playtingtopright {
@@ -645,33 +643,61 @@ body {
 }
 
 .liimusic {
-  height: 50px;
+  height: 60px;
   display: flex;
   box-sizing: border-box;
   border-bottom: 1px solid #cccccc38;
+  color: #4a4949;
 }
 
 .liimusic:hover {
-  background-color: rgba(0, 0, 0, 0.205);
-  color: rgb(202, 40, 181);
+  background-color: rgba(232, 232, 232, 0.404);
+  color: #0f6ce6;
 }
 
 .liimusic .icon-icon-,
 .dleplaying {
   flex: none;
   text-align: center;
-  line-height: 50px;
-  width: 50px;
+  line-height: 60px;
+  width: 40px;
+}
+
+.liimusic .liimusiclogobox {
+  position: relative;
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  background: url("../img/musicbg.png") center center;
+  background-repeat: no-repeat;
+  background-size: 70%;
+}
+
+.liimusic .liimusiclogobox .liimusiclogo {
+  display: none;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+}
+
+.dleplaying {
+  color: #5a5a5a;
 }
 
 .dleplaying:hover {
-  font-weight: bold;
-  color: #fff;
+  color: rgb(209, 20, 178);
 }
 
 .liimusiccen {
   flex: auto;
   width: 0;
+  padding: 5px;
+  box-sizing: border-box;
+  padding-left: 10px;
 }
 
 .liimusiccen span {
@@ -683,26 +709,13 @@ body {
   background-color: transparent;
 }
 
-.liimusicnum {
-  flex: none;
-  min-width: 50px;
-  max-width: 60px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  line-height: 50px;
-  text-align: center;
-  font-size: 15px;
-  box-sizing: border-box;
-  padding: 0 5px;
+.liimusic .liimusicdq {
+  display: none;
+  position: absolute;
 }
 
-.liimusicnum.pling {
-  text-indent: -999px;
-  background-image: url(../img/wave.gif);
-  background-repeat: no-repeat;
-  background-size: 30%;
-  background-position: 15px 19px;
+.liimusic .liimusicdq.show {
+  display: block;
 }
 
 .liimusicname {
@@ -710,6 +723,7 @@ body {
 }
 
 .liimusicartist {
+  color: #5a5a5a;
   font-size: 12px;
 }
 
@@ -764,20 +778,21 @@ body {
   -ms-overflow-style: none;
   overflow-x: hidden;
   box-sizing: border-box;
-  padding: 0 5px;
+  padding-bottom: 40px;
 }
 
 .limusic {
   position: relative;
   display: flex;
   width: 100%;
-  height: 50px;
+  height: 60px;
   border-bottom: 1px solid #cccccc2b;
+  color: #4a4949;
 }
 
 .limusic:hover {
-  background-color: rgba(80, 80, 80, 0.521);
-  color: rgb(142, 243, 247);
+  background-color: rgba(232, 232, 232, 0.404);
+  color: #0f6ce6;
 }
 
 .limusic span {
@@ -794,10 +809,11 @@ body {
 .search-musiclist-menu,
 .limusicnum {
   flex: none;
-  width: 50px;
-  line-height: 50px;
+  width: 40px;
+  line-height: 60px;
   text-align: center;
   font-size: 18px;
+  color: #5a5a5a;
 }
 
 .limusicnum:hover,
@@ -805,9 +821,32 @@ body {
   color: rgb(209, 20, 178);
 }
 
+.limusic .limusiclogobox {
+  position: relative;
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  background: url("../img/musicbg.png") center center;
+  background-repeat: no-repeat;
+  background-size: 70%;
+}
+
+.limusic .limusiclogobox .limusiclogo {
+  display: none;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+}
+
 .limusiccen {
   flex: auto;
   width: 0;
+  padding: 5px;
+  box-sizing: border-box;
 }
 
 .limusicname {
@@ -816,6 +855,7 @@ body {
 
 .limusicartist {
   font-size: 12px;
+  color: #5a5a5a;
 }
 
 
@@ -1030,27 +1070,13 @@ body {
   position: relative;
   display: flex;
   flex-flow: row;
-  margin: 3px 5px;
+  margin: 3px;
   overflow: hidden;
 }
 
 .songlist:hover {
-  color: #fff;
-  background-color: rgba(48, 47, 47, 0.404);
-  border-radius: 5px;
-}
-
-.songlist:hover .divmusicname {
-  color: #ffff00;
-}
-
-.songlist:hover .musicartist {
-  color: #fff;
-}
-
-.songlist:hover .sxx,
-.songlist:hover .mvplay {
-  color: #000000;
+  color: #0f6ce6;
+  background-color: rgb(255, 255, 255);
 }
 
 .songlist .duoxuan {
@@ -1092,7 +1118,7 @@ body {
 
 .liimusic.songlisttwo,
 .songlist.songlisttwo {
-  color: #fff;
+  color: rgb(209, 20, 178);
   border-radius: 5px;
   background: linear-gradient(to right, #f6d365 0%, #919191 50%, #fda085 100%);
 }
@@ -1105,7 +1131,7 @@ body {
   color: #707070;
   line-height: 60px;
   text-align: center;
-  width: 45px;
+  width: 40px;
 }
 
 .songlist .icon-icon- {
@@ -1201,30 +1227,16 @@ body {
 .lbxianshi {
   height: 100px;
   margin-bottom: 10px;
-  border-radius: 5px;
-  position: relative;
+  display: flex;
   overflow: hidden;
 }
 
-.gedxh {
-  position: absolute;
-  top: 0px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  pointer-events: none;
-  line-height: 50px;
-  font-size: 50px;
-  color: rgba(212, 188, 188, 0.473);
-}
-
-.lbxma {
+.lbxianshi.lbxma {
   margin-bottom: 50px;
 }
 
 .gdfmtop {
-  float: left;
+  flex: none;
   width: 100px;
   height: 100px;
   background: url("../img/musicbg.png") center center;
@@ -1241,31 +1253,33 @@ body {
 }
 
 .gdlbname {
-  float: left;
-  height: 100px;
+  flex: auto;
+  padding: 0 20px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  flex-flow: column;
 }
 
 .lbming {
-  float: left;
-  margin-left: 20px;
-  max-width: 200px;
-  line-height: 100px;
-  font-size: 30px;
-  overflow: hidden;
+  flex: none;
+  font-size: 22px;
+  line-height: 40px;
+  height: 40px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  overflow: hidden;
+  color: #1389a7;
 }
 
-.editlb {
-  float: left;
-  font-size: 18px;
-  margin-left: 10px;
-  line-height: 100px;
-}
-
-.editlb:hover {
-  color: blue;
-  font-weight: bold;
+.musicListDes {
+  flex: auto;
+  overflow-y: auto;
+  line-height: 20px;
+  font-size: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  color: #575757;
 }
 
 .songlisttop {
@@ -1276,7 +1290,7 @@ body {
   padding: 0 5px;
 }
 
-.sct {
+.songlisttop.sct {
   position: fixed;
   top: 40px;
   right: 0px;
@@ -1315,6 +1329,7 @@ body {
 
 #mmlistqx,
 .addmusic,
+.editmusiclist,
 .listps {
   flex: none;
   height: 40px;
@@ -1325,6 +1340,7 @@ body {
 
 #mmlistqx:hover,
 .listps:hover,
+.editmusiclist:hover,
 .addmusic:hover {
   color: rgb(209, 20, 178);
 
@@ -1334,6 +1350,10 @@ body {
 .addmusic i,
 .listps i {
   font-size: 25px;
+}
+
+.editmusiclist i {
+  font-size: 22px;
 }
 
 
@@ -2644,6 +2664,7 @@ body {
 .playingbot::-webkit-scrollbar,
 .folder::-webkit-scrollbar,
 .mmlist::-webkit-scrollbar,
+.musicListDes::-webkit-scrollbar,
 .mmmlist::-webkit-scrollbar {
   display: none;
 }
