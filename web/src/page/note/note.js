@@ -455,7 +455,7 @@ import iconlogo from '../../img/icon.png'
     let $allLi = $navwrap.find('li');
     document.addEventListener('click', function (e) {
       if (!_getTarget(e, '.navwrap')) {
-        $navwrap.removeClass('open');
+        $navwrap.css('transition', '.5s').removeClass('open');
       }
     });
     $navwrap.on('click', 'li', function (e) {
@@ -475,12 +475,12 @@ import iconlogo from '../../img/icon.png'
     _mySlide({
       el: '.navwrap',
       right() {
-        $navwrap.removeClass('open');
+        $navwrap.css('transition', '.5s').removeClass('open');
       },
     });
     $showDir.on('click', (e) => {
       e.stopPropagation();
-      $navwrap.addClass('open');
+      $navwrap.css('transition', '.5s').addClass('open');
       hdNavActive();
     });
     function hdNavActive() {

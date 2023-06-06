@@ -8100,11 +8100,9 @@ import { UpProgress } from '../plugins/UpProgress'
       box._framename = name || url;
       box._url = url;
       $mainid.append(box);
+      box.style.display = 'flex';
       let $box = $(box);
-      $box.stop().fadeIn(_speed, () => {
-        box.style.display = 'flex';
-        setZindex($box);
-      });
+      setZindex($box);
       $box.on(
         'click',
         debounce(

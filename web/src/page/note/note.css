@@ -368,7 +368,6 @@ body {
   color: #e7f1ff;
   background-color: #6c6c6cee;
   opacity: 0;
-  transition: .5s;
 }
 
 .navwrap.open {
