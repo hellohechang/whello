@@ -376,23 +376,6 @@ body {
   opacity: 1;
 }
 
-/* .navwrap .navClose {
-  position: absolute;
-  font-size: 40px;
-  top: 20px;
-  width: 50px;
-  line-height: 50px;
-  text-align: center;
-  left: -60px;
-  height: 50px;
-  color: #aaa;
-}
-
-.navwrap .navClose:hover {
-  color: #FF9632;
-} */
-
-
 
 .navwrap .dirBox {
   width: 100%;
@@ -401,6 +384,13 @@ body {
   box-sizing: border-box;
   padding: 20px 4px;
   margin: 0;
+}
+
+.navwrap .dirBox ul {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  display: none;
 }
 
 .navwrap .dirBox li {

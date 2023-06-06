@@ -407,7 +407,26 @@ import iconlogo from '../../img/icon.png'
   $markdown.on('click', 'img', function () {
     imgPreview([{ u1: $(this).attr('src') }]);
   });
-
+  function toTree(box) {
+    // 祖先
+    const root = { node: 'root', children: [] };
+    let cur = root;
+    // 遍历所有子孙
+    box.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach((item, idx) => {
+      // 生成子孙对象
+      const obj = { node: item, children: [] };
+      // 找父亲
+      while (cur !== root && obj.node.tagName[1] <= cur.node.tagName[1]) {
+        cur = cur.parent;
+      };
+      // 儿子认父亲
+      obj.parent = cur;
+      // 父亲认儿子
+      obj.parent.children.push(obj);
+      cur = obj;
+    })
+    return root.children;
+  }
   let BlogDirectory = function () {
     let $mdBox = $('.markdownbox'),
       $navwrap = $('.navwrap'),
@@ -415,13 +434,22 @@ import iconlogo from '../../img/icon.png'
       $showDir = $('.showDir'),
       $allH = $mdBox.find('h1,h2,h3,h4,h5,h6'),
       str = '';
-    $allH.each((idx, item) => {
-      let text = encodeHtml(item.innerText);
-      item.id = 'hello_' + idx;
-      str += `<li h="${item.tagName.slice(
-        1
-      )}" cursor title="${text}" data-id="hello_${idx}">${text}</li>`;
-    });
+
+    let treeData = toTree($mdBox[0]);
+    let num = 1;
+    (function next(data, level) {
+      data.forEach((item) => {
+        let text = encodeHtml(item.node.innerText);
+        let flag = `hello_${num++}`;
+        item.node.id = flag;
+        str += `<li title="${text}" cursor h="${level}" data-id="${flag}">${text}</li>`
+        if (item.children.length > 0) {
+          str += `<ul>`
+          next(item.children, level + 1)
+          str += '</ul>'
+        }
+      })
+    })(treeData, 1);
     $dirBox.html(str);
 
     let $allLi = $navwrap.find('li');
@@ -442,6 +470,7 @@ import iconlogo from '../../img/icon.png'
         top: _top - 60,
         behavior: "smooth"
       })
+      $this.next('ul').stop().slideToggle(_speed);
     });
     _mySlide({
       el: '.navwrap',
@@ -467,19 +496,26 @@ import iconlogo from '../../img/icon.png'
           .eq(0);
         if ($cuLi.length > 0) {
           $cuLi.addClass('open');
-          $dirBox.stop().animate(
-            {
-              scrollTop:
-                $dirBox.scrollTop() +
-                _position($cuLi[0], true).top -
-                $navwrap.height() / 4,
-            },
-            _speed
-          );
+          let c = $cuLi;
+          while (c[0] != $dirBox[0]) {
+            c = c.parent();
+            c.slideDown(_speed)
+          }
+          _setTimeout(() => {
+            $dirBox.stop().animate(
+              {
+                scrollTop:
+                  $dirBox.scrollTop() +
+                  _position($cuLi[0], true).top -
+                  $navwrap.height() / 4,
+              },
+              _speed
+            );
+          }, _speed)
         }
       }
     }
-    window.addEventListener('scroll', debounce(hdNavActive, 200));
+    window.addEventListener('scroll', debounce(hdNavActive, 100));
   };
 })();
 
