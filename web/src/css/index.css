@@ -711,7 +711,7 @@ body {
 .liimusic .liimusicdq {
   display: none;
   position: absolute;
-  width: 18px;
+  width: 16px;
 }
 
 .liimusic .liimusicdq.show {
