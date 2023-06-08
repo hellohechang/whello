@@ -14,8 +14,8 @@ export const LevelObj = {
   dianji: 107, // 点击（动）
 };
 let preUrl = getPreUrl()
-// preUrl = getPreUrl() + '/api'
+preUrl = getPreUrl() + '/api'
 export const serverURL = preUrl
 
-export const mediaURL = 'https://data.hellochang.eu.org';
-// export const mediaURL = preUrl + '/getfile';
+// export const mediaURL = 'https://data.hellochang.eu.org';
+export const mediaURL = preUrl + '/getfile';

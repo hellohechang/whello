@@ -493,86 +493,33 @@ import { UpProgress } from '../plugins/UpProgress'
       if (urlparmes.p) {
         $openplayer.click();
       }
-
-      if (dmwidth > 800) {
-        if (_userinfo.bg != '') {
-          $bgmain.css(
-            'background-image',
-            `url(${mediaURL}/bgys/bg/${_userinfo.bg})`
-          ).attr('data-bg', _userinfo.bg);
-          imgjz(
-            `${mediaURL}/bgys/bg/${_userinfo.bg}`,
-            () => {
-              loadingdh();
-              imgjz(`${mediaURL}/bg/bg/${_userinfo.bg}`, () => {
-                $bgmain.css(
-                  'background-image',
-                  `url(${mediaURL}/bg/bg/${_userinfo.bg})`
-                );
-              });
-            },
-            () => {
-              loadingdh();
-              imgjz(`${mediaURL}/bg/bg/${_userinfo.bg}`, () => {
-                $bgmain.css(
-                  'background-image',
-                  `url(${mediaURL}/bg/bg/${_userinfo.bg})`
-                );
-              });
-            }
-          );
-        } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
-          imgjz(
-            `/img/bg.jpg`,
-            () => {
-              loadingdh();
-            },
-            () => {
-              loadingdh();
-            }
-          );
-        }
-      } else {
-        if (_userinfo.bgxs != '') {
-          $bgmain.css(
-            'background-image',
-            `url(${mediaURL}/bgys/bgxs/${_userinfo.bgxs})`
-          ).attr('data-bg', _userinfo.bgxs);
-          imgjz(
-            `${mediaURL}/bgys/bgxs/${_userinfo.bgxs}`,
-            () => {
-              loadingdh();
-              imgjz(`${mediaURL}/bg/bgxs/${_userinfo.bgxs}`, () => {
-                $bgmain.css(
-                  'background-image',
-                  `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})`
-                );
-              });
-            },
-            () => {
-              loadingdh();
-              imgjz(`${mediaURL}/bg/bgxs/${_userinfo.bgxs}`, () => {
-                $bgmain.css(
-                  'background-image',
-                  `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})`
-                );
-              });
-            }
-          );
-        } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
-          imgjz(
-            `/img/bg.jpg`,
-            () => {
-              loadingdh();
-            },
-            () => {
-              loadingdh();
-            }
-          );
-        }
+      if (dmwidth > 800 && !_userinfo.bg || dmwidth <= 800 && !_userinfo.bgxs) {
+        $bgmain.css(
+          'background-image',
+          `url(/img/bg.svg)`
+        ).attr('data-bg', '');
+        loadingdh();
+        return;
       }
+      let bgUrl = '';
+      if (dmwidth > 800) {
+        bgUrl = `${mediaURL}/bg/bg/${_userinfo.bg}`;
+      } else {
+        bgUrl = `${mediaURL}/bg/bgxs/${_userinfo.bgxs}`;
+      }
+      imgjz(bgUrl, () => {
+        $bgmain.css(
+          'background-image',
+          `url(${bgUrl})`
+        ).attr('data-bg', bgUrl.split('/').pop());
+        loadingdh();
+      }, () => {
+        $bgmain.css(
+          'background-image',
+          `url(/img/bg.svg)`
+        ).attr('data-bg', '');
+        loadingdh();
+      });
     }
   }).catch(err => { })
 
@@ -2753,18 +2700,12 @@ import { UpProgress } from '../plugins/UpProgress'
                   )
                 );
               } else if (_getTarget(e, '.mtcitem1')) {
-                let mymouse = _getData('mymouse') || 'y';
-                let hua = _getData('hua') || 'y';
                 let dian = _getData('dian') || 'y';
                 let str = `<div cursor class="mtcitem">壁纸库</div>
                 <div cursor class="mtcitem1">背景模糊度</div>
               <div cursor class="mtcitem2">背景灰度</div>
               <div cursor class="mtcitem3">选择字体</div>
-              <div cursor data-mouse="${mymouse}" class="mtcitem4">鼠标跟随 [${mymouse === 'y' ? '开' : '关'
-                  }]</div>
               <div cursor data-dian="${dian}" class="mtcitem6">点击爱心 [${dian === 'y' ? '开' : '关'
-                  }]</div>
-              <div cursor data-hua="${hua}" class="mtcitem5">樱花飘落 [${hua === 'y' ? '开' : '关'
                   }]</div>
               <div cursor class="mtcitem7">加载动画</div>`;
                 let flagClose = close;
@@ -2773,8 +2714,6 @@ import { UpProgress } from '../plugins/UpProgress'
                   str,
                   debounce(
                     function ({ close, e }) {
-                      let item4 = _getTarget(e, '.mtcitem4');
-                      let item5 = _getTarget(e, '.mtcitem5');
                       let item6 = _getTarget(e, '.mtcitem6');
                       if (_getTarget(e, '.mtcitem')) {
                         flagClose()
@@ -2839,32 +2778,6 @@ import { UpProgress } from '../plugins/UpProgress'
                             );
                           }
                         }).catch(err => { })
-                      } else if (item4) {
-                        let _this = $(item4);
-                        let flag = _this.attr('data-mouse');
-                        if (flag === 'y') {
-                          _this.attr('data-mouse', 'n');
-                          _this.text(`鼠标跟随 [关]`);
-                          _setData('mymouse', 'n');
-                          $('#mouseCanvas').remove();
-                        } else {
-                          _this.attr('data-mouse', 'y');
-                          _this.text(`鼠标跟随 [开]`);
-                          _setData('mymouse', 'y');
-                          $.myMouse({ type: 11 });
-                        }
-                      } else if (item5) {
-                        let _this = $(item5);
-                        let flag = _this.attr('data-hua');
-                        if (flag === 'y') {
-                          _this.attr('data-hua', 'n');
-                          _this.text(`樱花飘落 [关]`);
-                          _setData('hua', 'n');
-                        } else {
-                          _this.attr('data-hua', 'y');
-                          _this.text(`樱花飘落 [开]`);
-                          _setData('hua', 'y');
-                        }
                       } else if (item6) {
                         let _this = $(item6);
                         let flag = _this.attr('data-dian');
@@ -7756,7 +7669,7 @@ import { UpProgress } from '../plugins/UpProgress'
             `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})`
           ).attr('data-bg', _userinfo.bgxs);
         } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
+          $bgmain.css('background-image', `url(/img/bg.svg)`).attr('data-bg', '');
         }
         $('.iframeBox').css({
           top: '50%',
@@ -7807,7 +7720,7 @@ import { UpProgress } from '../plugins/UpProgress'
             `url(${mediaURL}/bg/bg/${_userinfo.bg})`
           ).attr('data-bg', _userinfo.bg);
         } else {
-          $bgmain.css('background-image', `url(/img/bg.jpg)`).attr('data-bg', '');
+          $bgmain.css('background-image', `url(/img/bg.svg)`).attr('data-bg', '');
         }
         if (lrcbotwrap.isshow) {
           lrcbotwrap.style.display = 'block';
@@ -7843,12 +7756,12 @@ import { UpProgress } from '../plugins/UpProgress'
         if (dmwidth > 800) {
           $bgmain.css(
             'background-image',
-            _userinfo.bg ? `url(${mediaURL}/bg/bg/${_userinfo.bg})` : '/img/bg.jpg'
+            _userinfo.bg ? `url(${mediaURL}/bg/bg/${_userinfo.bg})` : '/img/bg.svg'
           ).attr('data-bg', _userinfo.bg ? _userinfo.bg : '');
         } else {
           $bgmain.css(
             'background-image',
-            _userinfo.bgxs ? `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})` : '/img/bg.jpg'
+            _userinfo.bgxs ? `url(${mediaURL}/bg/bgxs/${_userinfo.bgxs})` : '/img/bg.svg'
           ).attr('data-bg', _userinfo.bgxs ? _userinfo.bgxs : '');
         }
         handleUserinfo();
