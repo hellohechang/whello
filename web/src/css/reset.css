@@ -183,3 +183,27 @@ body {
   background: #000;
   color: #fff;
 }
+
+input::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: rgb(165, 174, 177);
+  font-size: 16px;
+}
+
+input:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: rgb(165, 174, 177);
+  font-size: 15px;
+}
+
+input::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: rgb(165, 174, 177);
+  font-size: 15px;
+}
+
+input:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: rgb(165, 174, 177);
+  font-size: 15px;
+}

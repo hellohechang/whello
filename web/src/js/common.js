@@ -12,7 +12,7 @@ import {
   _myOpen
 } from '../utils/utils'
 import { serverURL, LevelObj } from "../config";
-import { _err } from "../plugins/message";
+import { _err, _success } from "../plugins/message";
 import { _loadingBar } from '../plugins/loadingBar'
 
 //复制编辑选中文本

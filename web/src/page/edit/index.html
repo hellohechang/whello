@@ -14,23 +14,23 @@
 </head>
 
 <body>
-  <div class="mbg"></div>
-  <main class="markdownBox">
-    <div class="topBox">
-      <div cursor class="save iconfont icon-baocun"></div>
-      <div cursor class="sloseShow iconfont icon-yanjing_xianshi_o"></div>
-      <div class="title"><input autocomplete="off" placeholder="Title" type="text"></div>
-      <div cursor title="本地笔记列表" class="textData iconfont icon-bofangliebiao"></div>
-      <div cursor class="fullScreenShow iconfont icon-quanping"></div>
+  <div class="page_bg"></div>
+  <main class="content_wrap">
+    <div class="head_btns">
+      <div cursor class="save_btn iconfont icon-baocun"></div>
+      <div cursor class="preview_state iconfont icon-yanjing_xianshi_o"></div>
+      <div class="note_title"><input autocomplete="off" placeholder="Title" type="text"></div>
+      <div cursor title="本地笔记列表" class="note_list_btn iconfont icon-bofangliebiao"></div>
+      <div cursor class="to_max_btn iconfont icon-quanping"></div>
     </div>
-    <div class="editBox">
-      <div class="navwrap">
+    <div class="edit_wrap">
+      <div class="note_list_mask">
         <nav>
-          <ul class="dirBox"></ul>
+          <ul></ul>
         </nav>
       </div>
-      <textarea placeholder="输入内容~" class="codeBox"></textarea>
-      <div class="showBox"></div>
+      <textarea placeholder="输入内容~" class="edit_box"></textarea>
+      <div class="preview_box"></div>
     </div>
   </main>
 </body>

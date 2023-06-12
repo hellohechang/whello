@@ -14,8 +14,88 @@ export const LevelObj = {
   dianji: 107, // 点击（动）
 };
 let preUrl = getPreUrl()
-preUrl = getPreUrl() + '/api'
+// preUrl = getPreUrl() + '/api'
 export const serverURL = preUrl
 
-// export const mediaURL = 'https://data.hellochang.eu.org';
-export const mediaURL = preUrl + '/getfile';
+export const mediaURL = 'https://data.hellochang.eu.org';
+// export const mediaURL = preUrl + '/getfile';
+
+export const _d = {
+  searchEngineData: [
+    {
+      name: 'Bing',
+      icon: 'img/bing-xs.png',
+      logo: 'img/bing.png',
+      searchlink: 'https://cn.bing.com/search?q=',
+    },
+    {
+      name: 'Google',
+      icon: 'img/google-xs.png',
+      logo: 'img/google.png',
+      searchlink: 'https://www.google.com/search?q=',
+    },
+    {
+      name: 'Baidu',
+      icon: 'img/baidu-xs.png',
+      logo: 'img/baidu.png',
+      searchlink: 'https://www.baidu.com/s?wd=',
+    },
+    {
+      name: 'Youtube',
+      icon: 'img/youtube-xs.png',
+      logo: 'img/youtube.png',
+      searchlink: 'https://www.youtube.com/results?search_query=',
+    },
+    {
+      name: 'Bilibili',
+      icon: 'img/bilibili-xs.png',
+      logo: 'img/bilibili.png',
+      searchlink: 'https://search.bilibili.com/all?keyword=',
+    },
+    {
+      name: 'Yahoo',
+      icon: 'img/yahoo-xs.png',
+      logo: 'img/yahoo.png',
+      searchlink: 'https://search.yahoo.com/search?p=',
+    },
+    {
+      name: 'Sogou',
+      icon: 'img/sougou-xs.png',
+      logo: 'img/sougou.png',
+      searchlink: 'https://www.sogou.com/web?query=',
+    },
+    {
+      name: 'Github',
+      icon: 'img/github-xs.png',
+      logo: 'img/github.png',
+      searchlink: 'https://github.com/search?q=',
+    },
+    {
+      name: 'Toutiao',
+      icon: 'img/toutiao-xs.png',
+      logo: 'img/toutiao.png',
+      searchlink: 'https://m.toutiao.com/search?keyword=',
+    },
+    {
+      name: 'Weibo',
+      icon: 'img/weibo-xs.png',
+      logo: 'img/weibo.png',
+      searchlink: 'https://s.weibo.com/weibo?q=',
+    },
+    {
+      name: 'Zhihu',
+      icon: 'img/zhihu-xs.png',
+      logo: 'img/zhihu.png',
+      searchlink: 'https://www.zhihu.com/search?q=',
+    },
+    {
+      name: 'Kuaidi',
+      icon: 'img/kuaidi-xs.png',
+      logo: 'img/kuaidi.png',
+      searchlink: 'https://m.kuaidi100.com/result.jsp?nu=',
+    },
+  ],
+  remoteState: false,
+  checkColor: 'rgb(118 254 89 / 58%)',
+  myTitle: 'Hello',
+};

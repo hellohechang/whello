@@ -9,38 +9,37 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="assets">
-  <link id="hicode" rel="stylesheet">
+  <link class="theme_css" rel="stylesheet">
   <link rel="stylesheet icon" href="../../img/icon1.png">
-  <title class="notetitle">NoteBook</title>
+  <title>NoteBook</title>
 </head>
 
 <body>
-  <div class="mbg"></div>
-  <div class="pageSearch">
-    <input class="hinp" autocomplete="off" type="search">
-    <div class="pageSearchNum"></div>
-    <div flag="pre" class="hpre iconfont icon-up" cursor></div>
-    <div flag="next" class="hnext iconfont icon-Down" cursor></div>
-    <div flag="x" class="hx iconfont icon-guanbi" cursor></div>
+  <div class="page_bg"></div>
+  <div class="page_search_wrap">
+    <input class="search_inp" autocomplete="off" type="search">
+    <div class="res_total_num"></div>
+    <div flag="pre" class="prev_btn iconfont icon-up" cursor></div>
+    <div flag="next" class="next_btn iconfont icon-Down" cursor></div>
+    <div flag="x" class="close_btn iconfont icon-guanbi" cursor></div>
   </div>
-  <div class="notebotlist">
-    <div cursor class="showDir iconfont icon-bofangliebiao"></div>
-    <div cursor class="pageSearchOn iconfont icon-search"></div>
-    <div cursor class="fsbg iconfont icon-zhuti"></div>
-    <div cursor class="fszd iconfont icon-jiajian1"></div>
-    <div cursor class="fsjx iconfont icon-jiajian"></div>
-    <div cursor class="editnote iconfont icon-bianji"></div>
-    <div cursor class="totop iconfont icon-dingbu"></div>
+  <div class="set_btns_wrap">
+    <div cursor class="show_navigation_btn iconfont icon-bofangliebiao"></div>
+    <div cursor class="show_search_wrap iconfont icon-search"></div>
+    <div cursor class="change_theme_btn iconfont icon-zhuti"></div>
+    <div cursor class="enlarge_font_btn iconfont icon-jiajian1"></div>
+    <div cursor class="reduce_font_btn iconfont icon-jiajian"></div>
+    <div cursor class="edit_note_btn iconfont icon-bianji"></div>
+    <div cursor class="to_top_btn iconfont icon-dingbu"></div>
   </div>
-  <section class="markdownbox">
-    <div class="from">
+  <div class="content_wrap">
+    <div class="author_info">
       <div cursor class="logo"></div>
     </div>
-    <div class="markdown"></div>
-  </section>
-  <div class="navwrap">
-    <!-- <div cursor class="navClose iconfont icon-guanbi"></div> -->
-    <ul class="dirBox"></ul>
+    <div class="note_box"></div>
+  </div>
+  <div class="navigation_wrap">
+    <ul class="list_box"></ul>
   </div>
 </body>
 

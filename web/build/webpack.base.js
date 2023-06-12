@@ -3,19 +3,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    main: './src/js/main.js',
-    login: './src/page/login/login.js',
-    allnote: './src/page/allnote/allnote.js',
-    edit: './src/page/edit/edit.js',
-    history: './src/page/history/history.js',
-    note: './src/page/note/note.js',
-    notes: './src/page/notes/notes.js',
-    pic: './src/page/pic/pic.js',
-    recycle: './src/page/recycle/recycle.js',
-    root: './src/page/root/root.js',
-    sharebm: './src/page/sharebm/sharebm.js',
-    sharelist: './src/page/sharelist/sharelist.js',
-    sharemusic: './src/page/sharemusic/sharemusic.js',
+    main: './src/page/home/index.js',
+    login: './src/page/login/index.js',
+    allnote: './src/page/allnote/index.js',
+    edit: './src/page/edit/index.js',
+    history: './src/page/history/index.js',
+    note: './src/page/note/index.js',
+    notes: './src/page/notes/index.js',
+    pic: './src/page/pic/index.js',
+    recycle: './src/page/recycle/index.js',
+    root: './src/page/root/index.js',
+    sharebm: './src/page/sharebm/index.js',
+    sharelist: './src/page/sharelist/index.js',
+    sharemusic: './src/page/sharemusic/index.js',
   },
   output: {
     filename: 'js/[name].[chunkhash:8].js',
@@ -35,7 +35,7 @@ module.exports = {
       }
     }),
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: './src/page/home/index.html',
       filename: 'index.html',
       chunks: ['main'],
       minify: {

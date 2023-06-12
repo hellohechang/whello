@@ -1,0 +1,4172 @@
+html,
+body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  color: rgb(73, 73, 73);
+  overflow: hidden;
+  font-size: 16px;
+  background-color: #7f7f7f;
+  /* background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%); */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-text-size-adjust: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* 关闭选中 */
+.jzxz {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* -webkit-touch-callout: none; iOS Safari */
+}
+
+/* 主页 */
+#main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform .5s;
+  z-index: 2;
+}
+
+.dandelion {
+  position: absolute;
+  bottom: -10px;
+  left: 60px;
+  pointer-events: none;
+  width: 40px;
+  opacity: 0;
+}
+
+.dandelionloading {
+  position: absolute;
+  bottom: 45px;
+  left: 90px;
+  pointer-events: none;
+  width: 90px;
+  opacity: 0;
+}
+
+.grass {
+  position: absolute;
+  bottom: 0;
+  left: 100px;
+  pointer-events: none;
+  width: 40px;
+  opacity: 0;
+}
+
+.grassp {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  width: 200px;
+  height: 20px;
+  opacity: 0;
+}
+
+/* 随机壁纸 */
+.random_change_bg_btn {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  left: 25px;
+  bottom: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  &.open {
+    width: 40px;
+    height: 40px;
+    left: 20px;
+  }
+
+  div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 50px;
+    margin-left: -1px;
+    background-color: #383838;
+    z-index: -1;
+  }
+
+  img {
+    animation: turn 2s reverse infinite linear;
+    width: 100%;
+
+    &.open {
+      animation: turn .6s reverse infinite linear;
+    }
+
+    @keyframes turn {
+      0% {
+        transform: rotateZ(0deg);
+      }
+
+      100% {
+        transform: rotateZ(360deg);
+      }
+    }
+
+    @-webkit-keyframes turn {
+
+      /*针对webkit内核*/
+      0% {
+        transform: rotateZ(0deg);
+      }
+
+      100% {
+        transform: rotateZ(360deg);
+      }
+    }
+
+  }
+}
+
+/* 天气 */
+.weather_box {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  padding: 10px;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.247);
+  font-size: 14px;
+  line-height: 20px;
+  color: #ccc;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  @media (max-width:800px) {
+    & {
+      bottom: 60px;
+      width: 90%;
+      pointer-events: none;
+    }
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.685);
+    color: #fff;
+  }
+
+  span {
+    margin-right: 10px;
+  }
+}
+
+/* 主页加载效果 */
+.onloading {
+  position: relative;
+  font-family: Consolas, 'myfont';
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('../../img/bg.svg');
+  background-color: #2a2a2a;
+  overflow: hidden;
+  z-index: 99999;
+
+  div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-right: 1ch solid #ccc;
+    font-size: 40px;
+    line-height: 50px;
+    color: #aaa;
+    width: 10ch;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3s steps(10, end), blink-caret .5s 3s step-end infinite alternate;
+    text-shadow: 0 0 1px rgb(159, 158, 158);
+
+    &::after {
+      content: "Loading...";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      animation: loderWidth 2s 3s infinite;
+    }
+
+    @keyframes loderWidth {
+      0% {
+        width: 0%;
+        color: #FFF;
+      }
+
+      100% {
+        width: 100%;
+        color: #FFF;
+      }
+    }
+
+    @keyframes typing {
+      from {
+        width: 0
+      }
+    }
+
+    @keyframes blink-caret {
+      0% {
+        border-color: #aaa;
+      }
+
+      50% {
+        border-color: transparent;
+      }
+
+      100% {
+        border-color: #aaa;
+      }
+    }
+  }
+}
+
+/*桌面壁纸*/
+.page_bg {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  transition: background-image .5s, transform 0.5s, opacity 0.5s;
+  z-index: 1;
+
+  &.mh {
+    transform: scale(1.1);
+  }
+
+  &.sce {
+    opacity: 0.4;
+    transform: scale(1.5);
+  }
+}
+
+/* 壁纸 */
+.all_bg_wrap {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+
+  .show_bg_size {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgb(248 245 245 / 70%);
+    font-size: 20px;
+    color: #444444;
+    outline: none;
+    border: 1px solid #aaa;
+  }
+
+  .upload_bg,
+  .b_close_btn {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 20px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: rgba(139, 139, 139, 0.6);
+    color: #ccc;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+
+    &:hover {
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+  }
+
+  .upload_bg {
+    top: 20px;
+    left: 70px;
+  }
+
+  .bg_list {
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding-top: 5px;
+
+    .bg_item {
+      float: left;
+      position: relative;
+      width: 23.75%;
+      margin: 0 0 10px 1%;
+      background-color: #b8b5b5;
+      box-sizing: border-box;
+      height: 200px;
+      border-radius: 5px;
+      overflow: hidden;
+
+      &:hover {
+        box-shadow: 0 0 10px rgb(0, 0, 0);
+        opacity: .8;
+      }
+
+      @media (max-width: 800px) {
+        & {
+          width: 47%;
+          margin: 0 0 10px 2%;
+          height: 400px;
+        }
+      }
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+
+      .bg_img {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+      }
+    }
+
+    .bg_paging_box {
+      float: left;
+      width: 100%;
+      margin: 30px auto;
+
+      button[cursor]:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+  }
+}
+
+// 最小化盒子
+.minimize_box {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 1000px;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  overflow-y: auto;
+  max-height: 300px;
+  -ms-overflow-style: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  div {
+    background-color: #f0ffffde;
+    float: left;
+    margin: 5px;
+    padding: 5px;
+    max-width: 180px;
+    border-radius: 5px;
+    color: #4a4949;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    &:active {
+      transition: 0s;
+      opacity: .2;
+    }
+  }
+
+}
+
+/* 时钟 */
+.clock {
+  position: fixed;
+  top: 100px;
+  left: 100px;
+  width: 200px;
+  height: 200px;
+  border: 4px solid #0fddd22e;
+  border-radius: 50%;
+  background-color: rgb(0 0 0 / 6%);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.548);
+  }
+
+  /* 刻度 */
+  .line-hour li,
+  .line-min li {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: left center;
+  }
+
+  .line-hour li {
+    width: 10px;
+    height: 2px;
+    background-color: #fff;
+  }
+
+  .line-min li {
+    width: 5px;
+    height: 2px;
+    background-color: #1389a7;
+  }
+
+  /* 数字 */
+  .number {
+    position: absolute;
+    height: 150px;
+    width: 150px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 17px;
+    color: #ffffff;
+
+    li {
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+
+  /* 指针 */
+  .pointer {
+    position: absolute;
+    height: 150px;
+    width: 150px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    li.hour,
+    li.min,
+    li.sec {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(0, -50%);
+      transform-origin: left center;
+      border-radius: 20px;
+    }
+
+    li.hour {
+      width: 50px;
+      height: 2px;
+      background-color: #0f6ce6;
+    }
+
+    li.min {
+      width: 70px;
+      height: 2px;
+      background-color: #d114b2;
+    }
+
+    li.sec {
+      width: 85px;
+      height: 1px;
+      background-color: #f50;
+    }
+
+    li.circle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background-color: #f50;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+    }
+  }
+}
+
+// 右侧设置
+.user_logo_btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-color: #aaa;
+  background-image: url("../../img/nolanding.png");
+
+  &:hover {
+    box-shadow: 0 0 8px rgb(16, 212, 59);
+  }
+
+  &:active {
+    transition: 0s;
+    opacity: .2;
+  }
+
+}
+
+.right_menu_mask {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  .right_box {
+    position: absolute;
+    right: 10px;
+    transform: translateX(100%);
+    top: 50px;
+    border-radius: 5px;
+    color: #5d5d5d;
+    transition: .5s;
+    width: 90%;
+    max-width: 250px;
+    max-height: 80%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background-color: rgba(10, 10, 10, 0.473);
+    border: 10px solid transparent;
+    box-sizing: border-box;
+    opacity: 0;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &.open {
+      transform: none;
+      opacity: 1;
+    }
+
+    span {
+      margin-left: 10px;
+    }
+
+    .user_name {
+      display: none;
+      width: 100%;
+      overflow: hidden;
+      color: #07f525a3;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      line-height: 40px;
+      text-align: center;
+      font-size: 16px;
+      border-bottom: 1px #aaaaaa3b solid;
+
+      &:hover {
+        font-size: 20px;
+      }
+    }
+
+    .r_list {
+      padding-top: 10px;
+
+      div {
+        width: 100%;
+        line-height: 20px;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 3px;
+        border-radius: 5px;
+        color: #ccc;
+        background-color: rgba(14, 13, 13, 0.178);
+
+        &:hover {
+          color: rgb(184, 64, 28);
+          background-color: rgba(255, 255, 255, 0.418);
+        }
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+    }
+  }
+}
+
+// 个人信息
+.user_info_wrap {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background-color: rgb(255 255 255 / 90%);
+  padding: 20px 10px 20px 10px;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+
+  .u_close_btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 20px;
+    color: #868686;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  .user_logo {
+    height: 80px;
+    text-align: center;
+    margin-bottom: 10px;
+
+    div {
+      display: inline-block;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: rgb(223, 217, 230);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      transition: .2s;
+
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 8px rgb(139, 139, 139);
+      }
+    }
+  }
+
+  .user_list {
+    ul {
+      line-height: 40px;
+      height: 40px;
+      background-color: rgb(249 246 246 / 56%);
+      margin-bottom: 1px;
+      display: flex;
+      flex-flow: row;
+
+      li {
+
+        &:nth-child(3),
+        &:nth-child(1) {
+          flex: none;
+          width: 70px;
+          text-align: center;
+          color: rgb(77, 76, 76);
+        }
+
+        &:nth-child(3):hover {
+          color: rgb(93, 165, 224);
+        }
+
+        &:nth-child(2) {
+          flex: auto;
+          color: rgb(33, 34, 34);
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+      }
+    }
+  }
+}
+
+// 聊天室
+.show_chat_room_btn {
+  position: absolute;
+  bottom: 10px;
+  right: 25px;
+
+  &:hover i {
+    color: rgb(23, 68, 190);
+  }
+
+  &:active {
+    transition: 0s;
+    opacity: .2;
+  }
+
+  i {
+    font-size: 30px;
+    color: rgb(73 169 35);
+
+    &.red {
+      color: rgb(202, 32, 32);
+    }
+  }
+
+  .g_chat_msg_alert {
+    display: none;
+    position: absolute;
+    width: 14px;
+    height: 12px;
+    border-radius: 50%;
+    left: 20px;
+    top: -2px;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.chat_room_wrap {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  max-width: 600px;
+  max-height: 800px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 2px solid #fff;
+  transition: max-width .5s, width .5s, max-height .5s, height .5s;
+
+  @media (max-width: 800px) {
+    & {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      border: none;
+    }
+  }
+
+  .chat_room_box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+
+    // 回到底部
+    .scroll_to_bot_btn {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 30px;
+      padding: 10px;
+      z-index: 2;
+      background-color: #ffffffe3;
+      border-radius: 50%;
+      font-size: 20px;
+
+      &:hover {
+        background-color: #fff;
+        color: #249bca;
+      }
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    // 用户列表
+    .user_list_box {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      width: 100%;
+      height: 70%;
+      overflow-y: auto;
+      border-radius: 0 0 5px 5px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      background-color: #cdb;
+      z-index: 3;
+
+      .user_item {
+        display: flex;
+        width: 100%;
+        height: 50px;
+        line-height: 50px;
+        position: relative;
+        box-sizing: border-box;
+        padding: 5px 10px;
+        margin-top: 2px;
+        background-color: #ffffff45;
+
+        &:hover {
+          background-color: #fff;
+        }
+
+        &:hover .user_name {
+          color: rgb(204, 38, 196);
+        }
+
+        .msg_alert {
+          display: none;
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          background-color: #1389a7;
+          left: 0;
+          top: 0;
+          border-radius: 50%;
+
+          &[x="n"] {
+            display: block;
+          }
+        }
+
+        .user_logo {
+          flex: none;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+          overflow: hidden;
+          border-radius: 5px;
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+          background-color: #aaa;
+
+          img {
+            width: 100%;
+            height: 100%;
+            vertical-align: bottom;
+          }
+        }
+
+        .user_name {
+          flex: auto;
+          height: 40px;
+          line-height: 40px;
+          width: 0;
+          box-sizing: border-box;
+          padding-left: 10px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+      }
+    }
+
+    // 聊天室头部
+    .c_head_btns {
+      display: flex;
+      flex-flow: row;
+      width: 100%;
+      flex: none;
+      height: 40px;
+      background-color: #cdb;
+      box-sizing: border-box;
+      position: relative;
+      padding: 5px;
+      box-shadow: 2px 0 5px #959595;
+      z-index: 1;
+
+      div {
+        margin: 0 5px;
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+
+      .c_close_btn,
+      .c_back_btn,
+      .clear_msg_btn {
+        flex: none;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 20px;
+        text-align: center;
+        color: #868686;
+
+        &:hover {
+          color: #000;
+        }
+      }
+
+      .c_close_btn {
+        @media (max-width:800px) {
+          & {
+            display: none;
+          }
+        }
+      }
+
+      .c_back_btn {
+        @media (min-width:800px) {
+          & {
+            display: none;
+          }
+        }
+      }
+
+      input {
+        flex: auto;
+        border: none;
+        outline: 0;
+        margin: 0 5px;
+        max-width: 200px;
+        min-width: 80px;
+        width: 0;
+        background-color: rgb(236 236 236 / 83%);
+        height: 30px;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 2px;
+
+        &:focus {
+          background-color: #ccc;
+        }
+      }
+
+      .chat_title {
+        flex: auto;
+        width: 0;
+        line-height: 30px;
+        color: #04040470;
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .chat_home_btn {
+        flex: none;
+        width: 30px;
+        height: 30px;
+        color: rgb(73 169 35);
+        line-height: 30px;
+        text-align: center;
+        font-size: 30px;
+
+        &:hover {
+          color: rgb(18 123 231);
+        }
+
+        .c_home_msg_alert {
+          display: none;
+          width: 7px;
+          height: 7px;
+          position: absolute;
+          top: 9px;
+          background: #df0fbc;
+          border-radius: 50%;
+          right: 15px;
+        }
+      }
+
+      .c_user_btn {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        line-height: 30px;
+        font-size: 22px;
+        position: relative;
+        color: #838983;
+        margin-right: 10px;
+        text-align: center;
+
+        &:hover {
+          color: rgb(18 123 231);
+        }
+
+        .c_msg_alert {
+          display: none;
+          width: 7px;
+          height: 7px;
+          position: absolute;
+          top: 4px;
+          background: #df0fbc;
+          border-radius: 50%;
+          right: 2px;
+        }
+      }
+    }
+
+    // 消息列表
+    .chat_list_box {
+      position: relative;
+      width: 100%;
+      flex: 1 1 auto;
+      box-sizing: border-box;
+      padding: 10px;
+      background-color: #000;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .chat_list {
+        .chat_item {
+          display: flex;
+          flex-flow: row;
+          overflow: hidden;
+
+          .c_left_logo {
+            flex: none;
+            text-align: left;
+            width: 42px;
+            height: 40px;
+            padding: 8px 0;
+          }
+
+          .c_right_logo {
+            flex: none;
+            text-align: right;
+            width: 42px;
+            height: 40px;
+            box-sizing: border-box;
+            padding: 8px 0;
+          }
+
+          .c_left_logo .c_logo,
+          .c_right_logo .c_logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-color: #ccc;
+          }
+
+          .c_content_box {
+            flex: auto;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            width: 0;
+
+            .c_user_name {
+              display: block;
+              width: 100%;
+              font-size: 12px;
+              color: #ffeb3bd9;
+              margin-bottom: 5px;
+            }
+
+            .c_file_msg_box {
+              position: relative;
+              box-sizing: border-box;
+              padding: 10px;
+              width: 100%;
+              max-width: 300px;
+              height: 70px;
+              background-color: #fff;
+              border-radius: 6px;
+              display: flex;
+
+              .c_file_info {
+                flex: auto;
+                width: 0;
+                height: 100%;
+
+                span {
+                  display: block;
+                  text-indent: 20px;
+                  color: rgb(105, 104, 104);
+                  overflow: hidden;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                }
+
+                .file_name {
+                  width: 100%;
+                  height: 30px;
+                  line-height: 30px;
+                }
+
+                .file_size {
+                  width: 100%;
+                  height: 20px;
+                  line-height: 20px;
+                  font-size: 14px;
+
+                }
+
+              }
+
+              .file_type {
+                float: left;
+                width: 50px;
+                height: 50px;
+                font-size: 40px;
+                line-height: 50px;
+                text-align: center;
+                color: #aaa;
+              }
+            }
+
+            .c_right_triangle {
+              position: absolute;
+              top: 4px;
+              right: -15px;
+              border: 8px solid #fff;
+              border-top-color: transparent;
+              border-right-color: transparent;
+              border-bottom-color: transparent;
+            }
+
+            .c_left_triangle {
+              position: absolute;
+              top: 4px;
+              left: -15px;
+              border: 8px solid #fff;
+              border-top-color: transparent;
+              border-left-color: transparent;
+              border-bottom-color: transparent;
+            }
+
+            .c_img_msg_box {
+              position: relative;
+              width: 100%;
+              max-width: 200px;
+              height: 200px;
+              background-color: #ccc;
+              box-sizing: border-box;
+              padding: 5px;
+              border-radius: 6px;
+
+              .c_img {
+                width: 100%;
+                height: 100%;
+                background-color: #ccc;
+                background: no-repeat;
+                background-size: cover;
+                background-position: center;
+
+                span {
+                  position: absolute;
+                  bottom: 10px;
+                  right: 10px;
+                  color: rgb(209 133 20);
+                }
+              }
+            }
+
+            .c_voice_msg_box {
+              position: relative;
+              width: 100%;
+              max-width: 200px;
+              text-align: center;
+              color: #252629;
+              background-color: #fff;
+              border-radius: 6px;
+
+              i {
+                line-height: 35px;
+                font-size: 22px;
+              }
+            }
+
+            .c_text_msg_box {
+              position: relative;
+              padding: 5px 10px;
+              margin: 0;
+              white-space: pre-wrap;
+              word-break: break-word;
+              color: #252629;
+              background-color: #fff;
+              border-radius: 6px;
+              line-height: 20px;
+              font-size: 16px;
+            }
+
+          }
+        }
+      }
+
+    }
+
+    .chat_foot_box {
+      position: relative;
+      width: 100%;
+      flex: none;
+      display: flex;
+      flex-flow: row;
+      align-items: flex-end;
+      background-color: #cdb;
+      z-index: 1;
+
+      .c_text_msg_box {
+        flex: auto;
+        position: relative;
+        border: 5px solid #cdb;
+        box-sizing: border-box;
+        overflow: hidden;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        font-size: 18px;
+        min-height: 50px;
+        max-height: 250px;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        .c_text_msg {
+          background-color: rgb(255, 255, 255);
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+          border: none;
+          white-space: pre-wrap;
+          word-break: break-word;
+          padding: 10px;
+          min-height: 40px;
+          line-height: 20px;
+          outline: none;
+          -webkit-user-select: text;
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          border-radius: 2px;
+        }
+
+        .c_get_voice_btn {
+          display: none;
+          width: 100%;
+          height: 100%;
+          background-color: rgb(255, 255, 255);
+          text-align: center;
+          line-height: 40px;
+          color: rgb(119, 119, 119);
+
+          &.gren {
+            background-color: rgb(37, 201, 124);
+            color: #fff;
+          }
+        }
+      }
+
+      .c_sent_msg_btn,
+      .c_change_btn {
+        flex: none;
+        font-size: 20px;
+        text-align: center;
+        line-height: 50px;
+        width: 50px;
+        height: 50px;
+        color: rgb(145, 143, 143);
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+
+      .c_sent_msg_btn i {
+        font-size: 28px;
+      }
+
+      .c_change_btn i {
+        font-size: 25px;
+      }
+
+    }
+  }
+}
+
+// 侧边栏
+.aside_btn {
+  position: absolute;
+  top: 25px;
+  left: 15px;
+  font-size: 25px;
+  box-sizing: border-box;
+  padding: 5px;
+
+  .boxtop,
+  .boxcon,
+  .boxdow {
+    width: 23px;
+    height: 2px;
+    background-color: rgb(172, 99, 57);
+    transform-origin: left center;
+    transition: transform 0.5s, opacity 0.5s;
+  }
+
+  .boxtop.active {
+    transform: rotateZ(43deg);
+  }
+
+  .boxdow.active {
+    transform: rotateZ(-43deg);
+  }
+
+  .boxcon {
+    margin: 6px 0;
+  }
+}
+
+.aside_wrap {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+
+  .aside {
+    position: relative;
+    width: 80%;
+    max-width: 500px;
+    height: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+    background-color: rgb(0 0 0 / 84%);
+    overflow: hidden;
+
+    .list {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      border-right: 2px solid #fff;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .list_title {
+        position: relative;
+        margin-top: 5px;
+        color: #2c2c2c;
+        font-size: 18px;
+        box-sizing: border-box;
+        padding-left: 20px;
+        height: 50px;
+        line-height: 50px;
+        transition: .3s;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        background-image: linear-gradient(to right, rgb(255 255 255 / 89%) 0%, #fed6e378 100%);
+
+        &:hover {
+          color: #000000;
+          padding-left: 30px;
+          font-weight: bold;
+        }
+
+        &:active {
+          transition: 0s;
+          background-color: #fff;
+        }
+
+        i {
+          width: 30px;
+          height: 15px;
+          text-align: center;
+          margin-right: 10px;
+        }
+      }
+
+      ul {
+        box-sizing: border-box;
+        overflow: hidden;
+
+        .bm_item {
+          position: relative;
+          width: 47%;
+          float: left;
+          font-size: 16px;
+          height: 100px;
+          margin: 5px 0 5px 2%;
+          border-radius: 5px;
+          background-color: #ffffff24;
+          color: #fff;
+          overflow: hidden;
+
+          .check_bm {
+            display: none;
+            border-radius: 5px;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+          }
+
+          &:hover {
+            background-color: #ccc;
+            box-shadow: 0 0 10px rgb(136, 135, 135);
+            color: #000;
+          }
+
+          &:hover p {
+            color: #383737;
+          }
+
+          &:hover .bm_name {
+            border-bottom: 1px solid #747474;
+          }
+
+          &:active {
+            transition: 0s;
+            opacity: .2;
+          }
+
+          .bm_logo {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            margin-left: 5px;
+            border-radius: 5px;
+            width: 25px;
+            height: 25px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+          }
+
+          .bm_name {
+            height: 40px;
+            line-height: 40px;
+            padding-left: 40px;
+            box-sizing: border-box;
+            text-decoration: none;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #cccccc78;
+          }
+
+          p {
+            color: #aaa;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 18px;
+            margin: 5px;
+            word-break: break-all;
+          }
+        }
+      }
+
+      .add_list_btn {
+        float: right;
+        font-size: 24px;
+        margin: 10px 15px 100px 0;
+        color: rgb(20, 194, 218);
+        font-weight: bold;
+
+        &:hover {
+          color: rgb(21, 223, 55);
+        }
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+    }
+
+    .foot_menu {
+      display: none;
+      position: absolute;
+      flex: none;
+      width: 100%;
+      bottom: 0;
+      padding: 5px 0;
+      background-color: rgba(0, 0, 0, 0.692);
+      box-sizing: border-box;
+      border-right: 2px solid #fff;
+      z-index: 5;
+
+      div {
+        display: inline-block;
+        flex: none;
+        color: #ccc;
+        font-size: 20px;
+        margin: 5px 5px 5px 10px;
+        text-align: center;
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+      }
+
+      button {
+        flex: none;
+        outline: none;
+        height: 25px;
+        border: 1px solid #ccc;
+        padding: 0 8px;
+        background: #ccc;
+        margin: 5px;
+
+        &::hover {
+          color: #0f6ce6;
+        }
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+    }
+  }
+}
+
+// 搜索盒子
+.search_box_btn {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: width3 0.3s ease-in-out alternate both;
+  transition: opacity 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    opacity: 1;
+    box-shadow: 0 0 10px #767676;
+  }
+
+  @keyframes width3 {
+    0% {
+      width: 0;
+    }
+
+    100% {
+      width: 100px;
+    }
+  }
+}
+
+.search_box_mask {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  .search_box_wrap {
+    width: 80%;
+    height: 80%;
+    max-height: 1000px;
+    max-width: 1200px;
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -30%);
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: 5px 5px 10px #535353;
+    padding: 20px 0 20px 0;
+    display: flex;
+    flex-flow: column;
+
+    @media (max-width: 800px) {
+      & {
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+
+    .setting {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font-size: 30px;
+      line-height: 50px;
+      text-align: center;
+      width: 50px;
+      color: #ffffff78;
+      height: 50px;
+
+      &:hover {
+        color: #fff;
+      }
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    .search_logo {
+      margin: 0 auto;
+      flex: none;
+
+      .logo_box {
+        width: 0px;
+        margin: 0 auto;
+        overflow: hidden;
+
+        &.active {
+          animation: logowidth 1s ease-in-out alternate both;
+          -webkit-animation: logowidth 1s ease-in-out alternate both;
+        }
+
+        @media (max-width: 800px) {
+          &.active {
+            animation: logowidth1 1s ease-in-out alternate both;
+            -webkit-animation: logowidth1 1s ease-in-out alternate both;
+          }
+        }
+
+        @keyframes logowidth {
+          0% {
+            width: 0;
+          }
+
+          100% {
+            width: 195px;
+          }
+        }
+
+        @-webkit-keyframes logowidth {
+
+          /*针对webkit内核*/
+          0% {
+            width: 0;
+          }
+
+          100% {
+            width: 195px;
+          }
+        }
+
+        @keyframes logowidth1 {
+          0% {
+            width: 0;
+          }
+
+          100% {
+            width: 170px;
+          }
+        }
+
+        @-webkit-keyframes logowidth1 {
+
+          /*针对webkit内核*/
+          0% {
+            width: 0;
+          }
+
+          100% {
+            width: 170px;
+          }
+        }
+
+        img {
+          width: 195px;
+          height: 65px;
+
+          @media (max-width: 800px) {
+            & {
+              width: 170px;
+              height: 60px;
+            }
+          }
+        }
+      }
+    }
+
+    .search_inp_wrap {
+      position: relative;
+      flex: none;
+      padding: 0;
+      border-bottom: 1px solid #ccc;
+      height: 40px;
+      display: flex;
+      flex-flow: row;
+      width: 50%;
+      margin: 20px auto;
+      z-index: 6;
+
+      @media (max-width: 800px) {
+        & {
+          width: 70%;
+        }
+
+      }
+
+      .inp_box {
+        flex: auto;
+        line-height: 40px;
+
+        input {
+          width: 100%;
+          height: 80%;
+          outline: none;
+          box-sizing: border-box;
+          padding: 0 5px;
+          font-size: 20px;
+          background: transparent;
+          color: #fff;
+          text-align: center;
+          border: none;
+        }
+      }
+
+      .search_submit,
+      .translate_btn {
+        flex: none;
+        width: 40px;
+        line-height: 40px;
+        text-align: center;
+        font-size: 18px;
+        color: #ccc;
+
+        &:hover {
+          color: #4285f4;
+        }
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+
+      .search_submit {
+        font-size: 18px;
+      }
+
+      .search_list_box {
+        display: none;
+        width: 100%;
+        position: absolute;
+        top: 43px;
+        left: 0;
+        background-color: rgba(7, 7, 7, 0.753);
+        max-height: 300px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        font-size: 16px;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        ul {
+          box-sizing: border-box;
+
+          li {
+            position: relative;
+            color: #ffffffc2;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            text-align: left;
+            box-sizing: border-box;
+            padding: 0 30px 0 30px;
+            height: 30px;
+            line-height: 30px;
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            &:hover,
+            &.active {
+              color: #000;
+              background-color: #ffffffb3;
+            }
+
+            .dellss {
+              position: absolute;
+              width: 30px;
+              height: 30px;
+              right: 0;
+              top: 0;
+              line-height: 30px;
+              font-size: 17px;
+              text-align: center;
+              color: #cfabab;
+              z-index: 5;
+
+              &:hover {
+                color: rgb(253, 6, 6);
+              }
+            }
+
+            .type_logo {
+              position: absolute;
+              width: 30px;
+              height: 30px;
+              left: 0;
+              top: 0;
+              line-height: 30px;
+              font-size: 16px;
+              text-align: center;
+              color: #59fef6ba;
+              z-index: 5;
+            }
+          }
+        }
+      }
+
+    }
+
+    .home_bm_wrap {
+      width: 80%;
+      flex: auto;
+      display: block;
+      margin: 10px auto auto auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overflow-y: auto;
+
+      @media (max-width: 800px) {
+        & {
+          width: 90%;
+        }
+      }
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      ul {
+        padding: 0;
+
+        .home_bm_item {
+          position: relative;
+          margin: 5px 0;
+          float: left;
+          width: 14.285%;
+          text-align: center;
+
+          @media (max-width: 800px) {
+            & {
+              width: 25%;
+            }
+          }
+
+          &:hover p {
+            color: #aaaa7f;
+          }
+
+          .check_home_bm {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 90%;
+            height: 100%;
+            transform: translateX(-50%);
+            text-align: left;
+            z-index: 5;
+          }
+
+          .home_bm_logo {
+            position: relative;
+            top: 0;
+            margin: 0 auto;
+            width: 45%;
+            box-sizing: border-box;
+            padding-top: 45%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            opacity: .8;
+
+            @media (max-width: 800px) {
+              & {
+                width: 60%;
+                padding-top: 60%;
+              }
+
+            }
+
+            &:hover {
+              transform: scale(1.1);
+              opacity: 1;
+              box-shadow: rgba(33, 33, 33, 0.75) 0 14px 12px -7px;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+          }
+
+          .home_bm_logo[x="add"] {
+            background-color: transparent;
+          }
+        }
+
+        p {
+          font-size: 14px;
+          line-height: 20px;
+          color: #ccc;
+          margin-top: 5px;
+          text-align: center;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .home_foot_menu {
+      display: none;
+      flex: none;
+      width: 100%;
+      padding: 5px 0;
+      background-color: rgba(0, 0, 0, 0.1);
+      text-align: center;
+      box-sizing: border-box;
+
+      div {
+        flex: none;
+        color: #ccc;
+        font-size: 20px;
+        display: inline-block;
+        margin: 5px 10px;
+        width: 25px;
+        text-align: center;
+        line-height: 25px;
+        height: 25px;
+      }
+
+      button {
+        flex: none;
+        outline: none;
+        height: 25px;
+        border: 1px solid #ccc;
+        padding: 0 8px;
+        background: #ccc;
+        margin: 5px;
+
+        &:hover {
+          color: #0f6ce6;
+        }
+
+        &:active {
+          transition: 0s;
+          opacity: .2;
+        }
+      }
+    }
+  }
+}
+
+// 迷你播放器
+.mini_player {
+  display: none;
+  position: fixed;
+  bottom: 100px;
+  left: 100px;
+  height: 100px;
+  width: 100px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 3px 3px 8px #000;
+  border-radius: 5px;
+
+  @media (min-width: 800px) {
+
+    &:hover .next_btn,
+    &:hover .show_lrc,
+    &:hover .prev_btn,
+    &:hover .to_max {
+      display: block;
+    }
+
+    div {
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    .play_btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 40px;
+      height: 40px;
+      font-size: 40px;
+      line-height: 40px;
+      margin: auto;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+
+      &:hover {
+        color: #fff;
+      }
+
+      @keyframes fontcolor {
+        0% {
+          color: #000000;
+        }
+
+        100% {
+          color: #fff;
+        }
+      }
+
+    }
+
+    .to_max {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+      font-size: 25px;
+      color: #ff5500;
+    }
+
+    .show_lrc {
+      display: none;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      font-size: 22px;
+      color: #ff5500;
+    }
+
+    .next_btn,
+    .prev_btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 30px;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    .next_btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: -40px;
+    }
+
+    .prev_btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: -40px;
+    }
+  }
+
+  @media (max-width: 800px) {
+    & {
+      display: none;
+    }
+  }
+}
+
+/* 迷你歌词 */
+.mini_lrc_wrap {
+  display: none;
+  width: 700px;
+  font-size: 30px;
+  color: #a1a3a4;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  border: 1px dotted transparent;
+
+  &:hover {
+    border: 1px dotted #646464;
+  }
+
+  &:hover .close {
+    display: block;
+  }
+
+  .one,
+  .tow {
+    padding: 10px;
+    transition: .3s;
+    line-height: 40px;
+
+    &.open {
+      color: rgb(25, 216, 222)
+    }
+  }
+
+  .one {
+    text-align: left;
+  }
+
+  .tow {
+    text-align: right;
+  }
+
+  .close {
+    display: none;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    font-size: 15px;
+    z-index: 1;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 1);
+    }
+  }
+}
+
+// 音乐播放器盒子
+.music_palyer_box {
+  display: none;
+  height: 90%;
+  width: 100%;
+  max-width: 500px;
+  max-height: 1000px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: max-width .5s, width .5s, max-height .5s, height .5s;
+  background-color: #fff;
+  border: 2px solid #fff;
+  border-radius: 5px;
+
+  @media (max-width: 800px) {
+    & {
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      border: none;
+    }
+
+  }
+
+  // 底部进度条
+  .music_foot_progress {
+    height: 1px;
+    background-color: rgb(37, 186, 206);
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    z-index: 10;
+  }
+
+  .content_wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    // 背景
+    .music_palyer_bg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-image: linear-gradient(to top, #b5c7c8 0%, #d8c7ce 50%, #cacdd4 100%);
+      z-index: -1;
+      border-radius: 0 0 5px 5px;
+      opacity: 0.2;
+      filter: blur(10px);
+      transition: opacity 5s;
+    }
+
+    // 头部
+    .head_wrap {
+      width: 100%;
+      flex: none;
+      height: 40px;
+      display: flex;
+      box-sizing: border-box;
+      padding: 5px 10px;
+      overflow: hidden;
+      background-color: #ffffff;
+
+      div {
+        margin: 0 5px;
+      }
+
+      .close,
+      .hide,
+      .back,
+      .volume {
+        flex: none;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        font-size: 20px;
+        color: #868686;
+
+        &:hover {
+          color: #000;
+        }
+      }
+
+      .hide,
+      .close {
+        @media (max-width:800px) {
+          & {
+            display: none;
+          }
+        }
+      }
+
+      .song_list_name {
+        flex: auto;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-align: center;
+        color: #c91bd5;
+        text-overflow: ellipsis;
+        transition: .5s;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        opacity: 0;
+      }
+
+      .search_music_inp {
+        flex: auto;
+        border: none;
+        outline: none;
+        max-width: 200px;
+        min-width: 100px;
+        width: 0;
+        background-color: rgb(236 236 236 / 83%);
+        height: 30px;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 2px;
+
+        &:focus {
+          background-color: #ccc;
+        }
+      }
+    }
+
+    // 中间
+    .content_box {
+      width: 100%;
+      flex: auto;
+      overflow: hidden;
+      position: relative;
+
+      // 歌单列表
+      .song_list_wrap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        overflow-y: auto;
+        scrollbar-width: none;
+        transition: .5s;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        &.open {
+          transform: translateX(-100%);
+        }
+
+        ul {
+          padding: 10px 10px 50px 10px;
+          overflow: hidden;
+
+          // 项
+          .song_list_item {
+            position: relative;
+            width: 20%;
+            float: left;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 13px;
+            overflow: hidden;
+
+            @media (max-width: 800px) {
+              & {
+                width: 25%;
+                float: left;
+              }
+            }
+
+            &:hover {
+              background-color: #e3e3e3;
+              border-radius: 5px;
+              box-shadow: 3px 2px 5px #6d6d6d;
+            }
+
+            &:hover span {
+              color: #000;
+            }
+
+            &:hover img {
+              box-shadow: none;
+            }
+
+            &:hover .list_logo {
+              top: 3px;
+              box-shadow: 3px 3px 5px transparent;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            .list_logo {
+              position: relative;
+              top: 0;
+              margin: 5px auto;
+              width: 80%;
+              box-sizing: border-box;
+              padding-top: 80%;
+              transition: 0.1s;
+              border-radius: 5px;
+              box-shadow: 3px 3px 5px #6d6d6d;
+              background: url("../../img/musicbg.png") center center;
+              background-repeat: no-repeat;
+              background-size: 70%;
+
+              img {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 5px;
+                vertical-align: bottom;
+              }
+
+            }
+
+            span {
+              color: #5e5e5e;
+              display: block;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              height: 20px;
+              line-height: 20px;
+            }
+
+          }
+
+          // 添加歌单
+          .add_song_list {
+            width: 20%;
+            float: left;
+            margin-bottom: 10px;
+            text-align: center;
+            opacity: 0.3;
+
+            @media (max-width: 800px) {
+              & {
+                width: 25%;
+              }
+            }
+
+            &:hover {
+              opacity: 1;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            img {
+              margin: 5px auto;
+              width: 80%;
+              vertical-align: bottom;
+            }
+          }
+        }
+      }
+
+      // 歌曲列表
+      .list_items_wrap {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translateX(100%);
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        transition: 0.5s;
+        box-sizing: border-box;
+        padding-top: 5px;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        &.open {
+          transform: none;
+        }
+
+        .items_box {
+
+          // 批量操作按钮框
+          .check_all_menu_wrap {
+            display: none;
+            position: fixed;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            font-size: 15px;
+            color: #fff;
+
+            div {
+              line-height: 30px;
+              box-shadow: 2px 2px 6px rgb(143, 137, 137);
+              background-color: rgba(131, 95, 95, 0.3);
+              box-sizing: border-box;
+              padding: 5px;
+              margin-bottom: 8px;
+              border-radius: 5px;
+              text-align: center;
+
+              &:hover {
+                background-color: rgba(29, 26, 26, 0.863);
+              }
+
+              &:active {
+                transition: 0s;
+                opacity: .2;
+              }
+            }
+          }
+
+          // 顶部歌单信息框
+          .items_list_top_wrap {
+            height: 100px;
+            margin-bottom: 10px;
+            display: flex;
+            overflow: hidden;
+
+            &.lbxma {
+              margin-bottom: 50px;
+            }
+
+            .song_list_cover {
+              flex: none;
+              width: 100px;
+              height: 100px;
+              background: url("../../img/musicbg.png") center center;
+              background-repeat: no-repeat;
+              background-size: 70%;
+              margin-left: 5px;
+
+              img {
+                display: none;
+                vertical-align: bottom;
+                width: 100px;
+                border-radius: 5px;
+              }
+            }
+
+            .song_list_info {
+              flex: auto;
+              padding: 0 20px;
+              overflow: hidden;
+              display: flex;
+              justify-content: center;
+              flex-flow: column;
+
+              // 歌单名
+              .song_list_name {
+                flex: none;
+                font-size: 22px;
+                line-height: 40px;
+                height: 40px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                color: #1389a7;
+              }
+
+              // 描叙
+              .song_list_des {
+                flex: auto;
+                overflow-y: auto;
+                line-height: 20px;
+                font-size: 15px;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                color: #575757;
+
+                &::-webkit-scrollbar {
+                  display: none;
+                }
+              }
+            }
+          }
+
+          // 顶部操作按钮框
+          .items_list_top_menu {
+            height: 40px;
+            width: 100%;
+            display: flex;
+            box-sizing: border-box;
+            padding: 0 5px;
+
+            &.sct {
+              position: fixed;
+              top: 40px;
+              right: 0px;
+              z-index: 10;
+              background-color: rgb(255, 255, 255);
+              border-top: 1px solid #efefef;
+            }
+
+            // 播放列表按钮
+            .play_list_btn {
+              flex: none;
+              margin: 0 5px;
+              height: 40px;
+              line-height: 40px;
+              color: #4086b4;
+              font-size: 20px;
+
+              &:hover {
+                font-weight: bold;
+              }
+
+              &:active {
+                transition: 0s;
+                opacity: .2;
+              }
+            }
+
+            // 列表歌曲数
+            .list_total_num {
+              flex: auto;
+              height: 40px;
+              line-height: 40px;
+              font-size: 15px;
+              box-sizing: border-box;
+              overflow: hidden;
+
+              span {
+                color: #706969;
+                margin-left: 5px;
+              }
+            }
+
+            // 右部操作按钮
+            .sheck_song_btn,
+            .upload_song_btn,
+            .edit_song_list_btn,
+            .sort_songs {
+              flex: none;
+              height: 40px;
+              width: 40px;
+              text-align: center;
+              line-height: 40px;
+
+              i {
+                font-size: 25px;
+              }
+
+              &:hover {
+                color: rgb(209, 20, 178);
+              }
+
+              &:active {
+                transition: 0s;
+                opacity: .2;
+              }
+            }
+
+            .edit_song_list_btn i {
+              font-size: 22px;
+            }
+
+          }
+
+          // 歌曲项
+          .song_item {
+            height: 60px;
+            position: relative;
+            display: flex;
+            flex-flow: row;
+            margin: 3px;
+            overflow: hidden;
+
+            &:hover {
+              color: #0f6ce6;
+              background-color: rgb(255, 255, 255);
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            &.active {
+              color: rgb(209, 20, 178);
+              border-radius: 5px;
+              background: linear-gradient(to right, #f6d365 0%, #919191 50%, #fda085 100%);
+            }
+
+            // 选中状态
+            .check_state {
+              display: none;
+              position: absolute;
+              top: 0;
+              left: 0;
+              border-radius: 5px;
+              width: 100%;
+              height: 100%;
+              z-index: 5;
+            }
+
+            // 操作按钮
+            .play_mv,
+            .icon-icon-,
+            .add_song_playing_btn,
+            .set_song_btn {
+              flex: none;
+              color: #707070;
+              line-height: 60px;
+              text-align: center;
+              width: 40px;
+            }
+
+            .play_mv:hover,
+            .add_song_playing_btn:hover,
+            .set_song_btn:hover {
+              color: rgb(209, 20, 178);
+            }
+
+            .icon-icon- {
+              font-size: 18px;
+            }
+
+            .set_song_btn {
+              font-size: 20px;
+            }
+
+            .add_song_playing_btn {
+              font-size: 22px;
+            }
+
+            .play_mv {
+              font-size: 24px;
+            }
+
+            .song_logo_box {
+              position: relative;
+              flex: none;
+              width: 50px;
+              height: 50px;
+              margin: 5px;
+              overflow: hidden;
+              border-radius: 5px;
+              background: url("../../img/musicbg.png") center center;
+              background-repeat: no-repeat;
+              background-size: 80%;
+
+              .logo {
+                display: none;
+                width: 100%;
+                height: 100%;
+              }
+
+              .play_gif {
+                bottom: 6px;
+                display: none;
+                left: 6px;
+                position: absolute;
+                width: 14px;
+
+                &.show {
+                  display: block;
+                }
+              }
+            }
+
+
+            .song_info_wrap {
+              flex: auto;
+              width: 0;
+              height: 60px;
+              box-sizing: border-box;
+              padding: 5px;
+              overflow: hidden;
+
+              span {
+                display: block;
+                width: 100%;
+                line-height: 25px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              }
+
+              .song_name {
+                font-size: 16px;
+              }
+
+              .artist_name {
+                font-size: 12px;
+                color: #747474;
+
+                .viptu {
+                  color: rgb(167, 164, 37);
+                  font-size: 13px;
+                  margin-right: 4px;
+                }
+              }
+            }
+          }
+
+          .song_list_paging {
+
+            .next_page:hover,
+            .prev_page:hover {
+              color: rgb(209, 20, 178);
+            }
+          }
+        }
+
+        .position_btn {
+          display: none;
+          width: 30px;
+          position: fixed;
+          bottom: 100px;
+          right: 15px;
+          z-index: 10;
+          border-radius: 10px;
+          box-shadow: 2px 2px 5px #868686;
+          opacity: 0.8;
+          overflow: hidden;
+
+          div {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #868686;
+            background-color: #f0f0f0;
+
+            &:hover {
+              color: rgb(209, 20, 178);
+            }
+          }
+
+          .get_location {
+            font-size: 17px;
+          }
+        }
+      }
+    }
+
+    .music_foot_box {
+      width: 100%;
+      flex: none;
+      height: 50px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      background-color: #ffffff;
+
+      .playing_song_logo {
+        width: 50px;
+        flex: none;
+        height: 50px;
+        position: relative;
+
+        &:active {
+          transition: 0;
+          opacity: .2;
+        }
+
+        .logo_img {
+          width: 46px;
+          height: 46px;
+          margin: 2px;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: 80%;
+          border-radius: 50%;
+
+          img {
+            display: none;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+          }
+        }
+      }
+
+      .playing_song_info {
+        flex: auto;
+        margin: 0 auto;
+        font-size: 18px;
+        height: 50px;
+        line-height: 50px;
+        color: #626262;
+        text-align: center;
+        overflow: hidden;
+        animation: fcolor 18s infinite linear alternate;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      @keyframes fcolor {
+        0% {
+          color: #000;
+        }
+
+        20% {
+          color: #55aaff;
+        }
+
+        40% {
+          color: #ff55ff;
+        }
+
+        60% {
+          color: #55ff00;
+        }
+
+        80% {
+          color: #aa00ff;
+        }
+
+        100% {
+          color: #ff007f;
+        }
+      }
+
+      .right_btns {
+        flex: none;
+        width: 150px;
+        height: 50px;
+
+        div {
+          float: left;
+          width: 50px;
+          text-align: center;
+          font-size: 30px;
+          line-height: 50px;
+
+          &:hover {
+            color: rgb(209, 20, 178);
+
+          }
+
+          &:active {
+            transition: 0;
+            opacity: .2;
+          }
+        }
+
+        @keyframes fontcolor {
+          0% {
+            color: #000000;
+          }
+
+          100% {
+            color: #fff;
+          }
+        }
+
+        .playing_list_btn {
+          font-size: 24px;
+        }
+      }
+    }
+
+    // 歌词盒子
+    .music_lrc_wrap {
+      position: absolute;
+      box-sizing: border-box;
+      background-color: #000;
+      color: #ccc;
+      top: 40px;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 11;
+      transform: translateY(100%);
+      transition: 0.5s;
+      padding-bottom: 40px;
+
+      @media (max-width: 800px) {
+        & {
+          top: 0;
+          padding: 0;
+        }
+      }
+
+      &.active {
+        transform: none;
+      }
+
+      .lrc_box {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+
+        .lrc_bg {
+          position: absolute;
+          box-sizing: border-box;
+          background-image: linear-gradient(to top, #e5e5e5 0%, #c3c392 100%);
+          background-repeat: no-repeat;
+          background-size: cover;
+          background-position: center;
+          width: 100%;
+          height: 100%;
+          opacity: 0.3;
+          transform: scale(1.1);
+          filter: blur(10px);
+          z-index: -1;
+          transition: transform 0.3s, filter 1s, opacity 1s;
+
+          &.open {
+            opacity: 0.8;
+            transform: scale(1);
+            filter: blur(0);
+          }
+
+          &.lrcbgss {
+            opacity: 0;
+            transition: opacity 0s;
+          }
+        }
+
+        .lrc_head {
+          display: flex;
+          flex-flow: row;
+          flex: none;
+          height: 60px;
+
+          @media (max-width: 800px) {
+            & {
+              height: 80px;
+              padding-top: 20px;
+              box-sizing: border-box;
+            }
+          }
+
+          .remote_play,
+          .close {
+            flex: none;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            font-size: 20px;
+
+            @media (max-width: 800px) {
+              & {
+                width: 60px;
+                height: 60px;
+                line-height: 60px;
+                text-align: center;
+                font-size: 20px;
+              }
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+          }
+
+          .close:hover {
+            color: rgb(209, 20, 178);
+
+          }
+
+          .remote_play {
+            font-size: 30px;
+            color: #1389a7;
+
+            @media (max-width: 800px) {
+              & {
+                font-size: 36px;
+              }
+            }
+
+            &.red {
+              color: rgb(197, 26, 55);
+            }
+          }
+
+          .song_info_box {
+            flex: auto;
+            width: 0;
+            box-sizing: border-box;
+
+            .song_name {
+              height: 40px;
+              text-align: center;
+              box-sizing: border-box;
+              padding-top: 15px;
+              font-size: 20px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+
+              @media (max-width: 800px) {
+                & {
+                  line-height: 40px;
+                  padding-top: 0px;
+                  font-size: 24px;
+                }
+              }
+            }
+
+            .artist_name {
+              height: 20px;
+              text-align: center;
+              font-size: 10px;
+              box-sizing: border-box;
+              color: rgb(151 151 146);
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+
+              @media (max-width: 800px) {
+                & {
+                  font-size: 13px;
+                }
+              }
+            }
+          }
+        }
+
+        // 歌词框
+        .lrc_list_wrap {
+          position: relative;
+          width: 100%;
+          flex: auto;
+          box-sizing: border-box;
+          overflow: hidden;
+
+          .lrc_items {
+            width: 100%;
+            color: #7c7b7b;
+            box-sizing: border-box;
+            padding: 0 8%;
+            overflow: hidden;
+
+            div {
+              padding-bottom: 22px;
+              transition: opacity 0.5s ease-out, letter-spacing .1s;
+              opacity: 1;
+
+              &.open {
+                opacity: 0.1;
+              }
+
+              &.active {
+                color: rgb(255, 255, 255);
+                letter-spacing: 1px;
+                opacity: 1;
+              }
+
+              p {
+                white-space: pre-wrap;
+                word-break: break-word;
+              }
+
+              .lrcfy {
+                padding-top: 10px;
+              }
+            }
+          }
+        }
+
+        // 设置按钮
+        .lrc_menu_wrap {
+          flex: none;
+          height: 60px;
+
+          .collect_song_btn {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-size: 24px;
+            color: #999595bd;
+            margin-left: 30px;
+            float: left;
+
+            @media (max-width: 800px) {
+              font-size: 28px;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            &.active {
+              color: #fd4747;
+            }
+          }
+
+          .right_btns {
+            float: right;
+            margin-right: 15px;
+
+            div {
+              height: 30px;
+              line-height: 30px;
+              margin: 0 5px;
+              font-size: 20px;
+              padding: 0 5px;
+              text-align: center;
+              float: left;
+
+              @media (max-width: 800px) {
+                & {
+                  font-size: 22px;
+                }
+              }
+
+              &:hover {
+                color: rgb(209, 20, 178);
+              }
+
+              &:active {
+                transition: 0s;
+                opacity: .2;
+              }
+            }
+
+            .set_lrc_btn {
+              font-size: 19px;
+            }
+
+            .lrc_translate_btn,
+            .play_mv_btn {
+              display: none;
+            }
+          }
+        }
+
+        .lrc_foot_wrap {
+          display: none;
+          width: 100%;
+          height: 120px;
+          flex: none;
+          background-color: transparent;
+
+          .progress_bar {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .current_time,
+            .total_time {
+              font-size: 16px;
+              line-height: 10px;
+              flex: none;
+              padding: 0 10px;
+            }
+
+            .probox {
+              flex: auto;
+              height: 10px;
+              display: flex;
+              align-items: center;
+
+              &:hover .pro1 {
+                height: 6px;
+              }
+
+              &:hover .pro1 .pro2 .dolt {
+                margin-top: -2px;
+                width: 6px;
+                height: 10px;
+              }
+
+              .pro1 {
+                position: relative;
+                width: 100%;
+                height: 2px;
+                background-color: #ccc;
+
+                &.open {
+                  height: 6px;
+                }
+
+                .pro2 {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 0;
+                  height: 100%;
+                  background-image: linear-gradient(to right, green, orange, red);
+
+                  .dolt {
+                    float: right;
+                    transform: translateX(50%);
+                    margin-top: -3px;
+                    width: 4px;
+                    height: 8px;
+                    background-color: #ccc;
+
+                    &:open {
+                      margin-top: -2px;
+                      width: 6px;
+                      height: 10px;
+                    }
+
+                    @keyframes bgcolor {
+                      0% {
+                        background-color: #000000;
+                      }
+
+                      100% {
+                        background-color: #fff;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+          }
+
+          .foot_btn_wrap {
+            width: 80%;
+            height: 100px;
+            line-height: 50px;
+            box-sizing: border-box;
+            padding: 25px 0;
+            display: flex;
+            flex-direction: row;
+            margin: 0 auto;
+            justify-content: space-around;
+            border-radius: 0 0 5px 5px;
+
+            div {
+              &:active {
+                transition: 0s;
+                opacity: .2;
+              }
+            }
+
+            .play_btn,
+            .playing_list_btn,
+            .random_play_btn,
+            .prev_play_btn,
+            .next_play {
+              font-size: 25px;
+
+              &:hover {
+                color: rgb(209, 20, 178);
+
+              }
+            }
+
+
+            .play_btn {
+              font-size: 40px;
+            }
+
+            .playing_list_btn {
+              font-size: 20px;
+            }
+
+            @keyframes fontcolor {
+              0% {
+                color: #000000;
+              }
+
+              100% {
+                color: #fff;
+              }
+            }
+
+          }
+        }
+      }
+
+
+    }
+
+    // 搜索列表
+    .search_music_wrap {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      box-sizing: border-box;
+      padding-bottom: 40px;
+      background-color: rgba(0, 0, 0, 0.486);
+      z-index: 13;
+
+      .s_music_list_box {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 80%;
+        color: #6c6c6c;
+        border-radius: 0 0 5px 5px;
+        background-color: rgb(255, 255, 255);
+
+        ul {
+          text-align: left;
+          height: 100%;
+          border-radius: 0 0 5px 5px;
+          overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          overflow-x: hidden;
+          box-sizing: border-box;
+          padding-bottom: 40px;
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          .song_item {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 60px;
+            border-bottom: 1px solid #cccccc2b;
+            color: #4a4949;
+
+            &:hover {
+              background-color: rgba(232, 232, 232, 0.404);
+              color: #0f6ce6;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            .icon-icon-,
+            .set_menu,
+            .add_palying_list {
+              flex: none;
+              width: 40px;
+              line-height: 60px;
+              text-align: center;
+              font-size: 18px;
+              color: #5a5a5a;
+            }
+
+            .add_palying_list:hover,
+            .set_menu:hover {
+              color: rgb(209, 20, 178);
+            }
+
+            .logo_wrap {
+              position: relative;
+              flex: none;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 60px;
+              height: 60px;
+              overflow: hidden;
+              background: url("../../img/musicbg.png") center center;
+              background-repeat: no-repeat;
+              background-size: 70%;
+
+              .logo {
+                display: none;
+                width: 80%;
+                height: 80%;
+                border-radius: 50%;
+              }
+            }
+
+            .song_info_wrap {
+              flex: auto;
+              width: 0;
+              padding: 5px;
+              box-sizing: border-box;
+
+              span {
+                line-height: 25px;
+                height: 25px;
+                display: block;
+                overflow: hidden;
+                white-space: normal;
+                text-overflow: ellipsis;
+                background-color: transparent;
+              }
+
+              .song_name {
+                font-size: 16px;
+              }
+
+              .artist_name {
+                font-size: 12px;
+                color: #5a5a5a;
+              }
+
+            }
+          }
+        }
+      }
+    }
+
+    // 当前播放列表
+    .playing_list_mask {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.507);
+      z-index: 12;
+
+      .p_music_list_wrap {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 70%;
+        color: #6c6c6c;
+        overflow: hidden;
+        border-radius: 5px 5px 0 0;
+        box-sizing: border-box;
+        padding: 0 2px;
+        background-color: rgba(255, 255, 255);
+
+        .p_head {
+          width: 100%;
+          height: 40px;
+          padding: 5px;
+          box-sizing: border-box;
+
+          .left {
+            float: left;
+            line-height: 30px;
+          }
+
+          .clear_playing_list {
+            float: right;
+            line-height: 30px;
+            text-align: center;
+            height: 30px;
+            width: 30px;
+            font-size: 20px;
+
+
+            &:hover {
+              color: #000;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+          }
+        }
+
+        .p_foot {
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+          padding-bottom: 40px;
+          overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          overflow-x: hidden;
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          .song_item {
+            height: 60px;
+            display: flex;
+            box-sizing: border-box;
+            border-bottom: 1px solid #cccccc38;
+            color: #4a4949;
+
+            &:hover {
+              background-color: rgba(232, 232, 232, 0.404);
+              color: #0f6ce6;
+            }
+
+            &:active {
+              transition: 0s;
+              opacity: .2;
+            }
+
+            &.active {
+              color: rgb(209, 20, 178);
+              border-radius: 5px;
+              background: linear-gradient(to right, #f6d365 0%, #919191 50%, #fda085 100%);
+            }
+
+            .icon-icon-,
+            .del {
+              flex: none;
+              text-align: center;
+              line-height: 60px;
+              width: 40px;
+            }
+
+            .logo_wrap {
+              position: relative;
+              flex: none;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 60px;
+              height: 60px;
+              overflow: hidden;
+              background: url("../../img/musicbg.png") center center;
+              background-repeat: no-repeat;
+              background-size: 70%;
+
+              .logo {
+                display: none;
+                width: 80%;
+                height: 80%;
+                border-radius: 50%;
+              }
+
+              .play_gif {
+                display: none;
+                position: absolute;
+                width: 16px;
+
+                &.show {
+                  display: block;
+                }
+              }
+            }
+
+            .del {
+              color: #5a5a5a;
+
+              &:hover {
+                color: rgb(209, 20, 178);
+              }
+            }
+
+            .song_info_wrap {
+              flex: auto;
+              width: 0;
+              padding: 5px;
+              box-sizing: border-box;
+
+              span {
+                line-height: 25px;
+                display: block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                background-color: transparent;
+              }
+
+              .song_name {
+                font-size: 16px;
+              }
+
+              .artist_name {
+                color: #5a5a5a;
+                font-size: 12px;
+              }
+            }
+          }
+
+          .playing_list_paging {
+
+            .prev_page:hover,
+            .next_page:hover {
+              color: rgb(209, 20, 178);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 歌词编辑
+.edit_lrc_wrap {
+  display: none;
+  flex-flow: column;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  max-height: 80%;
+  border: 1px solid #b7b3b3;
+  background-color: #fff;
+  transition: max-width .5s, width .5s, max-height .5s, height .5s;
+
+  @media (max-width: 800px) {
+    & {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+
+  .e_head_btns {
+    padding: 5px;
+    display: flex;
+    border-bottom: 1px solid #ccc;
+
+    div {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      font-size: 20px;
+      color: #868686;
+      margin: 0 5px;
+
+      &:hover {
+        color: #000;
+      }
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    .close {
+      @media (max-width: 800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+    .back {
+      @media (min-width: 800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+    .song_info_text {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+  }
+
+  textarea {
+    flex: auto;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: none;
+    resize: none;
+    box-sizing: border-box;
+    padding: 10px;
+    line-height: 30px;
+    font-size: 18px;
+    overflow-y: auto;
+    background-color: transparent;
+  }
+}
+
+// MV盒子
+.music_mv_wrap {
+  display: none;
+  width: 100%;
+  max-width: 600px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: max-width .5s, width .5s, max-height .5s, height .5s;
+
+  @media (max-width: 800px) {
+    & {
+      max-width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+  }
+
+  .m_head_btns {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    padding: 5px;
+    box-sizing: border-box;
+
+    .m_back,
+    .m_close {
+      flex: none;
+      width: 30px;
+      line-height: 30px;
+      text-align: center;
+      font-size: 20px;
+      color: #868686;
+
+      &:hover {
+        color: #000;
+      }
+    }
+
+    .m_close {
+      @media (max-width:800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+    .m_back {
+      @media (min-width:800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+
+  }
+
+  .video_box {
+    width: 100%;
+    padding: 0 2px;
+    box-sizing: border-box;
+
+    @media (max-width: 800px) {
+
+      & {
+        width: 100%;
+        height: 100%;
+        padding: 0 0 80px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+// 日志盒子
+.log_wrap {
+  display: none;
+  flex-flow: column;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  max-width: 1200px;
+  max-height: 800px;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 0 2px 5px 2px;
+  transition: max-width .5s, max-height .5s, width .5s, height .5s;
+
+  @media (max-width: 800px) {
+    & {
+      height: 100%;
+      width: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      padding: 0;
+      border: none;
+    }
+  }
+
+  .log_head_btns {
+    flex: none;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 5px;
+    display: flex;
+
+    div {
+      margin: 0 5px;
+      font-size: 20px;
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    .l_clear_log,
+    .l_regresh,
+    .l_back_btn,
+    .l_close_btn {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      color: #868686;
+
+      &:hover {
+        color: #000;
+      }
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    .l_close_btn {
+      @media (max-width:800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+    .l_back_btn {
+      float: left;
+      line-height: 30px;
+      margin-left: 20px;
+
+      @media (min-width:800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+    .l_search_inp {
+      flex: auto;
+      border: none;
+      outline: none;
+      max-width: 200px;
+      min-width: 100px;
+      width: 0;
+      margin: 0 5px;
+      background-color: rgb(236, 236, 236);
+      height: 30px;
+      font-size: 16px;
+      text-align: center;
+      border-radius: 2px;
+
+      &:focus {
+        background-color: #ccc;
+      }
+    }
+  }
+
+  .log_content {
+    flex: auto;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    color: #1389a7;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #0e0d0d;
+
+    p {
+      padding: 0;
+      margin: 0;
+      word-break: break-all;
+      line-height: 25px;
+
+      &:nth-child(even) {
+        color: rgb(73 169 35);
+      }
+    }
+
+    .log_paging_box {
+      width: 100%;
+      margin: 30px auto;
+
+      button[cursor]:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+  }
+
+  .log_page_size {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgb(248 245 245 / 70%);
+    font-size: 20px;
+    color: #444444;
+    outline: none;
+    border: 1px solid #aaa;
+  }
+}
+
+// iframe窗口
+.iframe_warp {
+  display: none;
+  flex-flow: column;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  max-width: 1200px;
+  max-height: 800px;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 0 2px 5px 2px;
+  transition: max-width .5s, max-height .5s, width .5s, height .5s;
+  border: 1px solid #ccc;
+
+  @media (max-width: 800px) {
+    & {
+      height: 100%;
+      width: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      padding: 0;
+      border: none;
+    }
+  }
+
+  &.open {
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .i_head_btns {
+    flex: none;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 5px;
+    display: flex;
+
+    div {
+      margin: 0 5px;
+      font-size: 20px;
+      flex: none;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      color: #868686;
+
+      &:hover {
+        color: #000;
+      }
+
+      &:active {
+        transition: 0s;
+        opacity: .2;
+      }
+    }
+
+    .i_close_btn {
+      @media (max-width:800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+
+    .i_back_btn {
+      @media (min-width:800px) {
+        & {
+          display: none;
+        }
+      }
+
+    }
+
+    .i_title_text {
+      flex: auto;
+      text-align: center;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .i_to_max_btn {
+      font-size: 17px;
+
+      @media (max-width:800px) {
+        & {
+          display: none;
+        }
+      }
+    }
+  }
+
+  iframe {
+    flex: auto;
+    width: 100%;
+    height: 100%;
+  }
+}

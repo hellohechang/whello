@@ -14,31 +14,33 @@
 </head>
 
 <body>
-  <audio id="myAudio"></audio>
-  <div class="box">
-    <div class="mbg"></div>
-    <div class="musiclrcwrap">
-      <p class="from"><span cursor></span></p>
-      <div class="musicbg"></div>
-      <div class="mlrcbox">
-        <div class="mhead">
-          <div title="更多音乐" cursor class="home iconfont icon-zhuye"></div>
-          <div class="musicconfig">
-            <div class="mname"></div>
-            <div class="martist"></div>
+  <audio class="my_audio"></audio>
+  <div class="music_player_wrap">
+    <div class="page_bg"></div>
+    <div class="content_box">
+      <p class="user_info"><span cursor></span></p>
+      <div class="song_cover"></div>
+      <div class="lrc_box">
+        <div class="head_song_info">
+          <div title="更多音乐" cursor class="to_home iconfont icon-zhuye"></div>
+          <div class="info">
+            <div class="song_name"></div>
+            <div class="artist_name"></div>
           </div>
-          <div cursor class="userLogo"></div>
+          <div cursor class="user_logo"></div>
         </div>
-        <div class="musiclrc">
-          <div class="lrc"></div>
-          <div class="operation">
-            <div cursor class="mvon">MV</div>
-            <div cursor class="lrcfyon">译</div>
-          </div>
+        <div class="lrc_content">
+          <div class="lrc_list"></div>
         </div>
-        <div class="musicbar">
-          <div cursor id="play" class="iconfont icon-65zanting"></div>
-          <div class="prowrap">
+        <div class="song_set_btns">
+          <div cursor class="set_lrc_btn iconfont icon-icon"></div>
+          <div cursor class="translate_btn">译</div>
+          <div cursor class="play_mv_btn">MV</div>
+          <div cursor class="play_speed_btn">x1</div>
+        </div>
+        <div class="music_foot_wrap">
+          <div cursor class="play_btn iconfont icon-65zanting"></div>
+          <div class="pro_wrap">
             <div class="current_time">00:00</div>
             <div class="total_time">00:00</div>
             <div cursor class="probox clearfix">
@@ -54,13 +56,15 @@
     </div>
   </div>
   <!-- MV -->
-  <div class="musicmv">
-    <div class="mvonoffbox">
-      <div cursor class="mvoff iconfont icon-guanbi"></div>
-      <div cursor class="mvoffxs iconfont icon-prev"></div>
-    </div>
-    <div class="videowrap">
-      <video id="myVideo" width="100%" controls="controls"></video>
+  <div class="music_mv_mask">
+    <div class="music_mv_box">
+      <div class="head_btns">
+        <div cursor class="close_btn iconfont icon-guanbi"></div>
+        <div cursor class="back_btn iconfont icon-prev"></div>
+      </div>
+      <div class="vedio_box">
+        <video class="my_vedio" width="100%" controls="controls"></video>
+      </div>
     </div>
   </div>
 </body>
