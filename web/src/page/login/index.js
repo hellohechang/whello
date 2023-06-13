@@ -35,6 +35,10 @@ _setTimeout(() => {
   });
   $box.stop().show(_speed);
 }, 600);
+if (_getData('state')) {
+  myOpen('/');
+}
+$account.val(_getData('account') || '')
 _getAjax('/user/isregister').then(res => {
   if (res.code == 0) {
     if (res.data == 'y') {

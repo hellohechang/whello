@@ -1071,6 +1071,7 @@ _getAjax('/user/getuserinfo').then((result) => {
     }
     if (_d.userInfo.account !== 'root') {
       $rightBox.find('.show_log').remove();
+      $rightBox.find('.user_managa').remove();
     }
     $rightBox.find('.user_name')
       .text(_d.userInfo.username)
@@ -6167,7 +6168,9 @@ $rightBox.on('click', '.r_about', debounce(
       }).catch(err => { });
     },
   });
-});
+}).on('click', '.user_managa', function () {
+  openIframe(`/page/root`, '用户管理')
+})
 
 // 日志
 var logpage = 1;
