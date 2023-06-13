@@ -70,7 +70,7 @@ import { _loadingBar } from '../plugins/loadingBar'
           };
         local.push(obj);
         _setData('md', local);
-        if (window.clockMove) {
+        if (window.openIframe) {
           openIframe(`/page/edit/#${obj.name}`, 'Edit');
         } else {
           _myOpen(`/page/edit/#${obj.name}`, 'Edit');
