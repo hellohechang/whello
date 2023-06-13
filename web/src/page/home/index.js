@@ -2028,10 +2028,9 @@ function bgInterval() {
           $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
         }
       );
-      return;
     }
-    $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
   }).catch(err => {
+    _err('加载错误');
     $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
   });
 }
