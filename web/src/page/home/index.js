@@ -1,12 +1,12 @@
 import $ from "jquery";
 import SparkMD5 from "spark-md5";
-import md5 from 'md5'
-import './recorder.mp3.min'
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import './index.less'
-import icon1logo from '../../img/icon1.png'
-import iconlogo from '../../img/icon.png'
+import md5 from 'md5';
+import './recorder.mp3.min';
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import './index.less';
+import icon1logo from '../../img/icon1.png';
+import iconlogo from '../../img/icon.png';
 import {
   queryURLParams,
   myOpen,
@@ -48,15 +48,16 @@ import {
   downloadFile,
   imgPreview,
   qucong,
-} from '../../utils/utils.js'
+  userlenght,
+} from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
-import '../../js/common'
+import '../../js/common';
 import { _err, _success } from "../../plugins/message";
-import { alert } from '../../plugins/alert'
-import { _loadingBar } from '../../plugins/loadingBar'
-import { pagination } from '../../plugins/pagination'
-import { rightMenu } from '../../plugins/rightMenu'
-import { UpProgress } from '../../plugins/UpProgress'
+import { alert } from '../../plugins/alert';
+import { _loadingBar } from '../../plugins/loadingBar';
+import { pagination } from '../../plugins/pagination';
+import { rightMenu } from '../../plugins/rightMenu';
+import { UpProgress } from '../../plugins/UpProgress';
 const $pageBg = $('.page_bg'),
   $minimizeBox = $('.minimize_box'),
   $asideBtn = $('.aside_btn'),
@@ -232,7 +233,7 @@ let $document = $(document),
 })();
 // 关闭页面加载
 let closeLoading = function () {
-  const $onloading = $('.onloading')
+  const $onloading = $('.onloading');
   return function () {
     $onloading
       .html('')
@@ -240,7 +241,7 @@ let closeLoading = function () {
       .fadeOut(_speed, () => {
         $onloading.remove();
       });
-  }
+  };
 }();
 if (dmwidth <= 800) $clock.css('display', 'none');
 let zindexnum = 100;
@@ -267,7 +268,7 @@ function setZindex($el) {
             sendCommand({ type: 'updatedata', flag: 'bookmark' });
             renderAsideList();
           }
-        }).catch(err => { })
+        }).catch(err => { });
       }
       fromDom = null;
     })
@@ -294,7 +295,7 @@ function setZindex($el) {
               renderAsideList();
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
         fromDom = null;
       }
@@ -327,7 +328,7 @@ function renderAsideList() {
       }
       rAsideList();
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 function rAsideList() {
   if ($asideWrap.is(':hidden')) return;
@@ -454,7 +455,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
       fun();
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }, 500, true)).on('click', '.bm_item', function (e) {
   let link = $(this).attr('data-link');
   myOpen(link, "_blank");
@@ -478,7 +479,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
           renderAsideList();
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
   },
     1000,
@@ -570,7 +571,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
             renderAsideList();
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
         return;
       }
     },
@@ -617,7 +618,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
                     renderAsideList();
                   }
                 }
-              ).catch(err => { })
+              ).catch(err => { });
             },
           });
         }
@@ -704,7 +705,7 @@ function asideBmMenu(e, obj) {
                         return;
                       }
                     }
-                  ).catch(err => { })
+                  ).catch(err => { });
                 }
               },
               1000,
@@ -751,7 +752,7 @@ function asideBmMenu(e, obj) {
                       $asideBtn.activeId = obj.id;
                       renderAsideList();
                     }
-                  }).catch(err => { })
+                  }).catch(err => { });
                 }
               },
               1000,
@@ -763,9 +764,9 @@ function asideBmMenu(e, obj) {
           _postAjax('/nav/share', { id: obj.id }).then((result) => {
             if (parseInt(result.code) === 0) {
               close();
-              openIframe(`/page/sharelist`, '分享列表')
+              openIframe(`/page/sharelist`, '分享列表');
             }
-          }).catch(err => { })
+          }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem3')) {
           //删除列表
           alert(`确认删除列表：${obj.name}？`, {
@@ -778,7 +779,7 @@ function asideBmMenu(e, obj) {
                   sendCommand({ type: 'updatedata', flag: 'bookmark' });
                   renderAsideList();
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         }
@@ -807,7 +808,7 @@ function asideListMenu(e, obj) {
         if (_getTarget(e, '.mtcitem')) {
           close();
           hideAside();
-          openIframe(obj.link, obj.name)
+          openIframe(obj.link, obj.name);
         } else if (_getTarget(e, '.mtcitem1')) {
           //上传图标
           close();
@@ -929,7 +930,7 @@ function asideListMenu(e, obj) {
                       renderAsideList();
                       return;
                     }
-                  }).catch(err => { })
+                  }).catch(err => { });
                 }
               },
               1000,
@@ -946,7 +947,7 @@ function asideListMenu(e, obj) {
               str += `<div data-name="${name}" class="mtcitem" data-id="${item.id}"><i class='iconfont icon-shoucang'></i><span style="margin-left:10px;">${name}</span></div>`;
             }
           });
-          let flagClose = close
+          let flagClose = close;
           rightMenu(
             e,
             str,
@@ -967,7 +968,7 @@ function asideListMenu(e, obj) {
                         toid,
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
-                          flagClose()
+                          flagClose();
                           close();
                           sendCommand({
                             type: 'updatedata',
@@ -975,7 +976,7 @@ function asideListMenu(e, obj) {
                           });
                           renderAsideList();
                         }
-                      }).catch(err => { })
+                      }).catch(err => { });
                     },
                   });
                 }
@@ -999,7 +1000,7 @@ function asideListMenu(e, obj) {
                     return;
                   }
                 }
-              ).catch(err => { })
+              ).catch(err => { });
             },
           });
         }
@@ -1051,33 +1052,14 @@ function hideAside() {
   });
 }
 
-
-// 限制用户名长度
-function userlenght(str) {
-  let arr = str.split(''),
-    num = 0;
-  arr.forEach((v) => {
-    num +=
-      /[\u2E80-\u2FDF\u3040-\u318F\u31A0-\u31BF\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FFF\uA960-\uA97F\uAC00-\uD7FF]/.test(
-        v
-      )
-        ? 2
-        : 0.8;
-  });
-  if (num > 12) {
-    return true;
-  } else {
-    return false;
-  }
-}
 _getAjax('/chat/getnews', { a: 3 }).then((result) => {
   if (parseInt(result.code) === 0) {
     $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeOut(_speed);
   } else {
     $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeIn(_speed);
   }
-}).catch(err => { })
-_getAjax('/user/renewal').then(res => { }).catch(err => { })
+}).catch(err => { });
+_getAjax('/user/renewal').then(res => { }).catch(err => { });
 
 
 _getAjax('/user/getuserinfo').then((result) => {
@@ -1145,7 +1127,7 @@ _getAjax('/user/getuserinfo').then((result) => {
       closeLoading();
     });
   }
-}).catch(err => { })
+}).catch(err => { });
 
 // 主页书签
 ~(function () {
@@ -1166,7 +1148,7 @@ _getAjax('/user/getuserinfo').then((result) => {
               renderHomebook();
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
         fromDom = null;
       }
@@ -1188,7 +1170,7 @@ function renderHomebook() {
       renderhomebook();
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 function renderhomebookdefault() {
   let str = '';
@@ -1304,7 +1286,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
                 renderHomebook();
                 return;
               }
-            }).catch(err => { })
+            }).catch(err => { });
           }
         },
         1000,
@@ -1395,7 +1377,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
             renderHomebook();
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
         return;
       }
     },
@@ -1448,7 +1430,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
                   }
                   return;
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         }
@@ -1510,7 +1492,7 @@ function homeBmMenu(e, obj) {
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
           close();
-          openIframe(obj.link, obj.name)
+          openIframe(obj.link, obj.name);
         } else if (_getTarget(e, '.mtcitem1')) {
           // 自定义图标
           close();
@@ -1562,7 +1544,7 @@ function homeBmMenu(e, obj) {
                           return;
                         }
                       }
-                    ).catch(err => { })
+                    ).catch(err => { });
                     return;
                   }
                   return new Promise.reject();
@@ -1633,7 +1615,7 @@ function homeBmMenu(e, obj) {
                       renderHomebook();
                       return;
                     }
-                  }).catch(err => { })
+                  }).catch(err => { });
                 }
               },
               1000,
@@ -1651,7 +1633,7 @@ function homeBmMenu(e, obj) {
             let name = encodeHtml(v.name);
             str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><i class='iconfont icon-shoucang'></i><span style="margin-left:10px;">${name}</span></div>`;
           });
-          let flagClose = close
+          let flagClose = close;
           rightMenu(
             e,
             str,
@@ -1671,7 +1653,7 @@ function homeBmMenu(e, obj) {
                         nid,
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
-                          flagClose()
+                          flagClose();
                           close();
                           sendCommand({
                             type: 'updatedata',
@@ -1684,7 +1666,7 @@ function homeBmMenu(e, obj) {
                           }
                           return;
                         }
-                      }).catch(err => { })
+                      }).catch(err => { });
                     },
                   });
                 }
@@ -1708,7 +1690,7 @@ function homeBmMenu(e, obj) {
                   renderHomebook();
                   return;
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         }
@@ -1732,7 +1714,7 @@ $searchBoxBtn.on('click', function (e) {
 //搜索相关
 //切换搜索引擎
 ~(function () {
-  let ss = _getData('searchengine') || searchengine[0]; //默认搜索引擎
+  let ss = _getData('searchengine') || _d.searchEngineData[0]; //默认搜索引擎
   let { icon, logo, searchlink } = ss;
   $searchLogo.find('img').attr({ src: logo });
   $searchBoxBtn.attr('src', icon);
@@ -1815,7 +1797,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
           sxtsc(result.data);
         }
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     textinput(val);
   }
@@ -1829,7 +1811,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
           sxtsc(result.data);
         }
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     textinput(val);
   }
@@ -1865,7 +1847,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
         $(this).parent().stop().slideUp(_speed);
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   })
   .on('contextmenu', 'li', function (e) {
     let xx = $(this).attr('xx');
@@ -1876,7 +1858,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
 function saveSearchText(str) {
   str = str.trim();
   if (str === '') return;
-  _postAjax('/search/add', { a: str }).then(res => { }).catch(err => { })
+  _postAjax('/search/add', { a: str }).then(res => { }).catch(err => { });
 }
 let searchstr = '';
 function textinput(val) {
@@ -1906,7 +1888,7 @@ function textinput(val) {
       document.body.appendChild(script);
       document.body.removeChild(script);
     };
-  }).catch(err => { })
+  }).catch(err => { });
 }
 
 window.showMsg = function (msg) {
@@ -2007,8 +1989,8 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
         )
       );
     }
-  }, 1000, true))
-}, 1000, true))
+  }, 1000, true));
+}, 1000, true));
 
 //壁纸相关
 //壁纸模糊处理
@@ -2038,7 +2020,7 @@ function bgInterval() {
               sendCommand({ type: 'updatedata', flag: 'userinfo' });
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         },
         () => {
           _err('加载失败');
@@ -2050,7 +2032,7 @@ function bgInterval() {
     $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
   }).catch(err => {
     $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
-  })
+  });
 }
 
 // 上传壁纸
@@ -2236,7 +2218,7 @@ function bgitemmenu(e, url) {
                 return;
               }
             }
-          ).catch(err => { })
+          ).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
           if (_d.userInfo.account === 'root') {
             alert('确认删除？', {
@@ -2249,7 +2231,7 @@ function bgitemmenu(e, url) {
                     bgxuanran();
                     return;
                   }
-                }).catch(err => { })
+                }).catch(err => { });
               },
             });
           }
@@ -2304,7 +2286,7 @@ function bgxuanran(y) {
         return;
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }
 $bgList
   .on('contextmenu', '.bg_item', function (e) {
@@ -2315,15 +2297,15 @@ $bgList
   .on('click', '.bg_item', function () {
     let $this = $(this);
     let idx = $this.index();
-    let arr = []
+    let arr = [];
     $bgList.find('.bg_item').each((idx, item) => {
-      let $item = $(item)
-      let u2 = $item.children('.bg_img').attr('data-src')
+      let $item = $(item);
+      let u2 = $item.children('.bg_img').attr('data-src');
       arr.push({
         u2,
         u1: u2.replace('bgys', 'bg')
-      })
-    })
+      });
+    });
     imgPreview(arr, idx);
   })
   .on(
@@ -2426,12 +2408,12 @@ $randomChangeBgBtn.on('click', throttle(function () {
               bgInterval();
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         },
       });
     }
-  }, 1000, true))
-})
+  }, 1000, true));
+});
 
 
 // 时间日期
@@ -2479,7 +2461,7 @@ function showTime(time = Date.now()) {
           sendCommand({ type: 'updatedata', flag: 'musicinfo' });
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
   }
   _setTimeout(showTime, 1000);
@@ -2504,7 +2486,7 @@ $lrcFootBtnWrap.on('click', '.random_play_btn', function () {
         sendCommand({ type: 'yc' });
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
   var a;
   switch (randomplay) {
@@ -2609,23 +2591,25 @@ function playallmusic() {
     if (parseInt(result.code) === 0) {
       let musics = result.data;
       if (musics.length === 0) return;
-      musicarr =
-        randomplay === false
-          ? myShuffle(deepClone(musics))
-          : deepClone(musics);
-      _d.playingList = deepClone(musics);
-      _postAjax('/player/updateplaying', { data: _d.playingList }).then(
+      _postAjax('/player/updateplaying', { data: musics }).then(
         (result) => {
           if (parseInt(result.code) === 0) {
             sendCommand({ type: 'updatedata', flag: 'playinglist' });
             return;
           }
         }
-      ).catch(err => { })
+      ).catch(err => { });
+      musicarr =
+        randomplay === false
+          ? myShuffle(deepClone(musics))
+          : deepClone(musics);
+      _d.playingList = deepClone(musics);
+      dqplaying();
+      gaolianging();
       musicPlay(musicarr[0]);
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 
 // 暂停
@@ -2655,7 +2639,7 @@ function audioPlay() {
         sendCommand({ type: 'yc' });
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     $titleid.text(
       `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`
@@ -2719,7 +2703,7 @@ function musiclrc() {
       $lrcListWrap.find('.lrc_items').html(str);
       handleLrc(true);
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 function handleLrc(y) {
   const $lrc = $lrcListWrap.find('.lrc_items');
@@ -2907,7 +2891,7 @@ $editLrcWrap.on('click', '.close', function () {
       _success(result.codeText);
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 });
 // 进度条处理
 function proTime(pes, y) {
@@ -2965,7 +2949,7 @@ $lrcHead.on('click', '.remote_play', function (e) {
         sendCommand({ type: 'yc' });
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     if (!musicobj) return;
     _d.remoteState = !_d.remoteState;
@@ -2987,7 +2971,7 @@ $lrcHead.on('click', '.remote_play', function (e) {
         sendCommand({ type: 'yc' });
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 }).on('click', '.close', function () {
   $musicLrcWrap.removeClass('active');
@@ -3083,7 +3067,7 @@ function musicPlay(obj) {
             }
           }
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
   }, 2000);
 }
@@ -3119,18 +3103,19 @@ function dqplaying() {
     return total;
   }, {});
   let str = '';
-  if (!_d.playingList) {
+  if (!_d.playingList || _d.playingList.length == 0) {
     $pMusicListBox.find('.left').text(`正在播放(0)`);
+    $pMusicListBox.find('.p_foot').html('<p style="padding: 20px 0;text-align: center;pointer-events: none;">空空如也</p>');
     return;
   }
   $pMusicListBox.find('.left').text(`正在播放(${_d.playingList.length})`);
   let playarr = _d.playingList.map((item, idx) => {
     item.idx = idx;
     return item;
-  })
+  });
   let totalPage = Math.ceil(playarr.length / playingSize);
   playingPageNum < 1 ? playingPageNum = 1 : (playingPageNum > totalPage ? playingPageNum = totalPage : null);
-  let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize)
+  let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize);
   arr.forEach((v) => {
     let { name, artist, mv, idx } = v;
     let issc = scObj.hasOwnProperty(`h${artist}${name}`);
@@ -3153,7 +3138,7 @@ function dqplaying() {
       ${totalPage > 1 ? `<span style="${playingPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="prev_page iconfont icon-prev"></span>
       <span style="padding:0 30px">${playingPageNum}/${totalPage}</span>
       <span style="${playingPageNum == totalPage ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="next_page iconfont icon-page-next"></span>` : ''}
-    </div>`
+    </div>`;
   $pMusicListBox.find('.p_foot').html(str);
   lazyImg($pMusicListBox.find('.p_foot'), '.song_item', '.logo', 1);
 }
@@ -3184,17 +3169,19 @@ function lazyImg($fel, sels, simg, y) {
 }
 //清空播放列表
 $pMusicListBox.on('click', '.clear_playing_list', function () {
+  if (_d.playingList.length != 0) {
+    _postAjax('/player/updateplaying', { data: [] }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { });
+  };
   _d.playingList = [];
   musicarr = [];
   dqplaying();
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        return;
-      }
-    }
-  ).catch(err => { })
 });
 //选择播放列表歌曲播放
 $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
@@ -3213,12 +3200,12 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   playingPageNum--;
   $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
   dqplaying();
-  gaolianging()
+  gaolianging();
 }).on('click', '.next_page', function () {
   playingPageNum++;
   $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
   dqplaying();
-  gaolianging()
+  gaolianging();
 }).on('click', '.del', function (e) {
   e.stopPropagation();
   let $this = $(this),
@@ -3227,23 +3214,15 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
       artist: $this.parent().attr('data-artist'),
       mv: $this.parent().attr('data-mv'),
     };
-  let arr = _d.playingList.filter(
+  _d.playingList = _d.playingList.filter(
     (v) => v.artist + v.name !== mobj.artist + mobj.name
   );
-  _postAjax('/player/updateplaying', { data: arr }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        _d.playingList = arr;
-        musicarr = musicarr.filter(
-          (v) => v.artist + v.name !== mobj.artist + mobj.name
-        );
-        dqplaying();
-        gaolianging();
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        return;
-      }
-    }
-  ).catch(err => { })
+  musicarr = musicarr.filter(
+    (v) => v.artist + v.name !== mobj.artist + mobj.name
+  );
+  dqplaying();
+  gaolianging();
+  updatePlayingList();
 }).on('scroll', debounce(function () {
   lazyImg($pMusicListBox.find('.p_foot'), '.song_item', '.logo');
 }, 100)).on('click', '.logo_wrap', function () {
@@ -3263,7 +3242,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
         renderMusicList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     let ssobj = deepClone(sobj);
     let ar = [];
@@ -3274,10 +3253,19 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
         renderMusicList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 });
-
+const updatePlayingList = debounce(function () {
+  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
+    (result) => {
+      if (parseInt(result.code) === 0) {
+        sendCommand({ type: 'updatedata', flag: 'playinglist' });
+        return;
+      }
+    }
+  ).catch(err => { });
+}, 1000);
 function gaolianging(a) {
   if ($pMusicListBox.is(':hidden') || !musicobj || !_d.playingList) return;
   let $song_item = $pMusicListBox.find('.p_foot').find('.song_item');
@@ -3377,7 +3365,7 @@ $musicHeadWrap.on('click', '.back', function (e) {
               sendCommand({ type: 'yc' });
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
       }
     }, 500)
@@ -3425,19 +3413,24 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
   };
+  if (_d.playingList.length !== searchMusicList.length
+    || !searchMusicList.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
+    _postAjax('/player/updateplaying', { data: searchMusicList }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { });
+  };
+
   musicarr =
     randomplay === false
       ? myShuffle(deepClone(searchMusicList))
       : deepClone(searchMusicList);
   _d.playingList = deepClone(searchMusicList);
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        return;
-      }
-    }
-  ).catch(err => { })
+
   if (musicobj.name == obj.name && musicobj.artist == obj.artist) {
     $lrcFootBtnWrap.find('.play_btn').click();
     return;
@@ -3473,12 +3466,12 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
           close();
           _postAjax('/player/musicshare', obj).then((result) => {
             if (parseInt(result.code) === 0) {
-              openIframe(`/page/sharelist`, '分享列表')
+              openIframe(`/page/sharelist`, '分享列表');
             }
-          }).catch(err => { })
+          }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem5')) {
-          close()
-          copyText(`${sobj.artist}-${sobj.name}`)
+          close();
+          copyText(`${sobj.artist}-${sobj.name}`);
         } else if (_getTarget(e, '.mtcitem6')) {
           let str = `<div class="mtcinp">
             <input autocomplete="off" placeholder="歌手名" value="${encodeHtml(sobj.artist)}" >
@@ -3512,9 +3505,9 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                   renderMusicItem();
 
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             }
-          }, 1000, true))
+          }, 1000, true));
         } else if (_getTarget(e, '.mtcitem7')) {
           if (_d.userInfo.account !== 'root') {
             $editLrcWrap.find('.save').remove();
@@ -3534,14 +3527,14 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                 $editLrcWrap.find('textarea').val(result.data);
                 return;
               }
-            }).catch(err => { })
+            }).catch(err => { });
           });
         } else if (_getTarget(e, '.mtcitem8')) {
-          close()
+          close();
           imgPreview([{
             u1: `${mediaURL}/music/${sobj.artist}-${sobj.name}.jpg`,
             u2: `${mediaURL}/musicys/${sobj.artist}-${sobj.name}.jpg`
-          }])
+          }]);
         };
       },
       1000,
@@ -3563,15 +3556,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
   musicarr = qucong(musicarr);
   _d.playingList.reverse();
   musicarr.reverse();
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        _success('已添加到播放列表');
-        return;
-      }
-    }
-  ).catch(err => { })
+  _success('添加成功');
+  updatePlayingList();
 }).on('click', '.icon-icon-', function () {
   let $this = $(this).parent();
   let sobj = {
@@ -3588,7 +3574,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
         renderMusicList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     let ssobj = deepClone(sobj);
     let ar = [];
@@ -3600,7 +3586,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
         renderMusicList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 }).on('scroll', debounce(function () {
   lazyImg($searchMusicWrap.find('ul'), '.song_item', '.logo');
@@ -3650,7 +3636,7 @@ function musicsea() {
         }
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 }
 $searchMusicWrap.on('click', function (e) {
@@ -3702,7 +3688,7 @@ probox.addEventListener('touchstart', function (e) {
           sendCommand({ type: 'yc' });
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
     $lrcProgressBar.find('.dolt').removeClass('open');
     $lrcProgressBar.find('.pro1').removeClass('open');
@@ -3734,7 +3720,7 @@ probox.addEventListener('mousedown', function (e) {
           sendCommand({ type: 'yc' });
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
     document.removeEventListener('mousemove', mmove);
     document.removeEventListener('mouseup', mup);
@@ -3768,7 +3754,7 @@ document.onkeydown = function (e) {
             sendCommand({ type: 'yc' });
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
       }
       vobellm();
       _success(parseInt(defaultvolume * 100) + '%', true);
@@ -3789,7 +3775,7 @@ document.onkeydown = function (e) {
             sendCommand({ type: 'yc' });
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
       }
       vobellm();
       _success(parseInt(defaultvolume * 100) + '%', true);
@@ -3836,7 +3822,7 @@ document.onkeydown = function (e) {
     }
     // 跳到历史记录
     if (key === 'h') {
-      openIframe('/page/history', '历史记录管理')
+      openIframe('/page/history', '历史记录管理');
     }
     // 跳到笔记
     if (key === 'n') {
@@ -3916,7 +3902,7 @@ $playingSongLogo.on('click', function () {
               renderMusicList();
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
         fromDom = null;
       }
@@ -3952,7 +3938,7 @@ function renderMusicList() {
               }
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
         $myAudio[0].currentTime = currentTime;
         $myAudio[0]._totalTime = duration;
@@ -3967,9 +3953,9 @@ function renderMusicList() {
           rendermusiclist();
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
-  }).catch(err => { })
+  }).catch(err => { });
   if (!_d.playingList) {
     _getAjax('/player/getplaying').then((result) => {
       if (parseInt(result.code) === 0) {
@@ -3977,7 +3963,7 @@ function renderMusicList() {
         musicarr = deepClone(_d.playingList);
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 }
 function rendermusiclistdefault() {
@@ -4031,7 +4017,7 @@ function renderMusicItem() {
       rendermusicitem();
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 function rendermusicitemdefault() {
   let str = '';
@@ -4077,7 +4063,7 @@ function rendermusicitem(gao) {
   let str = '';
   let name = encodeHtml(marr.name);
   let des = marr.des ? encodeHtml(marr.des) : '';
-  let pic = !/^\/img/.test(marr.pic) ? `${mediaURL}${marr.pic}` : marr.pic
+  let pic = !/^\/img/.test(marr.pic) ? `${mediaURL}${marr.pic}` : marr.pic;
   str += `<div class="items_list_top_wrap">
         <div class="song_list_cover">
           <img onload="this.style.display='block';this.parentNode.style.background='none'" onerror="this.onerror=''; src='/img/music.jpg';this.parentNode.style.background='none'" src="${pic
@@ -4105,10 +4091,10 @@ function rendermusicitem(gao) {
   marr.item = marr.item.map((item, idx) => {
     item.idx = idx;
     return item;
-  })
+  });
   let pageTotal = Math.ceil(marr.item.length / musicPageSize);
-  musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null)
-  let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize)
+  musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null);
+  let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize);
   sliceList.forEach((item) => {
     let { name, artist, mv, idx } = item;
     let issc = scObj.hasOwnProperty(`h${artist}${name}`);
@@ -4141,7 +4127,7 @@ function rendermusicitem(gao) {
       ${pageTotal > 1 ? `<span class="prev_page iconfont icon-prev" style="${musicPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor></span>
       <span style="padding:0 30px">${musicPageNum}/${pageTotal}</span>
       <span class="next_page iconfont icon-page-next" style="${musicPageNum == pageTotal ? 'pointer-events: none;opacity:.4;' : ''}" cursor></span>` : ''}
-    </div>`
+    </div>`;
   str += `
       <div class="check_all_menu_wrap">
         <div cursor x='1' class="check_all_song_btn">全选</div>
@@ -4174,7 +4160,7 @@ $songListWrap
     '.song_list_item',
     debounce(function (e) {
       rendermusicitemdefault();
-      curSongListId = $(this).attr('data-id')
+      curSongListId = $(this).attr('data-id');
       $songListWrap.addClass('open');
       $msuicContentBox.find('.list_items_wrap').addClass('open').scrollTop(0);
       musicPageNum = 1;
@@ -4216,7 +4202,7 @@ $songListWrap
                 renderMusicList();
                 return;
               }
-            }).catch(err => { })
+            }).catch(err => { });
           }
         },
         1000,
@@ -4263,7 +4249,7 @@ function gedanmenu(e, id) {
                   renderMusicList();
                   return;
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         } else if (_getTarget(e, '.mtcitem1')) {
@@ -4294,9 +4280,9 @@ function gedanmenu(e, id) {
                     return;
                   }
                 }
-              ).catch(err => { })
+              ).catch(err => { });
             }
-          }, 1000, true))
+          }, 1000, true));
         };
       },
       1000,
@@ -4309,19 +4295,22 @@ function playList() {
     _err('播放列表为空');
     return;
   }
+  if (_d.playingList.length !== musicarrjl.length
+    || !musicarrjl.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
+    _postAjax('/player/updateplaying', { data: musicarrjl }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { });
+  };
   musicarr =
     randomplay === false
       ? myShuffle(deepClone(musicarrjl))
       : deepClone(musicarrjl);
   _d.playingList = deepClone(musicarrjl);
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        return;
-      }
-    }
-  ).catch(err => { })
   musicPlay(musicarr[0]);
 }
 let songItemsBoxHide = debounce(function () {
@@ -4358,9 +4347,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             return;
           }
         }
-      ).catch(err => { })
+      ).catch(err => { });
     }
-  }, 1000, true))
+  }, 1000, true));
 }).on('click', '.upload_song_btn', async function (e) {
   // 上传歌曲
   let listid = curSongListId;
@@ -4386,7 +4375,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             renderMusicList();
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
         return;
       }
       let { name, size } = files[num];
@@ -4537,15 +4526,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   musicarr = qucong(musicarr);
   _d.playingList.reverse();
   musicarr.reverse();
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        _success('已添加到播放列表');
-        return;
-      }
-    }
-  ).catch(err => { })
+  _success('添加成功');
+  updatePlayingList();
 }).on('click', '.sheck_song_btn', () => {
   //多选操作
   let $qxcz = $msuicContentBox.find('.check_all_menu_wrap'),
@@ -4599,7 +4581,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       _success();
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }).on('click', '.del_songs_btn', function (e) {
   // 移除全选
   let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
@@ -4627,7 +4609,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           renderMusicList();
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     },
   });
 }).on('click', '.move_song_btn', function (e) {
@@ -4679,7 +4661,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                     return;
                   }
                 }
-              ).catch(err => { })
+              ).catch(err => { });
             },
           });
         }
@@ -4712,16 +4694,16 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   musicarr = qucong(musicarr);
   _d.playingList.reverse();
   musicarr.reverse();
+  _success('添加成功');
+  $msuicContentBox.find('.sheck_song_btn').click();
   _postAjax('/player/updateplaying', { data: _d.playingList }).then(
     (result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        _success('已添加到播放列表');
-        $msuicContentBox.find('.sheck_song_btn').click();
         return;
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }).on('click', '.song_info_wrap', function () {
   let $this = $(this).parent();
   let sobj = {
@@ -4729,18 +4711,21 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     artist: $this.attr('xa'),
     mv: $this.attr('m'),
   };
+  if (_d.playingList.length !== musicarrjl.length
+    || !musicarrjl.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
+    _postAjax('/player/updateplaying', { data: musicarrjl }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { });
+  };
   musicarr = randomplay === false
     ? myShuffle(deepClone(musicarrjl))
     : deepClone(musicarrjl);
   _d.playingList = deepClone(musicarrjl);
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        return;
-      }
-    }
-  ).catch(err => { })
   if (musicobj.name == sobj.name && musicobj.artist == sobj.artist) {
     $lrcFootBtnWrap.find('.play_btn').click();
   } else {
@@ -4758,19 +4743,22 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     mv: $this.attr('m'),
   };
   setZindex($musicMvWrap);
+  if (_d.playingList.length !== musicarrjl.length
+    || !musicarrjl.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
+    _postAjax('/player/updateplaying', { data: musicarrjl }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { });
+  };
   musicarr =
     randomplay === false
       ? myShuffle(deepClone(musicarrjl))
       : deepClone(musicarrjl);
   _d.playingList = deepClone(musicarrjl);
-  _postAjax('/player/updateplaying', { data: _d.playingList }).then(
-    (result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'updatedata', flag: 'playinglist' });
-        return;
-      }
-    }
-  ).catch(err => { })
   musicMv(sobj);
 }).on('click', '.icon-icon-', function () {
   let $this = $(this).parent();
@@ -4798,7 +4786,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         renderMusicList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 }).on('click', '.set_song_btn', function (e) {
   let $this = $(this).parent();
@@ -4846,9 +4834,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           close();
           _postAjax('/player/musicshare', obj).then((result) => {
             if (parseInt(result.code) === 0) {
-              openIframe(`/page/sharelist`, '分享列表')
+              openIframe(`/page/sharelist`, '分享列表');
             }
-          }).catch(err => { })
+          }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
           alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
             confirm: true,
@@ -4865,7 +4853,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   renderMusicList();
                   return;
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         } else if (_getTarget(e, '.mtcitem3')) {
@@ -4879,7 +4867,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
             }
           });
-          let flagClose = close
+          let flagClose = close;
           rightMenu(
             e,
             str,
@@ -4903,7 +4891,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                         ar,
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
-                          flagClose()
+                          flagClose();
                           close();
                           sendCommand({
                             type: 'updatedata',
@@ -4912,7 +4900,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                           renderMusicList();
                           return;
                         }
-                      }).catch(err => { })
+                      }).catch(err => { });
                     },
                   });
                 }
@@ -4935,12 +4923,12 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   renderMusicItem();
                   return;
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         } else if (_getTarget(e, '.mtcitem5')) {
-          close()
-          copyText(`${sobj.artist}-${sobj.name}`)
+          close();
+          copyText(`${sobj.artist}-${sobj.name}`);
         } else if (_getTarget(e, '.mtcitem6')) {
           let str = `<div class="mtcinp">
                 <input autocomplete="off" placeholder="歌手名" value="${encodeHtml(sobj.artist)}" >
@@ -4972,9 +4960,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   renderMusicItem();
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             }
-          }, 1000, true))
+          }, 1000, true));
         } else if (_getTarget(e, '.mtcitem7')) {
           if (_d.userInfo.account !== 'root') {
             $editLrcWrap.find('.save').remove();
@@ -4994,14 +4982,14 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                 $editLrcWrap.find('textarea').val(result.data);
                 return;
               }
-            }).catch(err => { })
+            }).catch(err => { });
           });
         } else if (_getTarget(e, '.mtcitem8')) {
-          close()
+          close();
           imgPreview([{
             u1: `${mediaURL}/music/${sobj.artist}-${sobj.name}.jpg`,
             u2: `${mediaURL}/musicys/${sobj.artist}-${sobj.name}.jpg`
-          }])
+          }]);
         };
       },
       1000,
@@ -5023,7 +5011,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       _setData('lastpx', t);
       rendermusicitem();
     }
-  }, 1000, true))
+  }, 1000, true));
 }).on('click', '.to_top', function () {
   //列表回到顶部底部和定位到当前播放歌曲
   $msuicContentBox.find('.list_items_wrap').stop().animate(
@@ -5067,7 +5055,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       $msuicContentBox.find('.list_items_wrap')[0].scrollTop = 0;
       rendermusicitem();
     }
-  }, 1000, true))
+  }, 1000, true));
 }).on('click', '.check_state', function (e) {
   let $this = $(this),
     check = $this.attr('check');
@@ -5114,7 +5102,7 @@ if (isios()) {
             renderMusicList();
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
       }
       fromDom = null;
     }
@@ -5139,7 +5127,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
         $(this).addClass('active');
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   } else {
     _postAjax('/player/closecollectsong', obj).then((result) => {
       if (parseInt(result.code) === 0) {
@@ -5148,7 +5136,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
         $(this).removeClass('active');
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
 }).on('click', '.play_mv_btn', function (e) {
   e.stopPropagation();
@@ -5176,9 +5164,9 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
     };
     _postAjax('/player/musicshare', obj).then((result) => {
       if (parseInt(result.code) === 0) {
-        openIframe(`/page/sharelist`, '分享列表')
+        openIframe(`/page/sharelist`, '分享列表');
       }
-    }).catch(err => { })
+    }).catch(err => { });
   },
   500,
   true
@@ -5275,17 +5263,17 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
               $editLrcWrap.find('textarea').val(result.data);
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         });
       } else if (_getTarget(e, '.mtcitem6')) {
-        close()
+        close();
         imgPreview([{
           u1: `${mediaURL}/music/${musicobj.artist}-${musicobj.name}.jpg`,
           u2: `${mediaURL}/musicys/${musicobj.artist}-${musicobj.name}.jpg`
-        }])
+        }]);
       } else if (_getTarget(e, '.mtcitem7')) {
-        close()
-        copyText(`${musicobj.artist}-${musicobj.name}`)
+        close();
+        copyText(`${musicobj.artist}-${musicobj.name}`);
       }
     });
   },
@@ -5431,7 +5419,7 @@ function musicMv(obj) {
         }
       }
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 $myVideo[0].onerror = function (e) {
   if (!musicobj) return;
@@ -5679,11 +5667,11 @@ function csfz() {
   $lrcHead.find('.song_name').text(musicobj.name);
   $lrcHead.find('.artist_name').text(musicobj.artist);
   $myAudio.attr('src', `${musicobj.url}`);
-  $playingSongLogo.css('background-image', `url("/img/musicbg.png")`)
+  $playingSongLogo.css('background-image', `url("/img/musicbg.png")`);
   imgjz(
     musicobj.pic,
     () => {
-      $playingSongLogo.css('background-image', `none`)
+      $playingSongLogo.css('background-image', `none`);
       $playingSongLogo.find('img').attr('src', musicobj.pic).stop().fadeIn(_speed);
       $lrcBg.css('background-image', `url("${musicobj.pic}")`);
       $miniPlayer.css('background-image', `url("${musicobj.pic}")`);
@@ -5692,7 +5680,7 @@ function csfz() {
       $musicPlayerBg.removeClass('lrcbgss');
     },
     () => {
-      $playingSongLogo.css('background-image', `none`)
+      $playingSongLogo.css('background-image', `none`);
       $playingSongLogo
         .find('img')
         .attr('src', '/img/music.jpg')
@@ -5765,7 +5753,7 @@ $userInfoWrap
                 handleuser();
                 return;
               }
-            }).catch(err => { })
+            }).catch(err => { });
           }
         },
         1000,
@@ -5785,7 +5773,7 @@ $userInfoWrap
             _success(result.codeText);
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
       },
       500,
       true
@@ -5915,7 +5903,7 @@ $rightBox.on('click', '.r_about', debounce(
                   if (_getTarget(e, '.mtcitem')) {
                     $rightBox.removeClass('open');
                     $rightMenuMask.stop().fadeOut(_speed);
-                    flagClose()
+                    flagClose();
                     close();
                     handleUserinfo();
                     $userInfoWrap.stop().fadeIn(_speed);
@@ -5930,28 +5918,28 @@ $rightBox.on('click', '.r_about', debounce(
                       <div class="mtcinp2">
                         <input autocomplete="off" placeholder="确认密码" type="password">
                       </div>
-                    <button cursor class="mtcbtn">提交</button>`
+                    <button cursor class="mtcbtn">提交</button>`;
                     rightMenu(e, str, debounce(function ({ close, e, inp }) {
                       if (_getTarget(e, '.mtcbtn')) {
                         let oldpassword = inp[0],
                           newpassword = inp[1],
                           newpassword1 = inp[2];
                         if (newpassword !== newpassword1) {
-                          _err('密码不一致')
-                          return
+                          _err('密码不一致');
+                          return;
                         };
                         _postAjax('/user/changepass', {
                           oldpassword: md5(oldpassword),
                           newpassword: md5(newpassword),
                         }).then((result) => {
                           if (parseInt(result.code) === 0) {
-                            close()
+                            close();
                             _success(result.codeText);
                             return;
                           }
                         }).catch((_) => { });
                       }
-                    }, 500, true))
+                    }, 500, true));
                   } else if (_getTarget(e, '.mtcitem2')) {
                     alert('确认删除账号？', {
                       confirm: true,
@@ -5969,7 +5957,7 @@ $rightBox.on('click', '.r_about', debounce(
                                 return;
                               }
                             }
-                          ).catch(err => { })
+                          ).catch(err => { });
                         }
                       },
                     });
@@ -5996,7 +5984,7 @@ $rightBox.on('click', '.r_about', debounce(
                 function ({ close, e }) {
                   let item6 = _getTarget(e, '.mtcitem6');
                   if (_getTarget(e, '.mtcitem')) {
-                    flagClose()
+                    flagClose();
                     close();
                     openbgku();
                   } else if (_getTarget(e, '.mtcitem1')) {
@@ -6057,7 +6045,7 @@ $rightBox.on('click', '.r_about', debounce(
                           )
                         );
                       }
-                    }).catch(err => { })
+                    }).catch(err => { });
                   } else if (item6) {
                     let _this = $(item6);
                     let flag = _this.attr('data-dian');
@@ -6176,7 +6164,7 @@ $rightBox.on('click', '.r_about', debounce(
           myOpen('/page/login/');
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     },
   });
 });
@@ -6225,7 +6213,7 @@ function logxuanran(y) {
         return;
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }
 $logContent.on(
   'click',
@@ -6297,7 +6285,7 @@ $logHeadBtns.on('click', '.l_close_btn', () => {
             logpage = 1;
             return;
           }
-        }).catch(err => { })
+        }).catch(err => { });
         return;
       }
     },
@@ -6334,7 +6322,7 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
               to: ac,
             });
           }
-        }).catch(err => { })
+        }).catch(err => { });
         return;
       }
     },
@@ -6357,7 +6345,7 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
       $chatListBox[0].scrollTop = $chatListBox[0].scrollHeight;
       chatimgLoad();
     }
-  }).catch(err => { })
+  }).catch(err => { });
   $chatHeadBtns.find('.c_home_msg_alert').stop().fadeOut(_speed);
 }, 500)).on('input', '.search_msg_inp', debounce(function () {
   let val = $chatHeadBtns.find('.search_msg_inp').val().trim();
@@ -6372,7 +6360,7 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
         chatimgLoad();
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }, 1000)).on('click', '.c_user_btn', debounce(
   function (e) {
     $userListBox.stop().slideDown(_speed, () => {
@@ -6406,7 +6394,7 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
           $chatHeadBtns.find('.c_msg_alert').stop().fadeOut(_speed);
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     });
   },
   500,
@@ -6578,7 +6566,7 @@ $showChatRoomBtn.on('click',
                 } else {
                   $chatHeadBtns.find('.c_msg_alert').stop().fadeIn(_speed);
                 }
-              }).catch(err => { })
+              }).catch(err => { });
               //获取是否有群消息未读
               _getAjax('/chat/getnews', { a: 1 }).then((result) => {
                 if (parseInt(result.code) === 0) {
@@ -6586,10 +6574,10 @@ $showChatRoomBtn.on('click',
                 } else {
                   $chatHeadBtns.find('.c_home_msg_alert').stop().fadeIn(_speed);
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             }
           }
-        ).catch(err => { })
+        ).catch(err => { });
       });
     },
     500,
@@ -6635,7 +6623,7 @@ $chatListBox
                   $chatListBox[0].scrollHeight;
                 chatimgLoad();
               }
-            }).catch(err => { })
+            }).catch(err => { });
           } else if (_getTarget(e, '.mtcitem1')) {
             let url = `/page/allnote/#${a}`;
             openIframe(url, b);
@@ -6663,7 +6651,7 @@ $chatListBox
         return;
       }
       _err('文件已过期');
-    }).catch(err => { })
+    }).catch(err => { });
   })
   .on('contextmenu', '.c_content_box', function (e) {
     //操作消息
@@ -6698,7 +6686,7 @@ $chatListBox
         return;
       }
       _err('图片已过期');
-    }).catch(err => { })
+    }).catch(err => { });
   })
   .on(
     'scroll',
@@ -6746,7 +6734,7 @@ $chatListBox
             $chatListBox.scrollTop(fristel.position().top - 50);
             chatimgLoad();
           }
-        }).catch(err => { })
+        }).catch(err => { });
       }
     }, 200)
   );
@@ -6808,7 +6796,7 @@ function backmsg(e, tt, y, z, f, n, s) {
               });
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
           copyText(z);
           close();
@@ -6839,7 +6827,7 @@ function backmsg(e, tt, y, z, f, n, s) {
               return;
             }
             _err(`${type}已过期`);
-          }).catch(err => { })
+          }).catch(err => { });
         }
       },
       1000,
@@ -6908,7 +6896,7 @@ function sendmasg(obj, pchatId) {
       }
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 let debounceGetNewMsg = debounce(getNewMsg, 1000);
 function getNewMsg(y) {
@@ -6936,7 +6924,7 @@ function getNewMsg(y) {
         chatimgLoad();
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }
 
 // 文件消息对象
@@ -7312,7 +7300,7 @@ $userListBox.on('click', '.user_item', function (e) {
                 $chatListBox[0].scrollHeight;
               chatimgLoad();
             }
-          }).catch(err => { })
+          }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
           let url = `/page/allnote/#${a}`;
           openIframe(url, b);
@@ -7442,7 +7430,7 @@ function handleuser() {
     if (parseInt(result.code) === 0) {
       _d.userInfo = result.data;
       _d.myTitle = `Hello ${_d.userInfo.username}`;
-      _setData('account', _d.userInfo.username)
+      _setData('account', _d.userInfo.username);
       if ($myAudio[0].paused) {
         $titleid.text(_d.myTitle);
       }
@@ -7470,7 +7458,7 @@ function handleuser() {
       handleUserinfo();
       return;
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 //同步数据
 ~(function () {
@@ -7553,7 +7541,7 @@ function handleuser() {
                           }
                           chatimgLoad();
                         }
-                      }).catch(err => { })
+                      }).catch(err => { });
                     } else {
                       //新消息不是是当前聊天框
                       if (from.account !== _d.userInfo.account) {
@@ -7570,7 +7558,7 @@ function handleuser() {
                     }
                   }
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             } else if (flag === 'del') {
               //撤回消息
               if (from.account !== _d.userInfo.account) {
@@ -7624,7 +7612,7 @@ function handleuser() {
                   gaolianging();
                   return;
                 }
-              }, true).catch(err => { })
+              }, true).catch(err => { });
             } else if (flag === 'musicinfo') {
               if (!$musicPlayerBox.is(':hidden')) {
                 if ($myAudio[0].paused) {
@@ -7646,7 +7634,7 @@ function handleuser() {
                         $lrcProgressBar.find('.total_time').text(tin(duration));
                       }
                     }
-                  ).catch(err => { })
+                  ).catch(err => { });
                 }
               }
             }
@@ -7679,7 +7667,7 @@ function handleuser() {
                 }
                 return;
               }
-            }).catch(err => { })
+            }).catch(err => { });
           }
           return;
         }
@@ -7693,7 +7681,7 @@ function handleuser() {
   realtime();
   window.sendCommand = function (data) {
     //发送指令
-    _postAjax('/user/realtime', { data, id }, true).then(res => { }).catch(err => { })
+    _postAjax('/user/realtime', { data, id }, true).then(res => { }).catch(err => { });
   };
 })();
 ~(function () {

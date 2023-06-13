@@ -1,9 +1,9 @@
 import $ from "jquery";
-import MarkdownIt from 'markdown-it'
+import MarkdownIt from 'markdown-it';
 import hljs from "highlight.js";
-import '../../css/iconfont.css'
-import '../../css/notecode.css'
-import './index.less'
+import '../../css/iconfont.css';
+import '../../css/notecode.css';
+import './index.less';
 import {
   queryURLParams,
   myOpen,
@@ -20,8 +20,8 @@ import {
   encodeHtml,
   _myOpen,
   imgPreview,
-} from '../../utils/utils'
-import '../../js/common'
+} from '../../utils/utils';
+import '../../js/common';
 import { _err, _success } from "../../plugins/message";
 const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
@@ -75,7 +75,7 @@ if (HASH) {
       $headBtns.find('.note_title input').val(name);
       $editBox.val(text);
       orginData.name = name;
-      rende()
+      rende();
     } else {
       //获取内容编辑笔记
       _getAjax('/note/geteditnote', { id: HASH }).then((result) => {
@@ -85,7 +85,7 @@ if (HASH) {
           orginData = result.data;
           rende();
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }
   }
 } else {
@@ -93,9 +93,7 @@ if (HASH) {
   $headBtns.find('.note_title').remove();
   //变为本地模式,并添加标识
   HASH = `hello_${Date.now()}`;
-  // window.location.href = `/page/edit/#${HASH}`
   myOpen(`/page/edit/#${HASH}`);
-  // _myOpen(, false, 'Edit')
 }
 // 渲染转换显示
 function rende() {
@@ -139,10 +137,10 @@ function rende() {
   $previewBox.find('a').attr({
     'target': '_blank',
     cursor: ''
-  })
+  });
   $previewBox.find('img').attr({
     cursor: ''
-  })
+  });
 }
 // 处理保存按钮
 function handleSave() {
@@ -156,44 +154,26 @@ function handleSave() {
   $headBtns.find('.save_btn').addClass('active');
 }
 $headBtns.find('.note_title input').on('input', handleSave);
-$previewBox
-  .on(
-    'click',
-    '.codeCopy',
-    debounce(
-      function () {
-        let str = $(this).parent().find('code').text();
-        copyText(str);
-      },
-      500,
-      true
-    )
-  )
-  .on(
-    'click',
-    '.shrink',
-    debounce(
-      function () {
-        let $this = $(this);
-        let flag = $this.attr('data-flag');
-        if (flag === 'y') {
-          $this.attr({
-            'data-flag': 'n',
-            class: 'shrink iconfont icon-page-next',
-          });
-          $this.parent().find('code').stop().stop().hide();
-        } else {
-          $this.attr({
-            'data-flag': 'y',
-            class: 'shrink iconfont icon-Down',
-          });
-          $this.parent().find('code').stop().show();
-        }
-      },
-      500,
-      true
-    )
-  )
+$previewBox.on('click', '.codeCopy', debounce(function () {
+  let str = $(this).parent().find('code').text();
+  copyText(str);
+}, 500, true)).on('click', '.shrink', debounce(function () {
+  let $this = $(this);
+  let flag = $this.attr('data-flag');
+  if (flag === 'y') {
+    $this.attr({
+      'data-flag': 'n',
+      class: 'shrink iconfont icon-page-next',
+    });
+    $this.parent().find('code').stop().stop().hide();
+  } else {
+    $this.attr({
+      'data-flag': 'y',
+      class: 'shrink iconfont icon-Down',
+    });
+    $this.parent().find('code').stop().show();
+  }
+}, 500, true))
   .on('click', 'img', function () {
     imgPreview([{ u1: $(this).attr('src') }]);
   });
@@ -278,7 +258,7 @@ $headBtns.on('click', '.preview_state', function () {
     });
   }
   $noteListMask.find('ul').html(str);
-})
+});
 
 $noteListMask
   .on('click', function (e) {
@@ -321,15 +301,13 @@ function saveNote() {
       $headBtns.find('.save_btn').removeClass('active');
       if (result.data) {
         HASH = result.data.id;
-        // window.location.href = `/page/edit/#${HASH}`
         myOpen(`/page/edit/#${HASH}`);
-        // _myOpen(`/page/edit/#${HASH}`, false, vn)
         _success(result.codeText);
         return;
       }
       _success(result.codeText);
     }
-  }).catch(err => { })
+  }).catch(err => { });
 }
 // 禁止后退
 function pushHistory() {

@@ -1,7 +1,7 @@
 import $ from "jquery";
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import '../notes/index.less'
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import '../notes/index.less';
 import {
   myOpen,
   _setData,
@@ -13,12 +13,12 @@ import {
   _postAjax,
   _getAjax,
   encodeHtml
-} from '../../utils/utils'
+} from '../../utils/utils';
 import { _speed } from "../../config";
-import '../../js/common'
+import '../../js/common';
 import { _success } from "../../plugins/message";
-import { alert } from '../../plugins/alert'
-import { pagination } from '../../plugins/pagination'
+import { alert } from '../../plugins/alert';
+import { pagination } from '../../plugins/pagination';
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $html = $(document.documentElement),
@@ -83,7 +83,7 @@ function renderList(y) {
         }
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }
 renderList(true);
 let checkColor = 'rgb(118 254 89 / 58%)';
@@ -102,7 +102,7 @@ $contentWrap
             return;
           }
           alert(result.codeText);
-        }).catch(err => { })
+        }).catch(err => { });
       },
     });
   })
@@ -236,7 +236,7 @@ $footer
             if (parseInt(result.code) === 0) {
               renderList();
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
       },
     });
@@ -267,13 +267,12 @@ $footer
       .css('background-color', che === 'y' ? checkColor : 'transparent');
     _success(`选中：${che === 'y' ? $itemBox.length : 0}`, true);
   });
-$pageSize.val(_getData('historyshowpage') || 80);
 $pageSize.on('change', function () {
   let val = $(this).val();
   _setData('historyshowpage', val);
   $contentWrap.pagenum = 1;
   renderList(true);
-});
+}).val(_getData('historyshowpage') || 80);
 ~(function () {
   let p = 0,
     t = 0;

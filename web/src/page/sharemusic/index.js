@@ -1,7 +1,7 @@
 import $ from "jquery";
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import './index.less'
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import './index.less';
 import {
   queryURLParams,
   myOpen,
@@ -16,9 +16,9 @@ import {
   _getTarget,
   imgPreview,
   copyText
-} from '../../utils/utils'
+} from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
-import '../../js/common'
+import '../../js/common';
 import { _err, _success } from "../../plugins/message";
 import { rightMenu } from "../../plugins/rightMenu";
 ~async function () {
@@ -45,12 +45,12 @@ import { rightMenu } from "../../plugins/rightMenu";
     $pageBg.css({
       opacity: '1',
     });
-  }, 600)
+  }, 600);
   let mobj = await _getAjax('/player/musicshare', { id: HASH });
   if (mobj.code == 0) {
     musicobj = mobj.data;
-    let url = `${mediaURL}/logo/${musicobj.account}/${musicobj.account}.png?v=${Math.random()}`
-    $headSongInfo.find('.user_logo').css('background-image', `url(${url})`)
+    let url = `${mediaURL}/logo/${musicobj.account}/${musicobj.account}.png?v=${Math.random()}`;
+    $headSongInfo.find('.user_logo').css('background-image', `url(${url})`);
     if (musicobj.mv == 'y') {
       $songSetBtns.find('.play_mv_btn').stop().show(100);
     } else {
@@ -186,14 +186,14 @@ import { rightMenu } from "../../plugins/rightMenu";
           });
           _setData('lrcstatu', lrcstatu);
         } else if (_getTarget(e, '.mtcitem6')) {
-          close()
+          close();
           imgPreview([{
             u1: `${mediaURL}/music/${musicobj.artist}-${musicobj.name}.jpg`,
             u2: `${mediaURL}/musicys/${musicobj.artist}-${musicobj.name}.jpg`
-          }])
+          }]);
         } else if (_getTarget(e, '.mtcitem7')) {
-          close()
-          copyText(`${musicobj.artist}-${musicobj.name}`)
+          close();
+          copyText(`${musicobj.artist}-${musicobj.name}`);
         }
       });
     },
@@ -226,7 +226,7 @@ import { rightMenu } from "../../plugins/rightMenu";
   $headSongInfo.find('.info .song_name').text(musicobj.name);
   $headSongInfo.find('.info .artist_name').text(musicobj.artist);
   $contentBox.find('.user_info span').text(`from @${musicobj.username}`).click(() => {
-    $headSongInfo.find('.user_logo').click()
+    $headSongInfo.find('.user_logo').click();
   });
   let showlrcfy = false,
     lrcstatu = _getData('lrcstatu') || {
@@ -273,7 +273,7 @@ import { rightMenu } from "../../plugins/rightMenu";
         actionLrcIndex = 0;
         handleLrc(true);
       }
-    }).catch(err => { })
+    }).catch(err => { });
   }
   $lrcContent.on('click', function () {
     if (this._isop) {
@@ -461,7 +461,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       if (_getData('lastplaysd')) {
         $myAudio[0].playbackRate = _getData('lastplaysd')[1];
       }
-      document.title = `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`
+      document.title = `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`;
       if (!$lrcContent._flag) {
         musiclrc();
       }

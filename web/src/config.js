@@ -1,5 +1,5 @@
 import { getPreUrl } from "./utils/utils";
-export const _speed = 500
+export const _speed = 500;
 export const LevelObj = {
   upProgressbox: 100, // 上传进度（静）
   rightBox: 101, // 右键菜单（静）
@@ -13,9 +13,9 @@ export const LevelObj = {
   loading: 107, // 加载动画（静）
   dianji: 107, // 点击（动）
 };
-let preUrl = getPreUrl()
-// preUrl = getPreUrl() + '/api'
-export const serverURL = preUrl
+let preUrl = getPreUrl();
+// preUrl = getPreUrl() + '/api';
+export const serverURL = preUrl;
 
 export const mediaURL = 'https://data.hellochang.eu.org';
 // export const mediaURL = preUrl + '/getfile';

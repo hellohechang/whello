@@ -3,7 +3,7 @@ import SparkMD5 from "spark-md5";
 import { serverURL, LevelObj } from "../config";
 
 import { _err, _success } from "../plugins/message";
-import { _loadingBar } from '../plugins/loadingBar'
+import { _loadingBar } from '../plugins/loadingBar';
 // 解析url
 export function queryURLParams(url) {
   let obj = {};
@@ -1011,8 +1011,8 @@ export function imgPreview(arr, idx = 0) {
     lastPoint1 = { x: 0, y: 0 }, // 上一次第一个触摸点坐标
     lastPoint2 = { x: 0, y: 0 }, // 上一次第二个触摸点坐标
     lastCenter; // 上一次中心点坐标
-  let time = 0
-  let box = document.createElement('div')
+  let time = 0;
+  let box = document.createElement('div');
   box.style.cssText = `
   position: fixed;
   top: 0;
@@ -1023,14 +1023,14 @@ export function imgPreview(arr, idx = 0) {
   overflow: hidden;
   opacity: 0;
   z-index: ${LevelObj.imgPreview};
-  `
-  let image = document.createElement('img')
+  `;
+  let image = document.createElement('img');
   // 禁止移动端默认触摸事件
   image.style.cssText = `
   opacity: 0;
   touch-action: none;
-  `
-  let image1 = document.createElement('img')
+  `;
+  let image1 = document.createElement('img');
   image1.style.cssText = `
   position: absolute;
   left: 50%;
@@ -1038,9 +1038,9 @@ export function imgPreview(arr, idx = 0) {
   transform: translate(-50%, -50%);
   max-width: 100%;
   display: none;
-  `
-  box.appendChild(image)
-  box.appendChild(image1)
+  `;
+  box.appendChild(image);
+  box.appendChild(image1);
   let pre = document.createElement('div');
   pre.style.cssText = `
   display: none;
@@ -1069,34 +1069,34 @@ export function imgPreview(arr, idx = 0) {
   transform: translateY(-50%);
   /*cursor: pointer;*/
   `;
-  pre.innerText = '<'
-  next.innerText = '>'
-  pre.setAttribute('cursor', '')
-  next.setAttribute('cursor', '')
-  box.appendChild(pre)
-  box.appendChild(next)
-  document.body.appendChild(box)
-  box.style.transition = '.2s'
-  box.style.opacity = 1
+  pre.innerText = '<';
+  next.innerText = '>';
+  pre.setAttribute('cursor', '');
+  next.setAttribute('cursor', '');
+  box.appendChild(pre);
+  box.appendChild(next);
+  document.body.appendChild(box);
+  box.style.transition = '.2s';
+  box.style.opacity = 1;
   if (arr.length > 1) {
-    pre.style.display = 'block'
-    next.style.display = 'block'
+    pre.style.display = 'block';
+    next.style.display = 'block';
   }
 
   function cut(idx) {
-    scale = 1
+    scale = 1;
     image.style.opacity = 0;
-    image1.style.display = 'none'
+    image1.style.display = 'none';
     _loadingBar.end();
-    let { u1, u2 } = arr[idx]
+    let { u1, u2 } = arr[idx];
     _loadingBar.start();
     if (u2) {
       image1.src = u2;
-      image1.style.display = 'block'
+      image1.style.display = 'block';
     }
     image.src = u1;
   }
-  cut(idx)
+  cut(idx);
   function hdLoad() {
     result = getImgSize(image.naturalWidth, image.naturalHeight, window.innerWidth, window.innerHeight);
     image.style.width = result.width + 'px';
@@ -1104,17 +1104,17 @@ export function imgPreview(arr, idx = 0) {
     x = (window.innerWidth - result.width) * 0.5;
     y = (window.innerHeight - result.height) * 0.5;
     image.style.transform = 'translate3d(' + x + 'px, ' + y + 'px, 0) scale(1)';
-    image1.style.display = 'none'
+    image1.style.display = 'none';
     image.style.opacity = 1;
     _loadingBar.end();
   }
   function hdError() {
     _loadingBar.end();
-    image.style.opacity = 0
+    image.style.opacity = 0;
     _err('图片加载失败');
   }
   function hdMove(e) {
-    if (e.target !== image) return
+    if (e.target !== image) return;
     handlePointers(e);
     const current1 = { x: pointers[0].clientX, y: pointers[0].clientY };
     if (pointers.length === 1) {
@@ -1158,34 +1158,34 @@ export function imgPreview(arr, idx = 0) {
     e.preventDefault();
   }
   function hdUp(e) {
-    pointers = []
-    box.removeEventListener('pointermove', hdMove)
-    box.removeEventListener('pointerup', hdUp)
+    pointers = [];
+    box.removeEventListener('pointermove', hdMove);
+    box.removeEventListener('pointerup', hdUp);
     if ((Date.now() - time) < 200) {
       if (e.target === pre) {
-        idx -= 1
-        idx < 0 ? idx = arr.length - 1 : null
-        cut(idx)
-        return
+        idx -= 1;
+        idx < 0 ? idx = arr.length - 1 : null;
+        cut(idx);
+        return;
       }
       if (e.target === next) {
-        idx += 1
-        idx >= arr.length ? idx = 0 : null
-        cut(idx)
-        return
+        idx += 1;
+        idx >= arr.length ? idx = 0 : null;
+        cut(idx);
+        return;
       }
-      box.removeEventListener('pointerdown', hdDown)
-      image.removeEventListener('wheel', hdWheel)
-      image.removeEventListener('load', hdLoad)
-      image.removeEventListener('error', hdError)
-      box.style.transition = '.5s'
-      box.style.opacity = 0
+      box.removeEventListener('pointerdown', hdDown);
+      image.removeEventListener('wheel', hdWheel);
+      image.removeEventListener('load', hdLoad);
+      image.removeEventListener('error', hdError);
+      box.style.transition = '.5s';
+      box.style.opacity = 0;
       _loadingBar.end();
       let timer = setTimeout(() => {
-        clearTimeout(timer)
-        timer = null
-        box.remove()
-      }, 500)
+        clearTimeout(timer);
+        timer = null;
+        box.remove();
+      }, 500);
     }
   }
   function hdWheel(e) {
@@ -1220,8 +1220,8 @@ export function imgPreview(arr, idx = 0) {
   function hdDown(e) {
     // 绑定 pointerup
     box.addEventListener('pointerup', hdUp);
-    time = Date.now()
-    if (e.target !== image) return
+    time = Date.now();
+    if (e.target !== image) return;
     pointers.push(e);
     point1 = { x: pointers[0].clientX, y: pointers[0].clientY };
     if (pointers.length === 1) {
@@ -1310,7 +1310,7 @@ export function imgPreview(arr, idx = 0) {
         height = naturalHeight;
       }
     }
-    return { width: width, height: height }
+    return { width: width, height: height };
   }
 }
 export function getPreUrl() {
@@ -1337,3 +1337,21 @@ export function qucong(arr) {
   }, []);
   return arr;
 }
+// 限制用户名长度
+export function userlenght(str) {
+  let arr = str.split(''),
+    num = 0;
+  arr.forEach((v) => {
+    num +=
+      /[\u2E80-\u2FDF\u3040-\u318F\u31A0-\u31BF\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FFF\uA960-\uA97F\uAC00-\uD7FF]/.test(
+        v
+      )
+        ? 2
+        : 0.8;
+  });
+  if (num > 12) {
+    return true;
+  } else {
+    return false;
+  }
+};

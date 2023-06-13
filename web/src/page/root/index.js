@@ -1,17 +1,17 @@
 import $ from "jquery";
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import './index.less'
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import './index.less';
 import {
   myOpen,
   _postAjax,
   _getAjax,
   newDate,
   encodeHtml,
-} from '../../utils/utils'
-import '../../js/common'
+} from '../../utils/utils';
+import '../../js/common';
 import { _success } from "../../plugins/message";
-import { alert } from '../../plugins/alert'
+import { alert } from '../../plugins/alert';
 const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
   $tableBox = $contentWrap.find('.table_box'),
@@ -24,7 +24,7 @@ function renderList() {
       let str = '';
       result.data.forEach((v) => {
         let { account, username, time, state, online } = v;
-        username = encodeHtml(username)
+        username = encodeHtml(username);
         str += `<tr data-acc="${account}" data-state="${state}" data-name="${username}">
           <td>${newDate('{0}-{1}-{2} {3}:{4}', time)}</td>
           <td style="color:${online === 'y' ? 'green' : '#aaa'};">${online === 'y' ? '在线' : '离线'}</td>
@@ -37,13 +37,13 @@ function renderList() {
               <button cursor class="to_login">进入</button>
               <button cursor class="del_account">删除</button>
           </td>
-        </tr>`
+        </tr>`;
       });
       $list.html(str);
       return;
     }
-    myOpen('/404')
-  }).catch(err => { })
+    myOpen('/404');
+  }).catch(err => { });
 }
 $list
   .on('click', '.user_state', function () {
@@ -60,7 +60,7 @@ $list
             if (parseInt(result.code) === 0) {
               renderList();
             }
-          }).catch(err => { })
+          }).catch(err => { });
           return;
         }
       },
@@ -78,7 +78,7 @@ $list
             if (parseInt(result.code) === 0) {
               renderList();
             }
-          }).catch(err => { })
+          }).catch(err => { });
           return;
         }
       },
@@ -96,7 +96,7 @@ $list
             if (parseInt(result.code) === 0) {
               _success(result.codeText);
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
       },
     });
@@ -113,12 +113,11 @@ $list
             if (parseInt(result.code) === 0) {
               myOpen('/', '_blank');
             }
-          }).catch(err => { })
+          }).catch(err => { });
         }
       },
     });
   });
-
 
 $headBtns.on('click', '.clear_upload', function () {
   alert('确认清空upload目录？', {
@@ -129,7 +128,7 @@ $headBtns.on('click', '.clear_upload', function () {
           if (parseInt(result.code) === 0) {
             _success(result.codeText);
           }
-        }).catch(err => { })
+        }).catch(err => { });
         return;
       }
     },
@@ -144,7 +143,7 @@ $headBtns.on('click', '.clear_upload', function () {
           _success(result.data);
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     },
   });
 }).on('click', '.clear_chat', function () {
@@ -157,19 +156,19 @@ $headBtns.on('click', '.clear_upload', function () {
           _success(result.codeText);
           return;
         }
-      }).catch(err => { })
+      }).catch(err => { });
     },
   });
 }).on('click', '.register_state', function () {
   _postAjax('/root/isregister').then(res => {
     if (res.code == 0) {
-      $headBtns.find('.register_state').text(res.data === 'y' ? '注册：开' : '注册：关')
-      _success(res.data === 'y' ? '开放注册成功' : '已关闭注册')
+      $headBtns.find('.register_state').text(res.data === 'y' ? '注册：开' : '注册：关');
+      _success(res.data === 'y' ? '开放注册成功' : '已关闭注册');
     }
-  }).catch(() => { })
+  }).catch(() => { });
 });
 _getAjax('/user/isregister').then(res => {
   if (res.code == 0) {
-    $headBtns.find('.register_state').text(res.data === 'y' ? '注册：开' : '注册：关')
+    $headBtns.find('.register_state').text(res.data === 'y' ? '注册：开' : '注册：关');
   }
-}).catch(() => { })
+}).catch(() => { });

@@ -12,12 +12,13 @@ import {
   _postAjax,
   _getAjax,
   isUserName,
+  userlenght,
 } from '../../utils/utils';
 import { _speed } from '../../config';
 import validateImg from './validate';
-import '../../js/common'
+import '../../js/common';
 import { _err } from "../../plugins/message";
-import { alert } from '../../plugins/alert'
+import { alert } from '../../plugins/alert';
 const $box = $('.box'),
   $register = $box.find('.register'),
   $bg = $('.bg'),
@@ -32,8 +33,8 @@ _setTimeout(() => {
   $bg.css({
     opacity: 0.8,
   });
-  $box.stop().show(_speed)
-}, 600)
+  $box.stop().show(_speed);
+}, 600);
 _getAjax('/user/isregister').then(res => {
   if (res.code == 0) {
     if (res.data == 'y') {
@@ -42,21 +43,20 @@ _getAjax('/user/isregister').then(res => {
   }
 }).catch(() => { });
 
-
 let isLogin = true;
 $register.on('click', () => {
   if (isLogin) {
-    isLogin = false
-    $register.text('登录')
-    $submit.text('注册')
-    $repassword.parent().css('display', 'block')
+    isLogin = false;
+    $register.text('登录');
+    $submit.text('注册');
+    $repassword.parent().css('display', 'block');
   } else {
-    isLogin = true
-    $register.text('注册')
-    $submit.text('登录')
-    $repassword.parent().css('display', 'none')
+    isLogin = true;
+    $register.text('注册');
+    $submit.text('登录');
+    $repassword.parent().css('display', 'none');
   }
-})
+});
 $box.on('keyup', function (e) {
   if (e.key === 'Enter') {
     $submit.click();
@@ -105,7 +105,7 @@ $submit.on('click', debounce(function () {
     if (!checkUserName() || !checkPassword() || !_flag) return;
     _flag = false;
     validateImg(function () {
-      _flag = true
+      _flag = true;
       let npd = {
         username: account,
         password: md5(password)
@@ -129,7 +129,7 @@ $submit.on('click', debounce(function () {
         });
     }, function () {
       _err('验证失败');
-    })
+    });
   }
 }, 500, true));
 
@@ -157,25 +157,6 @@ function checkUserName() {
     $accountErr.text('昵称过长');
     return false;
   }
-  $accountErr.text('')
+  $accountErr.text('');
   return true;
-}
-
-// 限制用户名长度
-function userlenght(str) {
-  let arr = str.split(''),
-    num = 0;
-  arr.forEach((v) => {
-    num +=
-      /[\u2E80-\u2FDF\u3040-\u318F\u31A0-\u31BF\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FFF\uA960-\uA97F\uAC00-\uD7FF]/.test(
-        v
-      )
-        ? 2
-        : 0.8;
-  });
-  if (num > 12) {
-    return true;
-  } else {
-    return false;
-  }
 }

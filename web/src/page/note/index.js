@@ -1,8 +1,8 @@
 import $ from "jquery";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
-import '../../css/iconfont.css'
-import './index.less'
+import '../../css/iconfont.css';
+import './index.less';
 import {
   queryURLParams,
   myOpen,
@@ -20,12 +20,12 @@ import {
   _myOpen,
   imgPreview,
   getPageScrollTop,
-} from '../../utils/utils'
+} from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
-import '../../js/common'
-import { rightMenu } from '../../plugins/rightMenu'
-import icon1logo from '../../img/icon1.png'
-import iconlogo from '../../img/icon.png'
+import '../../js/common';
+import { rightMenu } from '../../plugins/rightMenu';
+import icon1logo from '../../img/icon1.png';
+import iconlogo from '../../img/icon.png';
 const $icon = $("link[rel*='icon']"),
   $html = $(document.documentElement),
   $body = $('body'),
@@ -46,7 +46,7 @@ _setTimeout(() => {
   $pageBg.css({
     opacity: '0.6',
   });
-}, 600)
+}, 600);
 
 const $setBtnsWrap = $('.set_btns_wrap'),
   $contentWrap = $('.content_wrap'),
@@ -69,7 +69,7 @@ $setBtnsWrap.on('click', '.edit_note_btn', debounce(function () {
   window.scrollTo({
     top: 0,
     behavior: "smooth"
-  })
+  });
 }).on('click', '.show_search_wrap', () => {
   $pageSearchWrap.css('display', 'flex').find('.search_inp').focus();
 }).on('click', '.change_theme_btn', changeTheme).on('click', '.enlarge_font_btn', (e) => {
@@ -94,7 +94,7 @@ $setBtnsWrap.on('click', '.edit_note_btn', debounce(function () {
   e.stopPropagation();
   $navigationWrap.css('transition', '.5s').addClass('open');
   hdNavigationPosition();
-})
+});
 ~function () {
   let str = '';
   new Array(20).fill(null).forEach((v, i) => {
@@ -113,7 +113,7 @@ if (urlparmes.v) {
   _getAjax('/note/getnote', { v: urlparmes.v }).then((result) => {
     if (parseInt(result.code) === 0) {
       let { name, data, account, username, own } = result.data;
-      titleName = name
+      titleName = name;
       $authorInfo._uobj = {
         account,
         username,
@@ -138,10 +138,10 @@ if (urlparmes.v) {
       $noteBox.find('a').attr({
         'target': '_blank',
         cursor: ''
-      })
+      });
       $noteBox.find('img').attr({
         cursor: ''
-      })
+      });
       // hljs.initHighlightingOnLoad();
       BlogDirectory();
       document.title = name;
@@ -149,11 +149,11 @@ if (urlparmes.v) {
       window.scrollTo({
         top: 0,
         behavior: "smooth"
-      })
+      });
       if (HASH) {
         HASH = decodeURIComponent(HASH);
         $noteBox.highlight(HASH);
-        $highlight = $noteBox.find('span.highlight')
+        $highlight = $noteBox.find('span.highlight');
         let _length = $highlight.length;
         highlightnum = 0;
         if (_length > 0) {
@@ -168,7 +168,7 @@ if (urlparmes.v) {
     $noteBox.html(result.codeText);
     $setBtnsWrap.remove();
     $authorInfo.remove();
-  }).catch(err => { })
+  }).catch(err => { });
 } else {
   $noteBox.html('输入地址错误');
   $setBtnsWrap.remove();
@@ -249,7 +249,7 @@ $noteBox.on(
   imgPreview([{ u1: $(this).attr('src') }]);
 });
 $pageSearchWrap.on('click', (e) => {
-  $highlight = $noteBox.find('span.highlight')
+  $highlight = $noteBox.find('span.highlight');
   let target = e.target,
     _length = $highlight.length;
   if (target.tagName === 'DIV') {
@@ -282,7 +282,7 @@ $pageSearchWrap.on('click', (e) => {
   $pageSearchWrap.find('.res_total_num').text(``);
   if (val === '') return;
   $noteBox.highlight(val);
-  $highlight = $noteBox.find('span.highlight')
+  $highlight = $noteBox.find('span.highlight');
   let _length = $highlight.length;
   $pageSearchWrap.css('display', 'flex');
   highlightnum = 0;
@@ -296,7 +296,7 @@ $pageSearchWrap.on('click', (e) => {
   .on('keydown', '.search_inp', function (e) {
     let key = e.key;
     if (key === 'Enter') {
-      $highlight = $noteBox.find('span.highlight')
+      $highlight = $noteBox.find('span.highlight');
       let _length = $highlight.length;
       if (_length === 0) return;
       highlightnum++;
@@ -322,7 +322,7 @@ function highlightPosition(num) {
     window.scrollTo({
       top: _top - 60,
       behavior: "smooth"
-    })
+    });
   }
 }
 if (_getData('themeObj')) {
@@ -401,7 +401,7 @@ function toTree(box) {
     // 父亲认儿子
     obj.parent.children.push(obj);
     cur = obj;
-  })
+  });
   return root.children;
 }
 function BlogDirectory() {
@@ -415,13 +415,13 @@ function BlogDirectory() {
       let text = encodeHtml(item.node.innerText);
       let flag = `hello_${num++}`;
       item.node.id = flag;
-      str += `<li title="${text}" cursor h="${level}" data-id="${flag}">${text}</li>`
+      str += `<li title="${text}" cursor h="${level}" data-id="${flag}">${text}</li>`;
       if (item.children.length > 0) {
-        str += `<ul>`
-        next(item.children, level + 1)
-        str += '</ul>'
+        str += `<ul>`;
+        next(item.children, level + 1);
+        str += '</ul>';
       }
-    })
+    });
   })(treeData, 1);
   $navigationWrap.find('.list_box').html(str);
 
@@ -442,7 +442,7 @@ function BlogDirectory() {
     window.scrollTo({
       top: _top - 60,
       behavior: "smooth"
-    })
+    });
     $this.next('ul').stop().slideToggle(_speed);
   });
   _mySlide({
@@ -467,7 +467,7 @@ function BlogDirectory() {
         let c = $cuLi;
         while (c[0] != $navigationWrap.find('.list_box')[0]) {
           c = c.parent();
-          c.slideDown(_speed)
+          c.slideDown(_speed);
         }
         _setTimeout(() => {
           $navigationWrap.find('.list_box').stop().animate(
@@ -479,7 +479,7 @@ function BlogDirectory() {
             },
             _speed
           );
-        }, _speed)
+        }, _speed);
       }
     }
   }

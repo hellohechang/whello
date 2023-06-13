@@ -1,7 +1,7 @@
 import $ from "jquery";
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import './index.less'
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import './index.less';
 import {
   queryURLParams,
   myOpen,
@@ -11,9 +11,9 @@ import {
   getHost,
   _getAjax,
   encodeHtml,
-} from '../../utils/utils'
+} from '../../utils/utils';
 import { mediaURL } from "../../config";
-import '../../js/common'
+import '../../js/common';
 import { _success } from "../../plugins/message";
 
 let urlparmes = queryURLParams(myOpen()),
@@ -25,19 +25,19 @@ _setTimeout(() => {
   $pageBg.css({
     opacity: '1',
   });
-}, 600)
+}, 600);
 _getAjax('/nav/share', { id: HASH }).then((res) => {
   if (res.code == 0) {
     let str = '';
     res.data.forEach((item) => {
       let { name, link, logo, des } = item;
-      des = des ? encodeHtml(des) : ''
+      des = des ? encodeHtml(des) : '';
       name = encodeHtml(name);
       str += `<li data-name="${name}" data-src="${logo}" data-des="${des}" cursor class="bm_item jzxz" data-link="${link}">
         <div class="logo"></div>
         <div title="${name}(${link})" class="bm_title">${name}</div>
         <p title="${des}">${des || '描述'}</p>
-        </li>`
+        </li>`;
     });
     $box.html(str);
     $box.find('.bm_item').each((index, item) => {
@@ -79,7 +79,7 @@ _getAjax('/nav/share', { id: HASH }).then((res) => {
   } else {
     document.body.innerHTML = `<p style="font-size: 20px;color: #303030;text-align:center;padding:50px 0;">${res.codeText}</p>`;
   }
-}).catch(err => { })
+}).catch(err => { });
 $saveToList.on('click',
   debounce(
     function () {
@@ -87,7 +87,7 @@ $saveToList.on('click',
         if (res.code == 0) {
           _success();
         }
-      }).catch(err => { })
+      }).catch(err => { });
     },
     5000,
     true

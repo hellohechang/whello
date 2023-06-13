@@ -1,7 +1,7 @@
 import $ from "jquery";
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import './index.less'
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import './index.less';
 import {
   _setData,
   _getData,
@@ -18,14 +18,14 @@ import {
   compressionImg,
   isImgFile,
   imgPreview,
-} from '../../utils/utils'
+} from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
-import '../../js/common'
+import '../../js/common';
 import { _err } from "../../plugins/message";
-import { alert } from '../../plugins/alert'
-import { pagination } from '../../plugins/pagination'
-import { rightMenu } from '../../plugins/rightMenu'
-import { UpProgress } from '../../plugins/UpProgress'
+import { alert } from '../../plugins/alert';
+import { pagination } from '../../plugins/pagination';
+import { rightMenu } from '../../plugins/rightMenu';
+import { UpProgress } from '../../plugins/UpProgress';
 const $contentWrap = $('.content_wrap'),
   $imgList = $contentWrap.find('.img_list'),
   $pageBg = $('.page_bg'),
@@ -35,7 +35,7 @@ _setTimeout(() => {
   $pageBg.css({
     opacity: '1',
   });
-}, 600)
+}, 600);
 // 上传壁纸
 function hdUpFile(files) {
   ~(async function fn(num) {
@@ -203,7 +203,7 @@ function renderImgList(y) {
       return;
     }
     document.body.innerHTML = `<p style="font-size: 20px;color: #303030;text-align:center;padding:50px 0;">${result.codeText}</p>`;
-  }).catch(err => { })
+  }).catch(err => { });
 }
 if (isios()) {
   $imgList[0]._longPress('.img_item', function (e) {
@@ -234,7 +234,7 @@ function bgitemmenu(e, url) {
                   renderImgList();
                   return;
                 }
-              }).catch(err => { })
+              }).catch(err => { });
             },
           });
         }
@@ -248,15 +248,15 @@ $imgList
   .on('click', '.img_item', function () {
     let $this = $(this);
     let idx = $this.index();
-    let arr = []
+    let arr = [];
     $imgList.find('.img_item').each((idx, item) => {
-      let $item = $(item)
-      let u2 = $item.children('.img').attr('data-src')
+      let $item = $(item);
+      let u2 = $item.children('.img').attr('data-src');
       arr.push({
         u2,
         u1: u2.replace('picys', 'pic')
-      })
-    })
+      });
+    });
     imgPreview(arr, idx);
   })
   .on('contextmenu', '.img_item', function (e) {

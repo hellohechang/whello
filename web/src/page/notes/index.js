@@ -1,7 +1,7 @@
 import $ from "jquery";
-import '../../css/reset.css'
-import '../../css/iconfont.css'
-import './index.less'
+import '../../css/reset.css';
+import '../../css/iconfont.css';
+import './index.less';
 import {
   _setData,
   _getData,
@@ -16,15 +16,15 @@ import {
   setPageScrollTop,
   getPageScrollTop,
   myOpen,
-} from '../../utils/utils'
+} from '../../utils/utils';
 import { _speed } from "../../config";
-import '../../js/common'
+import '../../js/common';
 import { _success } from "../../plugins/message";
-import { alert } from '../../plugins/alert'
-import { pagination } from '../../plugins/pagination'
-import { rightMenu } from '../../plugins/rightMenu'
-import icon1logo from '../../img/icon1.png'
-import iconlogo from '../../img/icon.png'
+import { alert } from '../../plugins/alert';
+import { pagination } from '../../plugins/pagination';
+import { rightMenu } from '../../plugins/rightMenu';
+import icon1logo from '../../img/icon1.png';
+import iconlogo from '../../img/icon.png';
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),
@@ -55,7 +55,7 @@ function pageLoading() {
     str += `<ul style="pointer-events: none;height:20px;background-color: #ffffff5c;margin:6px" class="item_box"></ul>`;
   });
   $contentWrap.html(str);
-  setPageScrollTop(0)
+  setPageScrollTop(0);
 }
 function renderList(y) {
   if (y) {
@@ -109,11 +109,11 @@ function renderList(y) {
         $headWrap._flag = false;
         $footer.stop().slideUp(_speed);
         if (y) {
-          setPageScrollTop(0)
+          setPageScrollTop(0);
         }
       }
     }
-  ).catch(err => { })
+  ).catch(err => { });
 }
 renderList(true);
 let checkColor = 'rgb(118 254 89 / 58%)';
@@ -151,7 +151,7 @@ $contentWrap
                       close();
                       renderList();
                     }
-                  }).catch(err => { })
+                  }).catch(err => { });
                   return;
                 }
               },
@@ -191,7 +191,7 @@ $contentWrap
         if (parseInt(result.code) === 0) {
           renderList();
         }
-      }).catch(err => { })
+      }).catch(err => { });
     }, 1000)
   )
   .on('click', '.check_state', function (e) {
@@ -247,7 +247,7 @@ $contentWrap
             window.scrollTo({
               top: 0,
               behavior: "smooth"
-            })
+            });
           } else {
             $contentWrap.pagenum = +flag;
             renderList(true);
@@ -313,7 +313,7 @@ $footer
               renderList();
               return;
             }
-          }).catch(err => { })
+          }).catch(err => { });
           return;
         }
       },
@@ -338,7 +338,7 @@ $footer
         renderList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   })
   .on('click', '.f_open', function () {
     let $itemBox = $contentWrap.find('.item_box'),
@@ -359,7 +359,7 @@ $footer
         renderList();
         return;
       }
-    }).catch(err => { })
+    }).catch(err => { });
   })
   .on('click', '.f_close', function () {
     let $itemBox = $contentWrap.find('.item_box');
@@ -410,8 +410,7 @@ $footer
     }, 500)
   );
 })();
-$pageSize.val(_getData('nodeshowpage') || 20);
-$pageSize.on('change', function () {
+$pageSize.val(_getData('nodeshowpage') || 20).on('change', function () {
   let val = $(this).val();
   _setData('nodeshowpage', val);
   $contentWrap.pagenum = 1;
