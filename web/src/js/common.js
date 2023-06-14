@@ -144,6 +144,9 @@ window.onload = function () {
     box.style.transition = '.8s';
     box.style.opacity = 0;
     box.style.transform = 'scale(2)';
+    _setTimeout(() => {
+      box.remove();
+    }, 2000);
     let dianji = _getData('dian') || 'y';
     if (dianji === 'n') return;
     // 心形状
@@ -185,7 +188,6 @@ window.onload = function () {
     box1.style.opacity = 0;
     box1.style.transform = 'rotate(-55deg) translateY(-600%) scale(1.5)';
     _setTimeout(() => {
-      box.remove();
       box1.remove();
     }, 2000);
   }
