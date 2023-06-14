@@ -356,7 +356,7 @@ function rAsideList() {
           <p title="${des}">${des || '描述'}</p>
           </li>`;
       });
-      str += '</ul>';
+      str += '<div cursor class="pack_up_bm_list iconfont icon-up"></div></ul>';
     } else {
       str += `<div data-id="${item.id}" data-name="${name}" cursor title="${name}" flag="off" draggable="true" class="list_title jzxz">
       <i class="iconfont icon-shoucang"></i>
@@ -428,6 +428,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
           <p title="${des}">${des || '描述'}</p>
           </li>`;
     });
+    str += `<div cursor class="pack_up_bm_list iconfont icon-up"></div>`;
     $aside.find('.list_title')
       .attr('flag', 'off')
       .next()
@@ -549,6 +550,8 @@ $asideWrap.on('click', '.list_title', debounce(function () {
       check: 'n',
     });
   }
+}).on('click', '.pack_up_bm_list', function () {
+  $(this).parent().prev().click();
 }).on('click', '.delete_bm', function (e) {
   let $sidenav = $aside.find('.bm_item'),
     $checkArr = $sidenav.filter(
@@ -764,6 +767,7 @@ function asideBmMenu(e, obj) {
           _postAjax('/nav/share', { id: obj.id }).then((result) => {
             if (parseInt(result.code) === 0) {
               close();
+              hideAside();
               openIframe(`/page/sharelist`, '分享列表');
             }
           }).catch(err => { });
