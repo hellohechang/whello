@@ -18,6 +18,7 @@ import {
   compressionImg,
   isImgFile,
   imgPreview,
+  pageErr,
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
@@ -202,7 +203,7 @@ function renderImgList(y) {
       bglazyImg($imgList, '.img_item', '.img');
       return;
     }
-    document.body.innerHTML = `<p style="font-size: 20px;color: #303030;text-align:center;padding:50px 0;">${result.codeText}</p>`;
+    pageErr('sorry 图床功能未开放');
   }).catch(err => { });
 }
 if (isios()) {

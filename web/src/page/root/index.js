@@ -8,6 +8,7 @@ import {
   _getAjax,
   newDate,
   encodeHtml,
+  pageErr,
 } from '../../utils/utils';
 import '../../js/common';
 import { _success } from "../../plugins/message";
@@ -42,7 +43,7 @@ function renderList() {
       $list.html(str);
       return;
     }
-    myOpen('/404');
+    pageErr('sorry 你没有权限访问')
   }).catch(err => { });
 }
 $list

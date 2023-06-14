@@ -34,9 +34,11 @@ let urlObj = queryURLParams(myOpen()),
   reg = /^hello_[0-9]+$/,
   { HASH } = urlObj;
 // 背景
-$pageBg.css({
-  opacity: '1',
-});
+_setTimeout(() => {
+  $pageBg.css({
+    opacity: '1',
+  });
+}, 600)
 // 对比记录
 let orginData = {
   name: '',
@@ -55,17 +57,6 @@ if (HASH) {
     }
   } else {
     $headBtns.find('.note_list_btn').remove();
-    // 绑定关闭页面事件
-    window.addEventListener('beforeunload', function (e) {
-      e.preventDefault();
-      // 对比内容是否发生改变
-      if (
-        $editBox.val() !== orginData.data ||
-        $headBtns.find('.note_title input').val().trim() !== orginData.name
-      ) {
-        e.returnValue = ''; //发生改变则弹出提示框
-      }
-    });
     if (HASH === 'new') {
       //新增笔记
       // 生成标题
@@ -147,13 +138,13 @@ function handleSave() {
   let name = $headBtns.find('.note_title input').val().trim(),
     data = $editBox.val();
   // 对比内容
-  if (orginData.name === name && orginData.data === data) {
+  if (orginData.name + orginData.data == name + data) {
     $headBtns.find('.save_btn').removeClass('active');
     return;
   }
   $headBtns.find('.save_btn').addClass('active');
 }
-$headBtns.find('.note_title input').on('input', handleSave);
+
 $previewBox.on('click', '.codeCopy', debounce(function () {
   let str = $(this).parent().find('code').text();
   copyText(str);
@@ -209,7 +200,7 @@ $editBox
     $previewBox.scrollTop(ST);
   });
 const $nav = $noteListMask.find('nav');
-$headBtns.on('click', '.preview_state', function () {
+$headBtns.on('input', '.note_title input', handleSave).on('click', '.preview_state', function () {
   if (!$headBtns._flag) {
     $headBtns._flag = 'y';
   }

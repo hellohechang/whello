@@ -361,7 +361,7 @@ function rAsideList() {
       str += `<div data-id="${item.id}" data-name="${name}" cursor title="${name}" flag="off" draggable="true" class="list_title jzxz">
       <i class="iconfont icon-shoucang"></i>
       <em>${name}</em></div>
-      <ul style="display:'none'" ></ul>`;
+      <ul style="display:'none'"></ul>`;
     }
   });
   str += `<div cursor title="新增列表" class="add_list_btn iconfont icon-icon-test"></div>`;

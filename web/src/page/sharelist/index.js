@@ -7,7 +7,8 @@ import {
   _postAjax,
   _getAjax,
   _myOpen,
-  getPreUrl
+  getPreUrl,
+  copyText
 } from '../../utils/utils';
 import '../../js/common';
 import { alert } from '../../plugins/alert';
@@ -30,7 +31,9 @@ function renderList() {
         let { id, type } = item,
           url = `${getPreUrl()}/${type === 'music' ? `page/sharemusic/#${id}` : `page/sharebm/#${id}`}`;
         str += `<li data-id="${id}" data-url="${url}">
-            <div>${url}</div>
+            <div class="item_type_logo iconfont ${type === 'music' ? 'icon-yinle' : 'icon-shuqian1'}"></div>
+            <div class="url_text">${url}</div>
+            <button cursor class="copy_link">复制</button>
             <button cursor class="go">访问</button>
             <button cursor class="delete">删除</button>
           </li>
@@ -57,7 +60,10 @@ $shareList.on('click', '.delete', function () {
 }).on('click', '.go', function () {
   let url = $(this).parent().attr('data-url');
   _myOpen(url, url);
-});
+}).on('click', '.copy_link', function () {
+  let url = $(this).parent().attr('data-url');
+  copyText(url);
+})
 $headBtns.on('click', '.clear_share_list_btn', function () {
   alert(`确认清空？`, {
     confirm: true,

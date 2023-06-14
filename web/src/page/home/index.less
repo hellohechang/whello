@@ -1398,8 +1398,8 @@ body {
 
   .aside {
     position: relative;
-    width: 80%;
-    max-width: 500px;
+    width: 90%;
+    max-width: 900px;
     height: 100%;
     transform: translateX(-100%);
     transition: transform 0.5s;
@@ -1423,7 +1423,7 @@ body {
       .list_title {
         position: relative;
         margin-top: 5px;
-        color: #2c2c2c;
+        color: #ccc;
         font-size: 18px;
         box-sizing: border-box;
         padding-left: 20px;
@@ -1433,17 +1433,17 @@ body {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-        background-image: linear-gradient(to right, rgb(255 255 255 / 89%) 0%, #fed6e378 100%);
 
         &:hover {
-          color: #000000;
+          color: #127be7;
+          background-color: #ffffff29;
           padding-left: 30px;
-          font-weight: bold;
         }
 
         &:active {
           transition: 0s;
-          background-color: #fff;
+          color: #fff;
+          background-color: #ffffff63;
         }
 
         i {
@@ -1460,7 +1460,7 @@ body {
 
         .bm_item {
           position: relative;
-          width: 47%;
+          width: 30.6%;
           float: left;
           font-size: 16px;
           height: 100px;
@@ -1469,6 +1469,12 @@ body {
           background-color: #ffffff24;
           color: #fff;
           overflow: hidden;
+
+          @media (max-width:800px) {
+            & {
+              width: 47%;
+            }
+          }
 
           .check_bm {
             display: none;
@@ -1480,9 +1486,9 @@ body {
           }
 
           &:hover {
-            background-color: #ccc;
-            box-shadow: 0 0 10px rgb(136, 135, 135);
-            color: #000;
+            background-color: #ffffff94;
+            box-shadow: 0 0 10px #888787;
+            color: #df0fbc;
           }
 
           &:hover p {

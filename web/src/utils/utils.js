@@ -1355,3 +1355,15 @@ export function userlenght(str) {
     return false;
   }
 };
+export function pageErr(str) {
+  let div = document.createElement('div');
+  div.style.cssText = `
+  text-align: center;
+  padding: 50px 0px;
+  font-size: 30px;
+  color: #e52335;
+  `;
+  div.innerText = str;
+  document.body.innerHTML = '';
+  document.body.appendChild(div);
+}

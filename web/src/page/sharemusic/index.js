@@ -15,7 +15,8 @@ import {
   encodeHtml,
   _getTarget,
   imgPreview,
-  copyText
+  copyText,
+  pageErr
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
@@ -57,7 +58,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       $songSetBtns.find('.play_mv_btn').stop().hide(100);
     }
   } else {
-    document.body.innerHTML = `<p style="font-size: 20px;color: #303030;text-align:center;padding:50px 0;">${mobj.codeText}</p>`;
+    pageErr(mobj.codeText);
     return;
   }
   musicobj.pic = encodeURI(

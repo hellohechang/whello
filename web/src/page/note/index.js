@@ -20,6 +20,7 @@ import {
   _myOpen,
   imgPreview,
   getPageScrollTop,
+  pageErr,
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
@@ -165,13 +166,10 @@ if (urlparmes.v) {
       }
       return;
     }
-    $noteBox.html(result.codeText);
-    $setBtnsWrap.remove();
-    $authorInfo.remove();
+    pageErr(result.codeText);
   }).catch(err => { });
 } else {
-  $noteBox.html('输入地址错误');
-  $setBtnsWrap.remove();
+  pageErr('地址错误');
 }
 $authorInfo.on('click', '.logo', debounce(
   function (e) {
