@@ -43,14 +43,17 @@ body {
 
 body.heibaibg {
   background-color: #383838;
+  color: #e1e1e1;
 }
 
 body.baiheibg {
   background-color: #f5f5f5;
+  color: #383838;
 }
 
 body.moren {
   background-color: rgb(230 255 230);
+  color: #383838;
 }
 
 body {
@@ -147,24 +150,34 @@ pre {
 }
 
 pre code {
-  max-height: 600px;
-  overflow-y: auto;
+  overflow: hidden;
+  transition: .5s;
+}
+
+pre code.hide {
+  height: 300px;
 }
 
 pre .codeCopy {
   display: none;
   position: absolute;
-  top: 40px;
+  top: 20px;
   right: 20px;
-  color: #ccc;
   font-size: 26px;
 }
 
 pre .shrink {
-  color: #aaa;
+  position: absolute;
+  left: 50%;
+  bottom: -15px;
+  transform: translateX(-50%);
   font-weight: 700;
-  width: 30px;
+  width: 60px;
+  height: 30px;
   line-height: 30px;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 pre .shrink:hover,
@@ -298,11 +311,11 @@ pre code:hover+.codeCopy {
     }
 
     &.baiheibg {
-      color: #1b1a1a;
+      color: #383838;
     }
 
     &.moren {
-      color: #1b1a1a;
+      color: #383838;
     }
 
     img {
@@ -336,7 +349,6 @@ pre code:hover+.codeCopy {
     width: 40px;
     line-height: 40px;
     font-size: 30px;
-    color: #868686;
     text-align: center;
 
     &:hover {

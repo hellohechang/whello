@@ -18,6 +18,10 @@ code,
   padding: 0px 6px;
 }
 
+pre .shrink {
+  background: #fff;
+}
+
 .hljs-doctag,
 .hljs-keyword,
 .hljs-meta .hljs-keyword,

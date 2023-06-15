@@ -28,6 +28,7 @@
   word-break: break-all;
   display: flex;
   align-items: center;
+  color: #383838;
 }
 
 .mtc .mtcitem:hover,

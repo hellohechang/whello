@@ -129,13 +129,18 @@ if (urlparmes.v) {
       let str = MarkdownIt({ linkify: true }).render(data);
       $noteBox.html(str);
       hljs.highlightAll();
-      $noteBox.find('pre')
-        .append(
+      let $pre = $noteBox.find('pre');
+      $pre.each((_, item) => {
+        let $item = $(item);
+        $item.append(
           `<div title="复制" cursor class="codeCopy iconfont icon-fuzhi"><div>`
         )
-        .prepend(
-          `<div data-flag="y" cursor class="shrink iconfont icon-Down"><div>`
-        );
+        let $code = $item.find('code');
+        if ($code.height() > 400) {
+          $code.addClass('hide');
+          $item.append('<div data-flag="y" cursor class="shrink iconfont icon-Down"><div>')
+        }
+      })
       $noteBox.find('a').attr({
         'target': '_blank',
         cursor: ''
@@ -229,15 +234,15 @@ $noteBox.on(
       if (flag === 'y') {
         $this.attr({
           'data-flag': 'n',
-          class: 'shrink iconfont icon-page-next',
+          class: 'shrink iconfont icon-up',
         });
-        $this.parent().find('code').stop().hide();
+        $this.parent().find('code').removeClass('hide');
       } else {
         $this.attr({
           'data-flag': 'y',
           class: 'shrink iconfont icon-Down',
         });
-        $this.parent().find('code').stop().show();
+        $this.parent().find('code').addClass('hide');
       }
     },
     500,
@@ -339,6 +344,7 @@ function changeTheme() {
         themeObj.theme = fsbgnum;
         _setData('themeObj', themeObj);
         $body.attr('class', 'heibaibg');
+        $setBtnsWrap.attr('set_btns_warp heibaibg')
         $noteBox.attr('class', 'note_box heibaibg');
         $themeCss.attr('href', '/css/notecode1.css');
         fsbgnum++;

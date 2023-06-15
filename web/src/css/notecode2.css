@@ -18,6 +18,10 @@ code,
   border: 1px solid #ccc;
 }
 
+pre .shrink {
+  background: #e1e1d3;
+}
+
 .hljs-keyword,
 .hljs-literal,
 .hljs-selector-tag {

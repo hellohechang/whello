@@ -118,13 +118,6 @@ function rende() {
   $previewBox.html(show);
   // hljs.initHighlightingOnLoad();
   hljs.highlightAll();
-  $previewBox.find('pre')
-    .append(
-      `<div title="复制" cursor class="codeCopy iconfont icon-fuzhi"><div>`
-    )
-    .prepend(
-      `<div data-flag="y" cursor class="shrink iconfont icon-Down"><div>`
-    );
   $previewBox.find('a').attr({
     'target': '_blank',
     cursor: ''

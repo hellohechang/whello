@@ -18,6 +18,10 @@ code,
   border: 1px solid #ccc;
 }
 
+pre .shrink {
+  background: rgb(22 22 22);
+}
+
 .hljs-literal,
 .hljs-quote,
 .hljs-subst {

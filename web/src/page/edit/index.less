@@ -28,6 +28,7 @@ body {
   font-size: 18px;
   font-family: Consolas, 'myfont';
   overflow: hidden;
+  color: #383838;
   background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
 }
 
@@ -126,33 +127,6 @@ h6::before {
 
 pre {
   position: relative;
-}
-
-pre .codeCopy {
-  display: none;
-  position: absolute;
-  top: 40px;
-  right: 10px;
-  color: #ccc;
-  font-size: 26px;
-  transition: .3s;
-}
-
-pre .shrink {
-  color: #aaa;
-  font-weight: 700;
-  width: 30px;
-  line-height: 30px;
-}
-
-pre .shrink:hover,
-pre .codeCopy:hover {
-  color: #2fc956;
-}
-
-pre .codeCopy:hover,
-pre code:hover+.codeCopy {
-  display: block;
 }
 
 .content_wrap {
