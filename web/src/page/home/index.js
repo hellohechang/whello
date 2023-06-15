@@ -1778,7 +1778,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
     $searchItem.removeClass('active').eq(numff).addClass('active');
     let aa = $searchItem.eq(numff).attr('xx');
     $searchInpWrap.find('.inp_box input').val(aa);
-    let dw = parseInt(numff * 30);
+    let dw = parseInt(numff * 36);
     $searchInpWrap.find('.search_list_box').scrollTop(dw);
   }
   if (key === 'ArrowUp') {
@@ -1790,7 +1790,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
     $searchItem.removeClass('active').eq(numff).addClass('active');
     let aa = $searchItem.eq(numff).attr('xx');
     $searchInpWrap.find('.inp_box input').val(aa);
-    let dw = parseInt(numff * 30);
+    let dw = parseInt(numff * 36);
     $searchInpWrap.find('.search_list_box').scrollTop(dw);
   }
 }).on('input', '.inp_box input', debounce(function () {

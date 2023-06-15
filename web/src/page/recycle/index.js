@@ -37,7 +37,7 @@ _setTimeout(() => {
 function pageLoading() {
   let str = '';
   new Array(50).fill(null).forEach(v => {
-    str += `<ul style="pointer-events: none;height:20px;background-color: #ffffff5c;margin:6px" class="item_box"></ul>`;
+    str += `<ul style="pointer-events: none;height:40px;background-color: #ffffff5c;margin:6px" class="item_box"></ul>`;
   });
   $contentWrap.html(str);
   setPageScrollTop(0);

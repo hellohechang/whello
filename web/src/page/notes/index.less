@@ -91,7 +91,7 @@ body:before {
       color: #7a7e7e;
 
       &:hover {
-        color: #0ebfeb
+        color: #444444
       }
 
       &:active {
@@ -118,7 +118,6 @@ body:before {
     width: 100%;
     display: flex;
     flex-flow: row;
-    padding: 10px 0;
     font-size: 18px;
     background-color: rgba(248, 245, 245, .836);
     margin-bottom: 2px;
@@ -126,7 +125,7 @@ body:before {
     overflow: hidden;
 
     &:hover {
-      background-color: #fff;
+      background-color: #ffffffde;
     }
 
     &:active {
@@ -152,6 +151,12 @@ body:before {
       line-height: 22px;
     }
 
+    .set_btn {
+      &:hover {
+        color: #383838;
+      }
+    }
+
     .del_item {
       &:hover {
         color: red;
@@ -171,12 +176,12 @@ body:before {
     .lock_state {
       color: #b9b5b5;
 
-      &.open {
-        color: #f44336
+      &:hover {
+        color: #383838
       }
 
-      &:hover {
-        color: rgb(51, 63, 167)
+      &.open {
+        color: #f44336
       }
     }
 
@@ -184,9 +189,10 @@ body:before {
       flex: auto;
       line-height: 22px;
       color: #2d2e2e;
+      padding: 10px 0;
 
       &:hover {
-        color: #f807b0
+        color: #127be7
       }
     }
   }

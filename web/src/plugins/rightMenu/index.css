@@ -42,21 +42,11 @@
 .mtc .mtcitem8:hover,
 .mtc .mtcitem9:hover,
 .mtc .mtcitem10:hover {
-  background-color: #ccc;
-  color: rgb(209, 20, 178);
+  background-color: #f3f3f3;
+  color: #127be7;
 }
 
-.mtc .mtcitem:active,
-.mtc .mtcitem1:active,
-.mtc .mtcitem2:active,
-.mtc .mtcitem3:active,
-.mtc .mtcitem4:active,
-.mtc .mtcitem5:active,
-.mtc .mtcitem6:active,
-.mtc .mtcitem7:active,
-.mtc .mtcitem8:active,
-.mtc .mtcitem9:active,
-.mtc .mtcitem10:active {
+.mtc div:active {
   transition: 0s;
   opacity: .2;
 }
@@ -107,18 +97,23 @@
 
 .mtc input:focus,
 .mtc textarea:focus {
-  border: 1px solid rgb(12, 12, 12);
-  background-color: #1413131e;
+  border: 1px solid #868686;
 }
 
 .mtc .mtcbtn {
   display: block;
   margin: 0 auto;
-  border: 1px solid #ccc;
+  border: 1px solid #dbdbdb;
   line-height: 25px;
   padding: 0 20px;
 }
 
 .mtc .mtcbtn:hover {
-  background-color: rgb(175, 173, 173);
+  background-color: rgb(229 229 229);
+  color: #127be7;
+}
+
+.mtc .mtcbtn:active {
+  transition: 0s;
+  opacity: .2;
 }
