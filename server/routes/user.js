@@ -31,8 +31,7 @@ let {
   } = require('../sqlite'),
   { filepath } = require('../myconfig'),
   landingerr = {}, //多次密码错误IP临时存放
-  realTimeData = {}, //同步数据存放
-  _yc = {};
+  realTimeData = {}; //同步数据存放
 // 前端错误记录
 route.post('/panelerror', async (req, res) => {
   try {
@@ -563,7 +562,10 @@ route.get('/realtime', async (req, res) => {
     let { flag, id } = req.query; //标识和设备ID
     if (!realTimeData.hasOwnProperty(account)) {
       //如果没有，创建指令对象
-      realTimeData[account] = {};
+      realTimeData[account] = {
+        id: '',
+        flag: Math.random().toFixed(10).slice(-10)
+      };
     }
     // 更新在线时间
     await updateData(
@@ -584,7 +586,7 @@ route.get('/realtime', async (req, res) => {
             clearInterval(timer);
             timer = null;
           }
-          _nothing(res)
+          _nothing(res, { flag })
           return
         }
         let sendObj = realTimeData[account];
@@ -669,26 +671,6 @@ route.post('/realtime', async (req, res) => {
       realTimeData[data.to] = todata;
     }
     _success(res);
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-// 远程操控
-route.post('/controlsave', async (req, res) => {
-  try {
-    let account = req._userInfo.account;
-    _yc[account] = req.body;
-    _success(res);
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-route.get('/controlread', async (req, res) => {
-  try {
-    let account = req._userInfo.account;
-    _success(res, 'ok', _yc[account]);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

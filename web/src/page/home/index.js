@@ -2482,15 +2482,12 @@ let actionLrcIndex = 0,
 $lrcFootBtnWrap.on('click', '.random_play_btn', function () {
   if (!_d.music) return;
   if (_d.remoteState) {
-    _postAjax('/user/controlsave', {
-      type: 'playmode',
-      data: randomplay,
-    }).then((result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'yc' });
-        return;
+    sendCommand({
+      type: 'yc', hd: {
+        type: 'playmode',
+        data: randomplay,
       }
-    }).catch(err => { });
+    });
   }
   var a;
   switch (randomplay) {
@@ -2632,18 +2629,15 @@ function audioPlay() {
   if (!musicobj) return;
   if (_d.remoteState) {
     //远程播放
-    _postAjax('/user/controlsave', {
-      type: 'play',
-      data: {
-        play: true,
-        obj: musicobj,
-      },
-    }).then((result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'yc' });
-        return;
+    sendCommand({
+      type: 'yc', hd: {
+        type: 'play',
+        data: {
+          play: true,
+          obj: musicobj,
+        },
       }
-    }).catch(err => { });
+    });
   } else {
     $titleid.text(
       `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`
@@ -2943,17 +2937,14 @@ $lrcHead.on('click', '.remote_play', function (e) {
     _success('远程播放已关闭');
     $lrcListWrap.find('.lrc_items').html(``);
     $lrcHead.find('.remote_play').removeClass('red');
-    _postAjax('/user/controlsave', {
-      type: 'play',
-      data: {
-        play: false,
-      },
-    }).then((result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'yc' });
-        return;
+    sendCommand({
+      type: 'yc', hd: {
+        type: 'play',
+        data: {
+          play: false,
+        },
       }
-    }).catch(err => { });
+    });
   } else {
     if (!musicobj) return;
     _d.remoteState = !_d.remoteState;
@@ -2964,18 +2955,15 @@ $lrcHead.on('click', '.remote_play', function (e) {
     );
     audioPause();
     $lrcHead.find('.remote_play').addClass('red');
-    _postAjax('/user/controlsave', {
-      type: 'play',
-      data: {
-        play: true,
-        obj: musicobj,
-      },
-    }).then((result) => {
-      if (parseInt(result.code) === 0) {
-        sendCommand({ type: 'yc' });
-        return;
+    sendCommand({
+      type: 'yc', hd: {
+        type: 'play',
+        data: {
+          play: true,
+          obj: musicobj,
+        },
       }
-    }).catch(err => { });
+    });
   }
 }).on('click', '.close', function () {
   $musicLrcWrap.removeClass('active');
@@ -3361,15 +3349,12 @@ $musicHeadWrap.on('click', '.back', function (e) {
       vobellm();
       if (type === 'up') {
         if (_d.remoteState) {
-          _postAjax('/user/controlsave', {
-            type: 'vol',
-            data: defaultvolume,
-          }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              sendCommand({ type: 'yc' });
-              return;
+          sendCommand({
+            type: 'yc', hd: {
+              type: 'vol',
+              data: defaultvolume,
             }
-          }).catch(err => { });
+          });
         }
       }
     }, 500)
@@ -3684,15 +3669,12 @@ probox.addEventListener('touchstart', function (e) {
   }
   function mend(e) {
     if (_d.remoteState) {
-      _postAjax('/user/controlsave', {
-        type: 'progress',
-        data: pes,
-      }).then((result) => {
-        if (parseInt(result.code) === 0) {
-          sendCommand({ type: 'yc' });
-          return;
+      sendCommand({
+        type: 'yc', hd: {
+          type: 'progress',
+          data: pes,
         }
-      }).catch(err => { });
+      });
     }
     $lrcProgressBar.find('.dolt').removeClass('open');
     $lrcProgressBar.find('.pro1').removeClass('open');
@@ -3716,15 +3698,12 @@ probox.addEventListener('mousedown', function (e) {
   }
   function mup() {
     if (_d.remoteState) {
-      _postAjax('/user/controlsave', {
-        type: 'progress',
-        data: pes,
-      }).then((result) => {
-        if (parseInt(result.code) === 0) {
-          sendCommand({ type: 'yc' });
-          return;
+      sendCommand({
+        type: 'yc', hd: {
+          type: 'progress',
+          data: pes,
         }
-      }).catch(err => { });
+      });
     }
     document.removeEventListener('mousemove', mmove);
     document.removeEventListener('mouseup', mup);
@@ -3733,7 +3712,14 @@ probox.addEventListener('mousedown', function (e) {
   document.addEventListener('mouseup', mup);
 });
 
-
+let remoteVol = debounce(function () {
+  sendCommand({
+    type: 'yc', hd: {
+      type: 'vol',
+      data: defaultvolume,
+    }
+  });
+}, 500)
 // 主页全局键盘事件
 document.onkeydown = function (e) {
   let key = e.key,
@@ -3750,15 +3736,7 @@ document.onkeydown = function (e) {
         defaultvolume = 1;
       }
       if (_d.remoteState) {
-        _postAjax('/user/controlsave', {
-          type: 'vol',
-          data: defaultvolume,
-        }).then((result) => {
-          if (parseInt(result.code) === 0) {
-            sendCommand({ type: 'yc' });
-            return;
-          }
-        }).catch(err => { });
+        remoteVol()
       }
       vobellm();
       _success(parseInt(defaultvolume * 100) + '%', true);
@@ -3771,15 +3749,7 @@ document.onkeydown = function (e) {
         defaultvolume = 0;
       }
       if (_d.remoteState) {
-        _postAjax('/user/controlsave', {
-          type: 'vol',
-          data: defaultvolume,
-        }).then((result) => {
-          if (parseInt(result.code) === 0) {
-            sendCommand({ type: 'yc' });
-            return;
-          }
-        }).catch(err => { });
+        remoteVol();
       }
       vobellm();
       _success(parseInt(defaultvolume * 100) + '%', true);
@@ -7478,7 +7448,7 @@ function handleuser() {
           fg = resu.data.flag; //更新标识
           realtime();
           //to do something
-          let { type, flag, from, to, tt } = resu.data.data;
+          let { type, flag, from, to, tt, hd } = resu.data.data;
           //处理聊天指令
           if (type === 'chat') {
             let pid = deepClone(chatobj); //当前聊天框
@@ -7645,37 +7615,33 @@ function handleuser() {
               }
             }
           } else if (type === 'yc') {
-            _getAjax('/user/controlread').then((result) => {
-              if (parseInt(result.code) === 0) {
-                let vo = result.data;
-                _d.remoteState = false;
-                $lrcHead.find('.remote_play').removeClass('red');
-                if (vo.type === 'play') {
-                  if (vo.data.play) {
-                    if (!_d.music) $rightBox.find('.show_music_player').click();
-                    if (randomplay === false) {
-                      musicarr = myShuffle(deepClone(_d.playingList));
-                    }
-                    musicPlay(vo.data.obj);
-                  } else {
-                    $lrcListWrap.find('.lrc_items').html(``);
-                    audioPause();
-                  }
-                } else if (vo.type === 'vol') {
-                  defaultvolume = vo.data;
-                  vobellm();
-                  _success(`${parseInt(defaultvolume * 100)}%`);
-                } else if (vo.type === 'progress') {
-                  $myAudio[0].currentTime = $myAudio[0]._totalTime * vo.data;
-                } else if (vo.type === 'playmode') {
-                  randomplay = vo.data;
-                  $lrcFootBtnWrap.find('.random_play_btn').click();
+            _d.remoteState = false;
+            $lrcHead.find('.remote_play').removeClass('red');
+            if (hd.type === 'play') {
+              if (hd.data.play) {
+                if (!_d.music) $rightBox.find('.show_music_player').click();
+                if (randomplay === false) {
+                  musicarr = myShuffle(deepClone(_d.playingList));
                 }
-                return;
+                musicPlay(hd.data.obj);
+              } else {
+                $lrcListWrap.find('.lrc_items').html(``);
+                audioPause();
               }
-            }).catch(err => { });
+            } else if (hd.type === 'vol') {
+              defaultvolume = hd.data;
+              vobellm();
+              _success(`${parseInt(defaultvolume * 100)}%`);
+            } else if (hd.type === 'progress') {
+              $myAudio[0].currentTime = $myAudio[0]._totalTime * hd.data;
+            } else if (hd.type === 'playmode') {
+              randomplay = hd.data;
+              $lrcFootBtnWrap.find('.random_play_btn').click();
+            }
           }
           return;
+        } else if (resu.code == 3) {
+          fg = resu.data.flag;
         }
         realtime();
       })
