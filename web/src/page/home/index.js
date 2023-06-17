@@ -4912,6 +4912,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
+              let id = curSongListId;
               _postAjax('/player/delsong', {
                 id, ar: [{
                   name: sobj.name,
