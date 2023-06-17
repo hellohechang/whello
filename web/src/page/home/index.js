@@ -3473,14 +3473,13 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     debounce(
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
-          let obj = {
+          close();
+          _postAjax('/player/musicshare', {
             name: sobj.name,
             artist: sobj.artist,
             mv: sobj.mv,
             duration: sobj.duration
-          };
-          close();
-          _postAjax('/player/musicshare', obj).then((result) => {
+          }).then((result) => {
             if (parseInt(result.code) === 0) {
               openIframe(`/page/sharelist`, '分享列表');
             }
@@ -4895,14 +4894,13 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     debounce(
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
-          let obj = {
+          close();
+          _postAjax('/player/musicshare', {
             name: sobj.name,
             artist: sobj.artist,
             mv: sobj.mv,
             duration: sobj.duration
-          };
-          close();
-          _postAjax('/player/musicshare', obj).then((result) => {
+          }).then((result) => {
             if (parseInt(result.code) === 0) {
               openIframe(`/page/sharelist`, '分享列表');
             }
@@ -5204,7 +5202,12 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       }
     }).catch(err => { });
   } else {
-    _postAjax('/player/closecollectsong', obj).then((result) => {
+    _postAjax('/player/closecollectsong', {
+      name: musicobj.name,
+      artist: musicobj.artist,
+      mv: musicobj.mv,
+      duration: musicobj.duration
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -5232,13 +5235,12 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
 }).on('click', '.share_song_btn', debounce(
   function (e) {
     if (!musicobj) return;
-    let obj = {
+    _postAjax('/player/musicshare', {
       name: musicobj.name,
       artist: musicobj.artist,
       mv: musicobj.mv,
       duration: musicobj.duration
-    };
-    _postAjax('/player/musicshare', obj).then((result) => {
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         openIframe(`/page/sharelist`, '分享列表');
       }
