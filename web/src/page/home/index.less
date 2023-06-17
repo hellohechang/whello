@@ -2866,6 +2866,12 @@ body {
                   font-size: 13px;
                   margin-right: 4px;
                 }
+
+                .artist_name_text {
+                  &:hover {
+                    border-bottom: 1px solid #383838;
+                  }
+                }
               }
             }
           }
@@ -3504,6 +3510,7 @@ body {
               opacity: .2;
             }
 
+            .play_mv,
             .icon-icon-,
             .set_menu,
             .add_palying_list {
@@ -3515,6 +3522,7 @@ body {
               color: #5a5a5a;
             }
 
+            .play_mv:hover,
             .add_palying_list:hover,
             .set_menu:hover {
               color: rgb(209, 20, 178);
@@ -3665,12 +3673,14 @@ body {
               background: linear-gradient(to right, #f6d365 0%, #919191 50%, #fda085 100%);
             }
 
+            .play_mv,
             .icon-icon-,
             .del {
               flex: none;
               text-align: center;
               line-height: 60px;
               width: 40px;
+              font-size: 18px;
             }
 
             .logo_wrap {
@@ -3704,6 +3714,7 @@ body {
               }
             }
 
+            .play_mv,
             .del {
               color: #5a5a5a;
 
@@ -3734,6 +3745,12 @@ body {
               .artist_name {
                 color: #5a5a5a;
                 font-size: 12px;
+
+                i {
+                  &:hover {
+                    border-bottom: 1px solid #383838;
+                  }
+                }
               }
             }
           }

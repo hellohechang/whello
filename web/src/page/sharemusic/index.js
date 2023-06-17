@@ -57,6 +57,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     } else {
       $songSetBtns.find('.play_mv_btn').stop().hide(100);
     }
+    $proWrap.find('.total_time').text(tin(musicobj.duration));
   } else {
     pageErr(mobj.codeText);
     return;
@@ -239,7 +240,6 @@ import { rightMenu } from "../../plugins/rightMenu";
     $lrcContent.find('.lrc_list').html(
       `<div style="width:100%;font-size:18px;position: fixed;text-align: center;top: 45%;left:50%;transform: translateX(-50%);">正在获取歌词...</div>`
     );
-    $proWrap.find('.total_time').text('00:00');
     _getAjax('/player/lrc', {
       artist: musicobj.artist,
       name: musicobj.name,
@@ -332,7 +332,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       (pro1.offsetWidth - dolt.offsetWidth) * pes + dolt.offsetWidth / 2;
     pro2.style.width = val + 'px';
     if (!y) {
-      $myAudio[0].currentTime = pes * $myAudio[0]._totalTime;
+      $myAudio[0].currentTime = pes * musicobj.duration;
     }
   }
   // 处理时间函数
@@ -393,10 +393,9 @@ import { rightMenu } from "../../plugins/rightMenu";
     document.addEventListener('mousemove', mmove);
     document.addEventListener('mouseup', mup);
   };
-  $myAudio[0]._totalTime = 0;
   let upprog = throttle(function () {
     $proWrap.find('.current_time').text(tin($myAudio[0].currentTime));
-    proTime($myAudio[0].currentTime / $myAudio[0]._totalTime, true);
+    proTime($myAudio[0].currentTime / musicobj.duration, true);
   }, 500);
   let lrcCount = -1; //歌词计数
   $myAudio
@@ -412,11 +411,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       document.title = 'ShareMusic';
     })
     .on('loadedmetadata', function () {
-      $myAudio[0]._totalTime =
-        isNaN($myAudio[0].duration) || $myAudio[0].duration === Infinity
-          ? 0
-          : $myAudio[0].duration;
-      $proWrap.find('.total_time').text(tin($myAudio[0]._totalTime));
+
     })
     .on('waiting', function () {
       //缺少数据加载效果

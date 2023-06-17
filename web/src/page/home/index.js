@@ -49,6 +49,7 @@ import {
   imgPreview,
   qucong,
   userlenght,
+  getDuration,
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
@@ -2447,17 +2448,18 @@ function showTime(time = Date.now()) {
   if (musicflagnum >= 10) {
     musicflagnum = 0;
     if (!$myAudio[0].paused && musicobj) {
-      let obj = deepClone(musicobj);
-      delete obj.pic;
-      delete obj.url;
-      delete obj.murl;
       _postAjax(
         '/player/updatemusicinfo',
         {
           history: 'n',
-          lastplay: obj,
+          lastplay: {
+            name: musicobj.name,
+            artist: musicobj.artist,
+            mv: musicobj.mv,
+            duration: musicobj.duration
+          },
           currentTime: $myAudio[0].currentTime,
-          duration: $myAudio[0]._totalTime,
+          duration: musicobj.duration,
         },
         true
       ).then((result) => {
@@ -2757,18 +2759,12 @@ $lrcListWrap.on('click', function () {
 // 音乐事件
 let upprog = throttle(function () {
   $lrcProgressBar.find('.current_time').text(tin($myAudio[0].currentTime));
-  proTime($myAudio[0].currentTime / $myAudio[0]._totalTime, true);
+  proTime($myAudio[0].currentTime / musicobj.duration, true);
 }, 500);
-$myAudio[0]._totalTime = 0;
 let lrcCount = -1; //歌词计数
 $myAudio
   .on('loadedmetadata', function () {
     //元数据加载完
-    $myAudio[0]._totalTime =
-      isNaN($myAudio[0].duration) || $myAudio[0].duration === Infinity
-        ? 0
-        : $myAudio[0].duration;
-    $lrcProgressBar.find('.total_time').text(tin($myAudio[0]._totalTime));
   })
   .on('waiting', function () {
     //缺少数据加载效果
@@ -2906,7 +2902,7 @@ function proTime(pes, y) {
     width: per,
   });
   if (!y) {
-    $myAudio[0].currentTime = pes * $myAudio[0]._totalTime;
+    $myAudio[0].currentTime = pes * musicobj.duration;
   }
 }
 // 处理时间函数
@@ -2983,7 +2979,6 @@ function musicobjInit(obj) {
 }
 function musicInitial() {
   actionLrcIndex = 0;
-  $lrcProgressBar.find('.total_time').text('00:00');
   $miniLrcWrap.find('.lrcbot').find('.one').text('');
   $miniLrcWrap.find('.lrcbot').find('.tow').text('');
   $myAudio[0]._rod = [];
@@ -3000,6 +2995,7 @@ function musicPlay(obj) {
   $myAudio[0].currentTime = 0; //时间进度归零
   musicobjInit(obj); //初始化音乐数据
   let a = `♪♪ ${musicobj.artist} - ${musicobj.name}`;
+  $lrcProgressBar.find('.total_time').text(tin(musicobj.duration));
   _success(a);
   gaoliang(false); //列表定位
   gaolianging(false);
@@ -3030,9 +3026,6 @@ function musicPlay(obj) {
       videoPause();
       $musicMvWrap.stop().fadeOut(_speed);
     }
-    delete obj.pic;
-    delete obj.url;
-    delete obj.murl;
     if (!_d.remoteState) {
       //未开启远程
       musicflagnum = 0; //初始化倒计时
@@ -3041,9 +3034,14 @@ function musicPlay(obj) {
         {
           //更新当前播放音乐
           history: 'y',
-          lastplay: obj,
+          lastplay: {
+            name: obj.name,
+            artist: obj.artist,
+            mv: obj.mv,
+            duration: obj.duration
+          },
           currentTime: $myAudio[0].currentTime,
-          duration: $myAudio[0]._totalTime,
+          duration: obj.duration,
         },
         true
       ).then((result) => {
@@ -3109,19 +3107,20 @@ function dqplaying() {
   playingPageNum < 1 ? playingPageNum = 1 : (playingPageNum > totalPage ? playingPageNum = totalPage : null);
   let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize);
   arr.forEach((v) => {
-    let { name, artist, mv, idx } = v;
+    let { name, artist, mv, idx, duration } = v;
     let issc = scObj.hasOwnProperty(`h${artist}${name}`);
     name = encodeHtml(name);
     artist = encodeHtml(artist);
-    str += `<li class="song_item" cursor data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}">
+    str += `<li class="song_item" cursor data-duration="${duration}" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}">
           <div class="logo_wrap">
           <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
           <img class="play_gif" src="/img/wave.gif">
           </div>
           <div class="song_info_wrap">
           <span class = "song_name">${name}</span>
-          <span class="artist_name">${artist}</span>
+          <span class="artist_name"><i class="artist_name_text">${artist}</i></span>
           </div>
+          ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin"></div>` : ''}
           <div style="color:${issc ? '#fd4747' : '#ccc'}" class="iconfont icon-icon-"></div>
           <div cursor class="del iconfont icon-guanbi"></div>
         </li>`;
@@ -3161,16 +3160,15 @@ function lazyImg($fel, sels, simg, y) {
 }
 //清空播放列表
 $pMusicListBox.on('click', '.clear_playing_list', function () {
-  if (_d.playingList.length != 0) {
-    _postAjax('/player/updateplaying', { data: [] }).then(
-      (result) => {
-        if (parseInt(result.code) === 0) {
-          sendCommand({ type: 'updatedata', flag: 'playinglist' });
-          return;
-        }
+  if (_d.playingList.length == 0) return;
+  _postAjax('/player/updateplaying', { data: [] }).then(
+    (result) => {
+      if (parseInt(result.code) === 0) {
+        sendCommand({ type: 'updatedata', flag: 'playinglist' });
+        return;
       }
-    ).catch(err => { });
-  };
+    }
+  ).catch(err => { });
   _d.playingList = [];
   musicarr = [];
   dqplaying();
@@ -3182,12 +3180,28 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
     name: $this.attr('data-name'),
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
+    duration: $this.attr('data-duration'),
   };
   if (musicobj.name == obj.name && musicobj.artist == obj.artist) {
     $lrcFootBtnWrap.find('.play_btn').click();
     return;
   }
   musicPlay(obj);
+}).on('click', '.artist_name_text', function (e) {
+  e.stopPropagation();
+  $musicHeadWrap.find('.search_music_inp').val(this.innerText);
+  _musicsea();
+}).on('click', '.play_mv', function (e) {
+  e.stopPropagation();
+  let $this = $(this).parent();
+  let sobj = {
+    name: $this.attr('data-name'),
+    artist: $this.attr('data-artist'),
+    mv: $this.attr('data-mv'),
+    duration: $this.attr('data-duration')
+  };
+  setZindex($musicMvWrap);
+  musicMv(sobj);
 }).on('click', '.prev_page', function () {
   playingPageNum--;
   $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
@@ -3205,6 +3219,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
       name: $this.parent().attr('data-name'),
       artist: $this.parent().attr('data-artist'),
       mv: $this.parent().attr('data-mv'),
+      duration: $this.parent().attr('data-duration'),
     };
   _d.playingList = _d.playingList.filter(
     (v) => v.artist + v.name !== mobj.artist + mobj.name
@@ -3226,9 +3241,15 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
     issc: $this.attr('data-issc'),
+    duration: $this.attr('data-duration'),
   };
   if (sobj.issc == 'true') {
-    _postAjax('/player/closecollectsong', sobj).then((result) => {
+    _postAjax('/player/closecollectsong', {
+      name: sobj.name,
+      artist: sobj.artist,
+      mv: sobj.mv,
+      duration: sobj.duration
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -3236,10 +3257,14 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
       }
     }).catch(err => { });
   } else {
-    let ssobj = deepClone(sobj);
-    let ar = [];
-    ar.push(ssobj);
-    _postAjax('/player/collectsong', { ar }).then((result) => {
+    _postAjax('/player/collectsong', {
+      ar: [{
+        name: sobj.name,
+        artist: sobj.artist,
+        mv: sobj.mv,
+        duration: sobj.duration
+      }]
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -3401,6 +3426,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     name: $this.attr('data-name'),
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
+    duration: $this.attr('data-duration'),
   };
   if (_d.playingList.length !== searchMusicList.length
     || !searchMusicList.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
@@ -3412,13 +3438,12 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
         }
       }
     ).catch(err => { });
+    musicarr =
+      randomplay === false
+        ? myShuffle(deepClone(searchMusicList))
+        : deepClone(searchMusicList);
+    _d.playingList = deepClone(searchMusicList);
   };
-
-  musicarr =
-    randomplay === false
-      ? myShuffle(deepClone(searchMusicList))
-      : deepClone(searchMusicList);
-  _d.playingList = deepClone(searchMusicList);
 
   if (musicobj.name == obj.name && musicobj.artist == obj.artist) {
     $lrcFootBtnWrap.find('.play_btn').click();
@@ -3432,6 +3457,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
     issc: $this.attr('data-issc'),
+    duration: $this.attr('data-duration')
   };
   let str = '';
   str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
@@ -3451,6 +3477,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
             name: sobj.name,
             artist: sobj.artist,
             mv: sobj.mv,
+            duration: sobj.duration
           };
           close();
           _postAjax('/player/musicshare', obj).then((result) => {
@@ -3536,6 +3563,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     name: $this.attr('data-name'),
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
+    duration: $this.attr('data-duration'),
   };
   _d.playingList.push(mobj);
   musicarr.push(mobj);
@@ -3554,9 +3582,15 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
     issc: $this.attr('data-issc'),
+    duration: $this.attr('data-duration'),
   };
   if (sobj.issc == 'true') {
-    _postAjax('/player/closecollectsong', sobj).then((result) => {
+    _postAjax('/player/closecollectsong', {
+      name: sobj.name,
+      artist: sobj.artist,
+      mv: sobj.mv,
+      duration: sobj.duration
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         _musicsea();
@@ -3565,10 +3599,14 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
       }
     }).catch(err => { });
   } else {
-    let ssobj = deepClone(sobj);
-    let ar = [];
-    ar.push(ssobj);
-    _postAjax('/player/collectsong', { ar }).then((result) => {
+    _postAjax('/player/collectsong', {
+      ar: [{
+        name: sobj.name,
+        artist: sobj.artist,
+        mv: sobj.mv,
+        duration: sobj.duration
+      }]
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         _musicsea();
@@ -3577,6 +3615,33 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
       }
     }).catch(err => { });
   }
+}).on('click', '.play_mv', function (e) {
+  e.stopPropagation();
+  let $this = $(this).parent();
+  let sobj = {
+    name: $this.attr('data-name'),
+    artist: $this.attr('data-artist'),
+    mv: $this.attr('data-mv'),
+    duration: $this.attr('data-duration')
+  };
+  setZindex($musicMvWrap);
+  if (_d.playingList.length !== searchMusicList.length
+    || !searchMusicList.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
+    _postAjax('/player/updateplaying', { data: searchMusicList }).then(
+      (result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'playinglist' });
+          return;
+        }
+      }
+    ).catch(err => { });
+    musicarr =
+      randomplay === false
+        ? myShuffle(deepClone(searchMusicList))
+        : deepClone(searchMusicList);
+    _d.playingList = deepClone(searchMusicList);
+  };
+  musicMv(sobj);
 }).on('scroll', debounce(function () {
   lazyImg($searchMusicWrap.find('ul'), '.song_item', '.logo');
 }, 100)).on('click', '.logo_wrap', function () {
@@ -3599,11 +3664,11 @@ function musicsea() {
         searchMusicList = arr;
         if (arr.length > 0) {
           arr.forEach((v) => {
-            let { artist, name, mv } = v;
+            let { artist, name, mv, duration } = v;
             let issc = scObj.hasOwnProperty(`h${artist}${name}`);
             artist = encodeHtml(artist);
             name = encodeHtml(name);
-            str += `<li class="song_item" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-mv="${mv}" cursor>
+            str += `<li class="song_item" data-duration="${duration}" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-mv="${mv}" cursor>
                     <div class="add_palying_list iconfont icon-icon-test"></div>
                     <div class="logo_wrap">
                     <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
@@ -3612,6 +3677,7 @@ function musicsea() {
                       <span class="song_name">${name}</span>
                       <span class="artist_name">${artist}</span>
                     </div>
+                    ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin"></div>` : ''}
                     <div style="color:${issc ? '#fd4747' : '#ccc'};" class="iconfont icon-icon-"></div>
                     <div class="set_menu iconfont icon-icon"></div>
                   </li>`;
@@ -3915,7 +3981,6 @@ function renderMusicList() {
           }).catch(err => { });
         }
         $myAudio[0].currentTime = currentTime;
-        $myAudio[0]._totalTime = duration;
         upprog();
         $lrcProgressBar.find('.total_time').text(tin(duration));
       }
@@ -4070,11 +4135,11 @@ function rendermusicitem(gao) {
   musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null);
   let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize);
   sliceList.forEach((item) => {
-    let { name, artist, mv, idx } = item;
+    let { name, artist, mv, idx, duration } = item;
     let issc = scObj.hasOwnProperty(`h${artist}${name}`);
     name = encodeHtml(name);
     artist = encodeHtml(artist);
-    str += `<div class="song_item" draggable="true" data-issc="${issc}" m="${mv
+    str += `<div class="song_item" data-duration="${duration}" draggable="true" data-issc="${issc}" m="${mv
       }" xn="${name}" data-idx="${idx}" xa="${artist}" cursor>
         <div cursor check="n" class="check_state"></div>
         <div class="song_logo_box">
@@ -4085,8 +4150,7 @@ function rendermusicitem(gao) {
         </div>
         <div class="song_info_wrap">
           <span class="song_name">${name}</span>
-          <span class="artist_name"><i class="viptu iconfont icon-vip1"></i>${artist
-      }</span>
+          <span class="artist_name"><i class="viptu iconfont icon-vip1"></i><i class="artist_name_text">${artist}</i></span>
         </div>
         ${mv === 'y'
         ? `<div class="play_mv iconfont icon-shipin"></div>`
@@ -4404,12 +4468,16 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           //文件已经存在操作
           let d = a.split('-');
           if (b === 'mp3') {
-            let obj = {
-              name: d[1],
-              artist: d[0],
-              mv: '',
-            };
-            arr.push(obj);
+            try {
+              let duration = await getDuration(files[num]);
+              let obj = {
+                name: d[1],
+                artist: d[0],
+                mv: '',
+                duration
+              };
+              arr.push(obj);
+            } catch (error) { }
           }
           pro.close('文件已存在');
           num++;
@@ -4431,12 +4499,16 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               pro.close();
               let d = a.split('-');
               if (b === 'mp3') {
-                let obj = {
-                  name: d[1],
-                  artist: d[0],
-                  mv: '',
-                };
-                arr.push(obj);
+                try {
+                  let duration = await getDuration(files[num]);
+                  let obj = {
+                    name: d[1],
+                    artist: d[0],
+                    mv: '',
+                    duration
+                  };
+                  arr.push(obj);
+                } catch (error) { }
               }
             } else {
               pro.fail();
@@ -4487,10 +4559,12 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }, 100)
 ).on('click', '.add_song_playing_btn', function (e) {
   //添加到播放列表
+  let $this = $(this);
   let mobj = {
-    name: $(this).parent().attr('xn'),
-    artist: $(this).parent().attr('xa'),
-    mv: $(this).parent().attr('m'),
+    name: $this.parent().attr('xn'),
+    artist: $this.parent().attr('xa'),
+    mv: $this.parent().attr('m'),
+    duration: $this.parent().attr('data-duration'),
   };
   _d.playingList.push(mobj);
   musicarr.push(mobj);
@@ -4546,6 +4620,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       name: $v.attr('xn'),
       artist: $v.attr('xa'),
       mv: $v.attr('m'),
+      duration: $v.attr('data-duration')
     });
   });
   _postAjax('/player/collectsong', { ar: arr }).then((result) => {
@@ -4575,6 +4650,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           name: $v.attr('xn'),
           artist: $v.attr('xa'),
           mv: $v.attr('m'),
+          duration: $v.attr('data-duration')
         });
       });
       _postAjax('/player/delsong', { id, ar: arr }).then((result) => {
@@ -4620,6 +4696,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               name: $v.attr('xn'),
               artist: $v.attr('xa'),
               mv: $v.attr('m'),
+              duration: $v.attr('data-duration')
             });
           });
           alert(`确认移动到 ${listname}?`, {
@@ -4658,6 +4735,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       name: $v.attr('xn'),
       artist: $v.attr('xa'),
       mv: $v.attr('m'),
+      duration: $v.attr('data-duration')
     });
   });
   _d.playingList = [..._d.playingList, ...arr];
@@ -4684,6 +4762,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     name: $this.attr('xn'),
     artist: $this.attr('xa'),
     mv: $this.attr('m'),
+    duration: $this.attr('data-duration'),
   };
   if (_d.playingList.length !== musicarrjl.length
     || !musicarrjl.every((item, idx) => item.name + item.artist === _d.playingList[idx].name + _d.playingList[idx].artist)) {
@@ -4695,16 +4774,20 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         }
       }
     ).catch(err => { });
+    musicarr = randomplay === false
+      ? myShuffle(deepClone(musicarrjl))
+      : deepClone(musicarrjl);
+    _d.playingList = deepClone(musicarrjl);
   };
-  musicarr = randomplay === false
-    ? myShuffle(deepClone(musicarrjl))
-    : deepClone(musicarrjl);
-  _d.playingList = deepClone(musicarrjl);
   if (musicobj.name == sobj.name && musicobj.artist == sobj.artist) {
     $lrcFootBtnWrap.find('.play_btn').click();
   } else {
     musicPlay(sobj);
   }
+}).on('click', '.artist_name_text', function (e) {
+  e.stopPropagation();
+  $musicHeadWrap.find('.search_music_inp').val(this.innerText);
+  _musicsea();
 }).on('click', '.song_logo_box', function () {
   $(this).parent().find('.song_info_wrap').click();
   $playingSongLogo.click();
@@ -4715,6 +4798,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     name: $this.attr('xn'),
     artist: $this.attr('xa'),
     mv: $this.attr('m'),
+    duration: $this.attr('data-duration')
   };
   setZindex($musicMvWrap);
   if (_d.playingList.length !== musicarrjl.length
@@ -4727,12 +4811,12 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         }
       }
     ).catch(err => { });
+    musicarr =
+      randomplay === false
+        ? myShuffle(deepClone(musicarrjl))
+        : deepClone(musicarrjl);
+    _d.playingList = deepClone(musicarrjl);
   };
-  musicarr =
-    randomplay === false
-      ? myShuffle(deepClone(musicarrjl))
-      : deepClone(musicarrjl);
-  _d.playingList = deepClone(musicarrjl);
   musicMv(sobj);
 }).on('click', '.icon-icon-', function () {
   let $this = $(this).parent();
@@ -4741,9 +4825,15 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     artist: $this.attr('xa'),
     mv: $this.attr('m'),
     issc: $this.attr('data-issc'),
+    duration: $this.attr('data-duration')
   };
   if (sobj.issc == 'true') {
-    _postAjax('/player/closecollectsong', sobj).then((result) => {
+    _postAjax('/player/closecollectsong', {
+      name: sobj.name,
+      artist: sobj.artist,
+      mv: sobj.mv,
+      duration: sobj.duration
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -4751,10 +4841,14 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       }
     }).catch(err => { });
   } else {
-    let ssobj = deepClone(sobj);
-    let ar = [];
-    ar.push(ssobj);
-    _postAjax('/player/collectsong', { ar }).then((result) => {
+    _postAjax('/player/collectsong', {
+      ar: [{
+        name: sobj.name,
+        artist: sobj.artist,
+        mv: sobj.mv,
+        duration: sobj.duration
+      }]
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -4769,6 +4863,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     artist: $this.attr('xa'),
     mv: $this.attr('m'),
     issc: $this.attr('data-issc'),
+    duration: $this.attr('data-duration')
   };
   let ii = _d.music.findIndex((item) => item.id === curSongListId);
   if (ii < 0) return;
@@ -4804,6 +4899,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             name: sobj.name,
             artist: sobj.artist,
             mv: sobj.mv,
+            duration: sobj.duration
           };
           close();
           _postAjax('/player/musicshare', obj).then((result) => {
@@ -4816,11 +4912,12 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
-              let ssobj = deepClone(sobj);
-              let ar = [];
-              let id = curSongListId;
-              ar.push(ssobj);
-              _postAjax('/player/delsong', { id, ar }).then((result) => {
+              _postAjax('/player/delsong', {
+                id, ar: [{
+                  name: sobj.name,
+                  artist: sobj.artist
+                }]
+              }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
                   sendCommand({ type: 'updatedata', flag: 'music' });
@@ -4851,10 +4948,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                 if (_this) {
                   let $this = $(_this),
                     tid = $this.attr('data-id'),
-                    listname = $this.attr('data-name'),
-                    ssobj = deepClone(sobj),
-                    ar = [];
-                  ar.push(ssobj);
+                    listname = $this.attr('data-name');
                   alert(`确认移动到 ${listname}?`, {
                     confirm: true,
                     handled: (m) => {
@@ -4862,7 +4956,12 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                       _postAjax('/player/songtolist', {
                         id,
                         tid,
-                        ar,
+                        ar: [{
+                          name: sobj.name,
+                          artist: sobj.artist,
+                          mv: sobj.mv,
+                          duration: sobj.duration
+                        }],
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
                           flagClose();
@@ -5087,14 +5186,15 @@ if (isios()) {
 
 $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
   if (!musicobj) return;
-  let obj = deepClone(musicobj);
-  delete obj.pic;
-  delete obj.url;
-  delete obj.murl;
-  let ar = [];
-  ar.push(obj);
   if (!$(this).hasClass('active')) {
-    _postAjax('/player/collectsong', { ar }).then((result) => {
+    _postAjax('/player/collectsong', {
+      ar: [{
+        name: musicobj.name,
+        artist: musicobj.artist,
+        mv: musicobj.mv,
+        duration: musicobj.duration
+      }]
+    }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -5135,6 +5235,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       name: musicobj.name,
       artist: musicobj.artist,
       mv: musicobj.mv,
+      duration: musicobj.duration
     };
     _postAjax('/player/musicshare', obj).then((result) => {
       if (parseInt(result.code) === 0) {
@@ -5368,16 +5469,18 @@ function musicMv(obj) {
   $musicMvWrap.stop().fadeIn(_speed);
   setZindex($musicMvWrap);
   gaoliang(false);
-  delete obj.pic;
-  delete obj.url;
-  delete obj.murl;
   _postAjax(
     '/player/updatemusicinfo',
     {
       history: 'y',
-      lastplay: obj,
+      lastplay: {
+        name: obj.name,
+        artist: obj.artist,
+        mv: obj.mv,
+        duration: obj.duration
+      },
       currentTime: $myAudio[0].currentTime,
-      duration: $myAudio[0]._totalTime,
+      duration: musicobj.duration,
     },
     true
   ).then((result) => {
@@ -7605,7 +7708,6 @@ function handleuser() {
                         musicobjInit(lastplay);
                         csfz();
                         $myAudio[0].currentTime = currentTime;
-                        $myAudio[0]._totalTime = duration;
                         upprog();
                         $lrcProgressBar.find('.total_time').text(tin(duration));
                       }
@@ -7633,7 +7735,7 @@ function handleuser() {
               vobellm();
               _success(`${parseInt(defaultvolume * 100)}%`);
             } else if (hd.type === 'progress') {
-              $myAudio[0].currentTime = $myAudio[0]._totalTime * hd.data;
+              $myAudio[0].currentTime = musicobj.duration * hd.data;
             } else if (hd.type === 'playmode') {
               randomplay = hd.data;
               $lrcFootBtnWrap.find('.random_play_btn').click();

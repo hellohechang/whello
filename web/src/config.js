@@ -16,9 +16,7 @@ export const LevelObj = {
 let preUrl = getPreUrl();
 // preUrl = getPreUrl() + '/api';
 export const serverURL = preUrl;
-
-export const mediaURL = 'https://data.hellochang.eu.org';
-// export const mediaURL = preUrl + '/getfile';
+export const mediaURL = preUrl + '/getfile';
 
 export const _d = {
   searchEngineData: [

@@ -1367,3 +1367,15 @@ export function pageErr(str) {
   document.body.innerHTML = '';
   document.body.appendChild(div);
 }
+export function getDuration(file) {
+  return new Promise((resolve, reject) => {
+    let url = URL.createObjectURL(file);
+    let audioElement = new Audio(url);
+    audioElement.onloadeddata = function () {
+      resolve(audioElement.duration)
+    }
+    audioElement.onerror = function () {
+      reject();
+    }
+  })
+}
