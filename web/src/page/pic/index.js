@@ -165,7 +165,8 @@ $contentWrap.on('click', '.uoload_img_btn', function () {
 })();
 // 获取壁纸
 var bgpage = 1;
-$pageSize.val(_getData('bgshowpage') || 40);
+let curPageSize = _getData('bgshowpage');
+$pageSize.val(curPageSize);
 renderImgList(true);
 function imgListLoading() {
   let str = '';
@@ -181,7 +182,7 @@ function renderImgList(y) {
     imgListLoading();
   }
   let str = '',
-    showpage = _getData('bgshowpage') || 40;
+    showpage = curPageSize;
   _getAjax('/pic/getlist', { page: bgpage, showpage }).then((result) => {
     if (parseInt(result.code) === 0) {
       let { total, totalPage, data, pageNo } = result.data;
@@ -311,8 +312,8 @@ $imgList
     )
   );
 $pageSize.on('change', function () {
-  let val = $(this).val();
-  _setData('bgshowpage', val);
+  curPageSize = $(this).val();
+  _setData('bgshowpage', curPageSize);
   if (bgpage == 1) {
     renderImgList();
   } else {

@@ -34,7 +34,7 @@ function mstc(flag, str, again) {
     clearTimeout(timer);
     timer = null;
   }
-  str = str || (flag ? '操作成功~' : '操作失败~');
+  str = str || (flag ? '操作成功' : '操作失败');
   let color = flag ? 'white' : 'rgba(245,27,112,1)';
   if (!again) {
     box.style.transition = '0s';

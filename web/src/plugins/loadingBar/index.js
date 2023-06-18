@@ -87,7 +87,7 @@ let load = null;
 function change() {
   let [x, y] = loadingNum;
   let num = null;
-  load = _getData('loading') || 16;
+  load = _getData('loading');
 
   if (load === 'y') {
     num = randomNum(x, y);

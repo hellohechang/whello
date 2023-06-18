@@ -40,7 +40,7 @@ import { alert } from '../../plugins/alert';
     });
     $box.stop().show(_speed);
   }, 600);
-  $account.val(_getData('account') || '')
+  $account.val(_getData('account'))
   _getAjax('/user/isregister').then(res => {
     if (res.code == 0) {
       if (res.data == 'y') {
@@ -94,7 +94,7 @@ import { alert } from '../../plugins/alert';
                 _setData('state', 'y');
                 alert(result.codeText, {
                   handled: () => {
-                    myOpen(_getData('originurl') || '/');
+                    myOpen(_getData('originurl'));
                   },
                 });
               }
@@ -125,7 +125,7 @@ import { alert } from '../../plugins/alert';
               _setData('state', 'y');
               alert(result.codeText, {
                 handled: () => {
-                  myOpen(_getData('originurl') || '/');
+                  myOpen(_getData('originurl'));
                 },
               });
             }

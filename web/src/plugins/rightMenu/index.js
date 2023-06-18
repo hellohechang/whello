@@ -1,6 +1,6 @@
 import { LevelObj } from '../../config';
 import { _setTimeout } from '../../utils/utils';
-import './index.css'
+import './index.less'
 // 右键菜单
 export function rightMenu(e, html, callback) {
   class rightM {
@@ -33,7 +33,7 @@ export function rightMenu(e, html, callback) {
       background-color: rgba(255, 255, 255);
       box-shadow: 0 0 10px #5e5c5c;
       overflow-y: auto;
-      border: 10px solid transparent;
+      border: 16px solid transparent;
       scrollbar-width: none;
       -ms-overflow-style: none;
       user-select: none;
@@ -44,6 +44,7 @@ export function rightMenu(e, html, callback) {
 
       this.rightBox.innerHTML = this.html;
       this.allInp = this.rightBox.querySelectorAll('input,textarea');
+      this.allDiv = this.rightBox.querySelectorAll('div');
       this.rikey(this.e);
       this.newHdClick = this.hdClick.bind(this);
       this.newHdKeyup = this.hdKeyup.bind(this);
@@ -77,12 +78,12 @@ export function rightMenu(e, html, callback) {
       }
       let data = [...this.allInp].map((item) => item.value.trim());
       let newClose = this.close.bind(this);
-      this.callback && this.callback({ e, close: newClose, inp: data });
+      this.callback && this.callback({ e, close: newClose, inp: data, items: this.allDiv });
     }
     hdKeyup(e) {
       if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.key === 'Enter') {
         e.preventDefault()
-        this.box.querySelector('.mtcbtn').click();
+        this.box.querySelector('button').click();
       }
     }
     close() {

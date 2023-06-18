@@ -13,10 +13,9 @@ export const LevelObj = {
   loading: 107, // 加载动画（静）
   dianji: 107, // 点击（动）
 };
-let preUrl = getPreUrl();
-// preUrl = getPreUrl() + '/api';
-export const serverURL = preUrl;
-export const mediaURL = preUrl + '/getfile';
+let url = getPreUrl() + '/api';
+export const serverURL = url;
+export const mediaURL = url + '/getfile';
 
 export const _d = {
   searchEngineData: [
@@ -96,4 +95,40 @@ export const _d = {
   remoteState: false,
   checkColor: 'rgb(118 254 89 / 58%)',
   myTitle: 'Hello',
+  localStorageDefaultData: {
+    md: [],
+    dian: 'y',
+    pagecolor: 0,
+    lastvol: 0.7,
+    fonttype: 'consolas.ttf',
+    nodeshowpage: 20,
+    newNote: '',
+    historyshowpage: 80,
+    searchengine: {
+      name: 'Bing',
+      icon: 'img/bing-xs.png',
+      logo: 'img/bing.png',
+      searchlink: 'https://cn.bing.com/search?q=',
+    },
+    toUser: {},
+    callword: 'y',
+    filterbg: 0,
+    lastpx: 'default',
+    loading: 16,
+    logshowpage: 100,
+    bgshowpage: 40,
+    recycleshowpage: 40,
+    lastplaysd: ['x1', 1],
+    showfy: false,
+    lastweizi: {},
+    lrcstatu: { size: 16, statu: 'center' },
+    musicpagenum: 50,
+    account: '',
+    originurl: '/',
+    themeObj: {
+      fontsz: 20,
+      fontwe: 0,
+      theme: 2,
+    }
+  }
 };

@@ -42,6 +42,7 @@ function pageLoading() {
   $contentWrap.html(str);
   setPageScrollTop(0);
 }
+let curPageSize = _getData('recycleshowpage');
 function renderList(y) {
   if (y) {
     pageLoading();
@@ -57,7 +58,7 @@ function renderList(y) {
   } else if (type === 'bookmk') {
     slogo = 'icon-shuqian1';
   }
-  let showpage = _getData('recycleshowpage') || 20;
+  let showpage = curPageSize;
   _getAjax('/user/getrecycle', { page: pagenum, showpage, type }).then(result => {
     if (parseInt(result.code) === 0) {
       let str = '';
@@ -243,9 +244,9 @@ $footer.on('click', '.f_delete', function () {
     });
   }, 500));
 }();
-$pageSize.val(_getData('recycleshowpage') || 20).on('change', function () {
-  let val = $(this).val();
-  _setData('recycleshowpage', val);
+$pageSize.val(curPageSize).on('change', function () {
+  curPageSize = $(this).val();
+  _setData('recycleshowpage', curPageSize);
   $contentWrap.pagenum = 1;
   renderList(true);
 });

@@ -42,6 +42,7 @@ function pageLoading() {
   $contentWrap.html(str);
   $html.scrollTop(0);
 }
+let curPageSize = _getData('historyshowpage');
 function renderList(y) {
   if (y) {
     pageLoading();
@@ -49,7 +50,7 @@ function renderList(y) {
   let pagenum = $contentWrap.pagenum,
     a = $headWrap.find('input').val().trim();
   pagenum ? null : (pagenum = 1);
-  let showpage = _getData('historyshowpage') || 80;
+  let showpage = curPageSize;
   _getAjax('/search/history', { a, page: pagenum, showpage }).then(
     (result) => {
       if (parseInt(result.code) === 0) {
@@ -114,10 +115,7 @@ $contentWrap
       if (isurl(a)) {
         myOpen(a, '_blank');
       } else {
-        let s = _getData('searchengine') || {
-          searchlink: 'https://cn.bing.com/search?q=',
-        };
-        myOpen(`${s.searchlink}${a}`, '_blank');
+        myOpen(`${_getData('searchengine').searchlink}${a}`, '_blank');
       }
     }, 500)
   )
@@ -268,11 +266,11 @@ $footer
     _success(`选中：${che === 'y' ? $itemBox.length : 0}`, true);
   });
 $pageSize.on('change', function () {
-  let val = $(this).val();
-  _setData('historyshowpage', val);
+  curPageSize = $(this).val();
+  _setData('historyshowpage', curPageSize);
   $contentWrap.pagenum = 1;
   renderList(true);
-}).val(_getData('historyshowpage') || 80);
+}).val(curPageSize);
 ~(function () {
   let p = 0,
     t = 0;

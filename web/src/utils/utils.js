@@ -1,6 +1,6 @@
 import $ from "jquery";
 import SparkMD5 from "spark-md5";
-import { serverURL, LevelObj } from "../config";
+import { serverURL, LevelObj, _d } from "../config";
 
 import { _err, _success } from "../plugins/message";
 import { _loadingBar } from '../plugins/loadingBar';
@@ -28,7 +28,10 @@ export function _setData(key, data) {
 //本地读取
 export function _getData(key) {
   let d = localStorage.getItem('hello_' + key);
-  return d && JSON.parse(decodeURIComponent(d)).data;
+  if (d === null) {
+    return _d.localStorageDefaultData[key];
+  }
+  return JSON.parse(decodeURIComponent(d)).data;
 }
 export function _delData(key) {
   if (key) {
@@ -1314,7 +1317,7 @@ export function imgPreview(arr, idx = 0) {
   }
 }
 export function getPreUrl() {
-  const reg = /^(https?:\/\/)([^\/#]+)/;
+  const reg = /^(https?:\/\/)([^\/\#\?]+)/;
   return myOpen().match(reg)[0];
 }
 export function setPageScrollTop(top) {

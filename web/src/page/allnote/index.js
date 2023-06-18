@@ -55,6 +55,7 @@ import { pagination } from '../../plugins/pagination';
     $contentWrap.html(str);
     setPageScrollTop(0);
   }
+  let curPageSize = _getData('nodeshowpage');
   function renderList(y) {
     if (y) {
       pageLoading();
@@ -62,7 +63,7 @@ import { pagination } from '../../plugins/pagination';
     let pagenum = $contentWrap.pagenum,
       a = $headWrap.find('input').val().trim();
     pagenum ? null : (pagenum = 1);
-    let showpage = _getData('nodeshowpage') || 20;
+    let showpage = curPageSize;
     _getAjax('/note/allsearchlist', {
       acc: urlparmes.HASH || '',
       a,
@@ -176,9 +177,9 @@ import { pagination } from '../../plugins/pagination';
     );
   })();
   $pageSize.on('change', function () {
-    let val = $(this).val();
-    _setData('nodeshowpage', val);
+    curPageSize = $(this).val();
+    _setData('nodeshowpage', curPageSize);
     $contentWrap.pagenum = 1;
     renderList(true);
-  }).val(_getData('nodeshowpage') || 20);
+  }).val(curPageSize);
 }();

@@ -49,7 +49,7 @@ if (HASH) {
     //本地模式
     $headBtns.find('.save_btn').remove();
     $headBtns.find('.note_title').remove();
-    let local = _getData('md') || [],
+    let local = _getData('md'),
       obj = local.find((item) => item.name == HASH);
     if (obj) {
       $editBox.val(obj.data);
@@ -62,7 +62,7 @@ if (HASH) {
       // 生成标题
       let name = newDate('{0}-{1}-{2} {3}:{4}');
       // 获取未上传保存在本地的笔记
-      let text = _getData('newNote') || '';
+      let text = _getData('newNote');
       $headBtns.find('.note_title input').val(name);
       $editBox.val(text);
       orginData.name = name;
@@ -93,7 +93,7 @@ function rende() {
   if (HASH) {
     if (reg.test(HASH)) {
       //本地模式
-      let local = _getData('md') || [],
+      let local = _getData('md'),
         idx = local.findIndex((item) => item.name == HASH),
         obj = {
           name: HASH,
@@ -217,7 +217,7 @@ $headBtns.on('input', '.note_title input', handleSave).on('click', '.preview_sta
   $noteListMask.stop().fadeIn(0, () => {
     $nav.addClass('open');
   });
-  let local = _getData('md') || [],
+  let local = _getData('md'),
     str = '';
   local.reverse();
   if (local.length === 0) {
@@ -261,7 +261,7 @@ $noteListMask
   .on('click', '.delete_note', function () {
     let $this = $(this),
       name = $this.parent().attr('data-name'),
-      local = _getData('md') || [];
+      local = _getData('md');
     local = local.filter((item) => item.name != name);
     _setData('md', local);
     $this.parent().remove();

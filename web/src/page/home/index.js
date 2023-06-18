@@ -121,8 +121,18 @@ const $pageBg = $('.page_bg'),
 
 let $document = $(document),
   dmwidth = $document.width(),
-  defaultvolume = _getData('lastvol');
-
+  curSearchEngine = _getData('searchengine'),
+  curFilterBg = _getData('filterbg'),
+  curBgPageSize = _getData('bgshowpage'),
+  curPlaySpeed = _getData('lastplaysd'),
+  lrcstatu = _getData('lrcstatu'),
+  curPlayVol = _getData('lastvol'),
+  musicPageSize = _getData('musicpagenum'),
+  curSongListSort = _getData('lastpx'),
+  boxpositon = _getData('lastweizi'),
+  curPageColor = _getData('pagecolor'),
+  curFontType = _getData('fonttype'),
+  curLogPageSize = _getData('logshowpage');
 // 时钟
 ~(function () {
   // 动画
@@ -463,9 +473,8 @@ $asideWrap.on('click', '.list_title', debounce(function () {
   myOpen(link, "_blank");
 }).on('click', '.add_list_btn', (e) => {
   // 新建列表
-  let str = `<div class="mtcinp">
-              <input autocomplete="off" placeholder="列表名" type="text">
-            </div>
+  let str = `
+          <input autocomplete="off" placeholder="列表名" type="text">
           <button cursor class="mtcbtn">新增列表</button>`;
   rightMenu(e, str, debounce(function ({ close, e, inp }) {
     if (_getTarget(e, '.mtcbtn')) {
@@ -718,15 +727,10 @@ function asideBmMenu(e, obj) {
           );
         } else if (_getTarget(e, '.mtcitem1')) {
           // 新增书签
-          let str = `<div class="mtcinp1">
-              <input autocomplete="off" placeholder="标题" type="text">
-            </div>
-            <div class="mtcinp2">
-              <input autocomplete="off" placeholder="https://" type="text">
-            </div>
-            <div class="mtcinp3">
-              <textarea autocomplete="off" placeholder="描述"></textarea>
-            </div>
+          let str = `
+          <input autocomplete="off" placeholder="标题" type="text">
+          <input autocomplete="off" placeholder="https://" type="text">
+          <textarea autocomplete="off" placeholder="描述"></textarea>
           <button cursor class="mtcbtn">提交</button>`;
           rightMenu(
             e,
@@ -884,17 +888,10 @@ function asideListMenu(e, obj) {
           close();
         } else if (_getTarget(e, '.mtcitem3')) {
           // 修改书签
-          let str = `<div class="mtcinp">
-            <input autocomplete="off" placeholder="标题" value="${encodeHtml(
-            obj.name
-          )}" type="text">
-          </div>
-          <div class="mtcinp1">
-            <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
-          </div>
-          <div class="mtcinp1">
-            <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
-          </div>
+          let str = `
+        <input autocomplete="off" placeholder="标题" value="${encodeHtml(obj.name)}" type="text">
+        <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
+        <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
         <button cursor class="mtcbtn">提交</button>`;
           rightMenu(
             e,
@@ -1091,7 +1088,7 @@ _getAjax('/user/getuserinfo').then((result) => {
     );
     const urlParmes = queryURLParams(myOpen());
     if (urlParmes.c) {
-      let { account, username } = _getData('toUser') || {};
+      let { account, username } = _getData('toUser');
       if (account && username) {
         if (account === _d.userInfo.account) {
           myOpen('/');
@@ -1252,16 +1249,11 @@ function renderhomebook() {
 $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
   let $this = $(this);
   if ($this.attr('x') === 'add') {
-    let str = `<div class="mtcinp">
-              <input autocomplete="off" placeholder="标题" type="text">
-            </div>
-            <div class="mtcinp1">
-              <input autocomplete="off" placeholder="https://" type="text">
-            </div>
-            <div class="mtcinp2">
-              <textarea autocomplete="off" placeholder="描述"></textarea>
-            </div>
-          <button cursor class="mtcbtn">提交</button>`;
+    let str = `
+    <input autocomplete="off" placeholder="标题" type="text">
+    <input autocomplete="off" placeholder="https://" type="text">
+    <textarea autocomplete="off" placeholder="描述"></textarea>
+    <button cursor class="mtcbtn">提交</button>`;
     rightMenu(
       e,
       str,
@@ -1571,17 +1563,10 @@ function homeBmMenu(e, obj) {
           close();
         } else if (_getTarget(e, '.mtcitem3')) {
           //编辑书签
-          let str = `<div class="mtcinp">
-              <input autocomplete="off" placeholder="标题" value="${encodeHtml(
-            obj.name
-          )}" type="text">
-            </div>
-            <div class="mtcinp1">
-              <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
-            </div>
-            <div class="mtcinp1">
-            <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
-          </div>
+          let str = `
+          <input autocomplete="off" placeholder="标题" value="${encodeHtml(obj.name)}" type="text">
+          <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
+          <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
           rightMenu(
             e,
@@ -1720,8 +1705,7 @@ $searchBoxBtn.on('click', function (e) {
 //搜索相关
 //切换搜索引擎
 ~(function () {
-  let ss = _getData('searchengine') || _d.searchEngineData[0]; //默认搜索引擎
-  let { icon, logo, searchlink } = ss;
+  let { icon, logo, searchlink } = curSearchEngine;
   $searchLogo.find('img').attr({ src: logo });
   $searchBoxBtn.attr('src', icon);
   $searchInpWrap.find('.inp_box input').attr({
@@ -1887,7 +1871,7 @@ function textinput(val) {
       $searchInpWrap.find('.search_list_box ul').html(searchstr);
       numff = -1;
     }
-    let callWord = _getData('callword') || 'y';
+    let callWord = _getData('callword');
     if (callWord === 'y') {
       const script = document.createElement('script');
       script.src = `https://www.baidu.com/su?wd=${val}&cb=showMsg`;
@@ -1928,7 +1912,7 @@ function sxtsc(arr) {
 
 $searchBoxMask.on('click', '.setting', debounce(function (e) {
   e.stopPropagation();
-  let callWord = _getData('callword') || 'y';
+  let callWord = _getData('callword');
   let str = `
     <div cursor data-callword="${callWord}" class="mtcitem">百度提示词 [${callWord === 'y' ? '开' : '关'}]</div>
     <div cursor class="mtcitem1">历史记录管理</div>
@@ -1955,7 +1939,8 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
       let _close = close;
       let str = ``;
       _d.searchEngineData.forEach((v, i) => {
-        str += `<div title="${v.name}" cursor class="mtcitem" xi=${i}><img style="width: 40px;height: 40px;" src="${v.icon}"><span style="margin-left:10px;">${v.name}</span></div>`;
+        let { name, icon } = v;
+        str += `<div title="${name}" cursor class="mtcitem ${curSearchEngine.name == name ? 'active' : ''}" xi=${i}><img style="width: 40px;height: 40px;" src="${icon}"><span style="margin-left:10px;">${name}</span></div>`;
       });
       rightMenu(
         e,
@@ -1981,7 +1966,8 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
                     placeholder: '输入搜索内容或网址',
                     action: searchlink,
                   });
-                  _setData('searchengine', _d.searchEngineData[xi]);
+                  curSearchEngine = _d.searchEngineData[xi];
+                  _setData('searchengine', curSearchEngine);
                 },
                 () => {
                   _err();
@@ -2000,9 +1986,8 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
 
 //壁纸相关
 //壁纸模糊处理
-let _filterbg = _getData('filterbg') === null ? 0 : _getData('filterbg');
 $pageBg.css({
-  filter: `blur(${_filterbg}px)`,
+  filter: `blur(${curFilterBg}px)`,
 });
 //随机背景
 function bgInterval() {
@@ -2161,8 +2146,8 @@ $allBgWrap.on('click', '.upload_bg', function () {
     hdUpBg(files);
   });
 }).on('change', '.show_bg_size', function () {
-  let val = $(this).val();
-  _setData('bgshowpage', val);
+  curBgPageSize = $(this).val();
+  _setData('bgshowpage', curBgPageSize);
   bgpage = 1;
   bgxuanran(true);
 }).on('click', '.b_close_btn', function () {
@@ -2266,7 +2251,7 @@ function bgxuanran(y) {
   }
   let str = '',
     _flag = dmwidth > 800 ? 'bg' : 'bgxs',
-    showpage = _getData('bgshowpage') || 40;
+    showpage = curBgPageSize;
   _getAjax('/bg/getbg', { flag: _flag, page: bgpage, showpage }).then(
     (result) => {
       if (parseInt(result.code) === 0) {
@@ -2391,7 +2376,7 @@ function openbgku() {
     bgxuanran(true);
   });
   setZindex($allBgWrap);
-  $allBgWrap.find('.show_bg_size').val(_getData('bgshowpage') || 40);
+  $allBgWrap.find('.show_bg_size').val(curBgPageSize);
 }
 
 $randomChangeBgBtn.on('click', throttle(function () {
@@ -2626,6 +2611,7 @@ function audioPause() {
   $miniPlayer.find('.play_btn').attr('class', 'play_btn iconfont icon-65zanting').css('animation', 'none');
 }
 //播放音乐
+$lrcMenuWrap.find('.play_speed_btn').text(curPlaySpeed[0]);
 function audioPlay() {
   videoPause();
   if (!musicobj) return;
@@ -2654,9 +2640,7 @@ function audioPlay() {
     }
   }
   //保持播放速度
-  if (_getData('lastplaysd')) {
-    $myAudio[0].playbackRate = _getData('lastplaysd')[1];
-  }
+  $myAudio[0].playbackRate = curPlaySpeed[1];
 }
 
 function videoPause() {
@@ -2667,7 +2651,6 @@ function videoPlay() {
   $myVideo[0].play();
 }
 //歌词处理
-let showlrcfy = _getData('showfy') || false;
 function musiclrc() {
   if (!musicobj) return;
   _getAjax('/player/lrc', {
@@ -2695,7 +2678,7 @@ function musiclrc() {
         str += `<div>
           <p style="text-align:${lrcstatu.statu};font-size:${lrcstatu.size + 'px'
           };line-height:${lrcstatu.size + 6 + 'px'}" class="elrc">${p}</p>
-          <p style="display: ${showlrcfy && hasfy ? 'block' : 'none'
+          <p style="display: ${_getData('showfy') && hasfy ? 'block' : 'none'
           };text-align:${lrcstatu.statu};font-size:${lrcstatu.size - 2 + 'px'
           };line-height:${lrcstatu.size + 4 + 'px'}" class="lrcfy">${fy
           }</p></div>`;
@@ -2829,13 +2812,13 @@ $myAudio
           }
           let activep = '',
             activep1 = '';
-          activep = showlrcfy
+          activep = _getData('showfy')
             ? `${rod[actionLrcIndex].p} ${rod[actionLrcIndex].fy}`
             : rod[actionLrcIndex].p;
           if (actionLrcIndex + 1 === rod.length) {
             activep1 = '';
           } else {
-            activep1 = showlrcfy
+            activep1 = _getData('showfy')
               ? `${rod[actionLrcIndex + 1].p} ${rod[actionLrcIndex + 1].fy}`
               : rod[actionLrcIndex + 1].p;
           }
@@ -2854,11 +2837,6 @@ $myAudio
   });
 
 // 歌词设置样式和编辑
-let lrcstatu = _getData('lrcstatu') || {
-  size: dmwidth > 800 ? 14 : 18,
-  statu: 'center',
-};
-
 $editLrcWrap.find('textarea').on('keydown', function (e) {
   let key = e.key,
     ctrl = e.ctrlKey || e.metaKey;
@@ -2918,12 +2896,6 @@ function tin(time) {
     .toString()
     .padStart(2, '0');
   return (time = `${ot}:${oh}`);
-}
-
-
-// 播放速度
-if (_getData('lastplaysd')) {
-  $lrcMenuWrap.find('.play_speed_btn').text(_getData('lastplaysd')[0]);
 }
 
 //远程播放
@@ -3368,16 +3340,16 @@ $musicHeadWrap.on('click', '.back', function (e) {
   }
 }).on('click', '.volume', function (e) {
   _progressBar(
-    defaultvolume,
+    curPlayVol,
     throttle(function (per, type) {
-      defaultvolume = per;
+      curPlayVol = per;
       vobellm();
       if (type === 'up') {
         if (_d.remoteState) {
           sendCommand({
             type: 'yc', hd: {
               type: 'vol',
-              data: defaultvolume,
+              data: curPlayVol,
             }
           });
         }
@@ -3488,12 +3460,9 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
           close();
           copyText(`${sobj.artist}-${sobj.name}`);
         } else if (_getTarget(e, '.mtcitem6')) {
-          let str = `<div class="mtcinp">
-            <input autocomplete="off" placeholder="歌手名" value="${encodeHtml(sobj.artist)}" >
-              </div>
-              <div class="mtcinp1">
-                <input autocomplete="off" placeholder="歌曲名" value="${encodeHtml(sobj.name)}">
-              </div>
+          let str = `
+          <input autocomplete="off" placeholder="歌手名" value="${encodeHtml(sobj.artist)}" >
+          <input autocomplete="off" placeholder="歌曲名" value="${encodeHtml(sobj.name)}">
             <button cursor class="mtcbtn">提交</button>`;
           rightMenu(e, str, debounce(function ({ e, close, inp }) {
             if (_getTarget(e, '.mtcbtn')) {
@@ -3781,7 +3750,7 @@ let remoteVol = debounce(function () {
   sendCommand({
     type: 'yc', hd: {
       type: 'vol',
-      data: defaultvolume,
+      data: curPlayVol,
     }
   });
 }, 500)
@@ -3796,28 +3765,28 @@ document.onkeydown = function (e) {
     //音量+
     if (ctrl && key === 'ArrowUp') {
       e.preventDefault();
-      defaultvolume += 0.1;
-      if (defaultvolume >= 1) {
-        defaultvolume = 1;
+      curPlayVol += 0.1;
+      if (curPlayVol >= 1) {
+        curPlayVol = 1;
       }
+      vobellm();
       if (_d.remoteState) {
         remoteVol()
       }
-      vobellm();
-      _success(parseInt(defaultvolume * 100) + '%', true);
+      _success(parseInt(curPlayVol * 100) + '%', true);
     }
     //音量-
     if (ctrl && key === 'ArrowDown') {
-      e.preventDefault(); // 或者 return false;
-      defaultvolume -= 0.1;
-      if (defaultvolume <= 0) {
-        defaultvolume = 0;
+      e.preventDefault();
+      curPlayVol -= 0.1;
+      if (curPlayVol <= 0) {
+        curPlayVol = 0;
       }
+      vobellm();
       if (_d.remoteState) {
         remoteVol();
       }
-      vobellm();
-      _success(parseInt(defaultvolume * 100) + '%', true);
+      _success(parseInt(curPlayVol * 100) + '%', true);
     }
     //暂停/播放
     if (key === ' ') {
@@ -3882,20 +3851,17 @@ document.onkeydown = function (e) {
   }
 };
 
-
-if (defaultvolume === null) {
-  defaultvolume = 0.7;
-} else if (defaultvolume <= 0) {
+if (curPlayVol <= 0) {
   $musicHeadWrap.find('.volume').attr('class', 'volume iconfont icon-24gl-volumeCross');
 }
 //音量
-$myAudio[0].volume = defaultvolume;
-$myVideo[0].volume = defaultvolume;
+$myAudio[0].volume = curPlayVol;
+$myVideo[0].volume = curPlayVol;
 function vobellm() {
-  $myAudio[0].volume = defaultvolume;
-  $myVideo[0].volume = defaultvolume;
-  _setData('lastvol', defaultvolume);
-  if (defaultvolume <= 0) {
+  $myAudio[0].volume = curPlayVol;
+  $myVideo[0].volume = curPlayVol;
+  _setData('lastvol', curPlayVol);
+  if (vol <= 0) {
     $musicHeadWrap.find('.volume').attr('class', 'volume iconfont icon-24gl-volumeCross');
   } else {
     $musicHeadWrap.find('.volume').attr('class', 'volume iconfont icon-24gl-volumeHigh');
@@ -4043,7 +4009,6 @@ function rendermusiclist() {
   }
 }
 let musicPageNum = 1;
-let musicPageSize = _getData('musicpagenum') || 50;
 function renderMusicItem() {
   if ($musicPlayerBox.is(':hidden') || $msuicContentBox.find('.list_items_wrap').css('transform') !== 'none') return;
   let id = curSongListId;
@@ -4080,10 +4045,11 @@ function rendermusicitemdefault() {
   });
   $songItemsBox.html(str);
 }
+
 function rendermusicitem(gao) {
   if ($musicPlayerBox.is(':hidden') || $msuicContentBox.find('.list_items_wrap').css('transform') !== 'none') return;
   let id = curSongListId,
-    listpx = _getData('lastpx') || 'default';
+    listpx = curSongListSort;
   let ind = _d.music.findIndex((item) => item.id === id);
   ind < 0 ? (ind = 0) : null;
   let marr = deepClone(_d.music[ind]);
@@ -4213,13 +4179,10 @@ $songListWrap
   .on('click', '.add_song_list', function (e) {
     // 添加歌单
     if (_d.userInfo.account !== 'root') return;
-    let str = `<div class="mtcinp">
-            <input autocomplete="off" placeholder="歌单标题" type="text">
-          </div>
-          <div class="mtcinp2">
-              <textarea autocomplete="off" placeholder="描述"></textarea>
-            </div>
-        <button cursor class="mtcbtn">新增歌单</button>`;
+    let str = `
+    <input autocomplete="off" placeholder="歌单标题" type="text">
+    <textarea autocomplete="off" placeholder="描述"></textarea>
+    <button cursor class="mtcbtn">新增歌单</button>`;
     rightMenu(
       e,
       str,
@@ -4290,12 +4253,9 @@ function gedanmenu(e, id) {
             },
           });
         } else if (_getTarget(e, '.mtcitem1')) {
-          let str = `<div class="mtcinp1">
-              <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
-            </div>
-            <div class="mtcinp2">
-              <textarea autocomplete="off" placeholder="描述">${encodeHtml(des || '')}</textarea>
-            </div>
+          let str = `
+          <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
+          <textarea autocomplete="off" placeholder="描述">${encodeHtml(des || '')}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
           rightMenu(e, str, debounce(function ({ e, close, inp }) {
             if (_getTarget(e, '.mtcbtn')) {
@@ -4359,12 +4319,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   let index = _d.music.findIndex((item) => item.id === id);
   if (index < 2) return;
   let { des, name } = _d.music[index];
-  let str = `<div class="mtcinp1">
-              <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
-            </div>
-            <div class="mtcinp2">
-              <textarea autocomplete="off" placeholder="描述">${encodeHtml(des || '')}</textarea>
-            </div>
+  let str = `
+  <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
+  <textarea autocomplete="off" placeholder="描述">${encodeHtml(des || '')}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
   rightMenu(e, str, debounce(function ({ e, close, inp }) {
     if (_getTarget(e, '.mtcbtn')) {
@@ -5002,12 +4959,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           close();
           copyText(`${sobj.artist}-${sobj.name}`);
         } else if (_getTarget(e, '.mtcitem6')) {
-          let str = `<div class="mtcinp">
-                <input autocomplete="off" placeholder="歌手名" value="${encodeHtml(sobj.artist)}" >
-                  </div>
-                  <div class="mtcinp1">
-                    <input autocomplete="off" placeholder="歌曲名" value="${encodeHtml(sobj.name)}">
-                  </div>
+          let str = `
+          <input autocomplete="off" placeholder="歌手名" value="${encodeHtml(sobj.artist)}" >
+          <input autocomplete="off" placeholder="歌曲名" value="${encodeHtml(sobj.name)}">
                 <button cursor class="mtcbtn">提交</button>`;
           rightMenu(e, str, debounce(function ({ e, close, inp }) {
             if (_getTarget(e, '.mtcbtn')) {
@@ -5073,14 +5027,17 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   $msuicContentBox.find('.list_items_wrap .sheck_song_btn').click();
 }).on('click', '.sort_songs', function (e) {
   //歌曲排序
-  let str = `<div cursor data-type="default" class="mtcitem">默认排序</div>
-      <div cursor data-type="artist" class="mtcitem">按歌手名排序</div>
-      <div cursor data-type="name" class="mtcitem">按歌曲名排序</div>`;
-  rightMenu(e, str, debounce(function ({ e }) {
+  let str = `<div cursor data-type="default" class="mtcitem ${curSongListSort == 'default' ? 'active' : ''}">默认排序</div>
+      <div cursor data-type="artist" class="mtcitem ${curSongListSort == 'artist' ? 'active' : ''}">按歌手名排序</div>
+      <div cursor data-type="name" class="mtcitem ${curSongListSort == 'name' ? 'active' : ''}">按歌曲名排序</div>`;
+  rightMenu(e, str, debounce(function ({ e, items }) {
     let _this = _getTarget(e, '.mtcitem');
     if (_this) {
-      let t = _this.dataset.type;
-      _setData('lastpx', t);
+      curSongListSort = _this.dataset.type;
+      let $items = $(items);
+      $items.removeClass('active');
+      _this.classList.add('active');
+      _setData('lastpx', curSongListSort);
       rendermusicitem();
     }
   }, 1000, true));
@@ -5112,17 +5069,16 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }
 }).on('click', '.music_list_setting', function (e) {
   let str = `
-      <div cursor data-val="50" class="mtcitem">50条/页</div>
-      <div cursor data-val="100" class="mtcitem">100条/页</div>
-      <div cursor data-val="200" class="mtcitem">200条/页</div>
+      <div cursor data-val="50" class="mtcitem ${musicPageSize == 50 ? 'active' : ''}">50条/页</div>
+      <div cursor data-val="100" class="mtcitem ${musicPageSize == 100 ? 'active' : ''}">100条/页</div>
+      <div cursor data-val="200" class="mtcitem ${musicPageSize == 200 ? 'active' : ''}">200条/页</div>
       `;
   rightMenu(e, str, debounce(function ({ e, close }) {
     let item = _getTarget(e, '.mtcitem');
     if (item) {
       close();
-      let val = +item.dataset.val;
-      musicPageSize = val;
-      _setData('musicpagenum', val);
+      musicPageSize = +item.dataset.val;
+      _setData('musicpagenum', musicPageSize);
       musicPageNum = 1;
       $msuicContentBox.find('.list_items_wrap')[0].scrollTop = 0;
       rendermusicitem();
@@ -5166,8 +5122,7 @@ if (isios()) {
       id = curSongListId,
       index = _d.music.findIndex((item) => item.id === id);
     if (fromDom) {
-      let t = _getData('lastpx') || 'default';
-      if (t === 'default' && index > 0) {
+      if (curSongListSort === 'default' && index > 0) {
         _postAjax('/player/songmove', { id, a, b }).then((result) => {
           if (parseInt(result.code) === 0) {
             sendCommand({ type: 'updatedata', flag: 'music' });
@@ -5224,14 +5179,15 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
   videoPlay();
   setZindex($musicMvWrap);
 }).on('click', '.lrc_translate_btn', (e) => {
-  if (showlrcfy) {
+  let showfy = _getData('showfy');
+  if (showfy) {
     $('.lrcfy').css('display', 'none');
   } else {
     $('.lrcfy').css('display', 'block');
   }
   handleLrc(true);
-  showlrcfy = !showlrcfy;
-  _setData('showfy', showlrcfy);
+  showfy = !showfy;
+  _setData('showfy', showfy);
 }).on('click', '.share_song_btn', debounce(
   function (e) {
     if (!musicobj) return;
@@ -5358,22 +5314,25 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
   500,
   true
 )).on('click', '.play_speed_btn', function (e) {
-  let str = `<div cursor class="mtcitem">x2</div>
-            <div cursor class="mtcitem">x1.75</div>
-            <div cursor class="mtcitem">x1.5</div>
-            <div cursor class="mtcitem">x1.25</div>
-            <div cursor class="mtcitem">x1</div>
-            <div cursor class="mtcitem">x0.75</div>
-            <div cursor class="mtcitem">x0.25</div>`;
-  rightMenu(e, str, function ({ e }) {
+  let str = `<div cursor class="mtcitem ${curPlaySpeed[1] == 2 ? 'active' : ''}">x2</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1.75 ? 'active' : ''}">x1.75</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1.5 ? 'active' : ''}">x1.5</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1.25 ? 'active' : ''}">x1.25</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1 ? 'active' : ''}">x1</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 0.75 ? 'active' : ''}">x0.75</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 0.25 ? 'active' : ''}">x0.25</div>`;
+  rightMenu(e, str, function ({ e, items }) {
     let _this = _getTarget(e, '.mtcitem');
     if (_this) {
-      let a = $(_this).text(),
+      let a = _this.innerText,
         b = +a.slice(1);
+      let $items = $(items);
+      $items.removeClass('active');
+      _this.classList.add('active');
       $lrcMenuWrap.find('.play_speed_btn').text(a);
       $myAudio[0].playbackRate = b;
-      let c = [$lrcMenuWrap.find('.play_speed_btn').text(), b];
-      _setData('lastplaysd', c);
+      curPlaySpeed = [a, b];
+      _setData('lastplaysd', curPlaySpeed);
       _success(b + 'X');
     }
   });
@@ -5505,10 +5464,6 @@ $myVideo[0].onerror = function (e) {
   if (!musicobj) return;
   _err(`${musicobj.artist}-${musicobj.name} 加载失败`);
 };
-let boxpositon = {};
-if (_getData('lastweizi')) {
-  boxpositon = _getData('lastweizi');
-}
 //拖动
 var mmlist = $musicPlayerBox[0],
   musichide = $miniPlayer[0],
@@ -5522,6 +5477,7 @@ drag($miniLrcWrap[0], $miniLrcWrap[0], 'lastwingc');
 drag($musicMvWrap.find('.m_top_space')[0], $musicMvWrap[0]);
 drag($musicHeadWrap.find('.song_list_name')[0], $musicPlayerBox[0]);
 drag($editLrcWrap.find('.song_info_text')[0], $editLrcWrap[0]);
+
 
 function drag(obj, oobj, lastweizi) {
   //记录最后所在的位置
@@ -5802,12 +5758,9 @@ $userLogoBtn.on('click',
 
 $userInfoWrap
   .on('click', '.edit_user_name', function (e) {
-    let str = `<div class="mtcinp">
-              <input autocomplete="off" placeholder="昵称" value="${encodeHtml(
-      _d.userInfo.username
-    )}" type="text">
-            </div>
-            <button cursor class="mtcbtn">提交</button>`;
+    let str = `
+    <input autocomplete="off" placeholder="昵称" value="${encodeHtml(_d.userInfo.username)}" type="text">
+    <button cursor class="mtcbtn">提交</button>`;
     rightMenu(
       e,
       str,
@@ -5957,7 +5910,7 @@ $rightBox.on('click', '.r_about', debounce(
   setZindex($logWrap);
   $logWrap.stop().fadeIn(_speed, () => {
     $logWrap.css('display', 'flex');
-    $logWrap.find('.log_page_size').val(_getData('logshowpage') || 100);
+    $logWrap.find('.log_page_size').val(curLogPageSize);
     logpage = 1;
     logxuanran(true);
   });
@@ -5989,15 +5942,10 @@ $rightBox.on('click', '.r_about', debounce(
                     $userInfoWrap.stop().fadeIn(_speed);
                     setZindex($userInfoWrap);
                   } else if (_getTarget(e, '.mtcitem1')) {
-                    let str = `<div class="mtcinp">
-                        <input autocomplete="off" placeholder="原密码" type="password">
-                      </div>
-                      <div class="mtcinp1">
-                        <input autocomplete="off" placeholder="新密码" type="password">
-                      </div>
-                      <div class="mtcinp2">
-                        <input autocomplete="off" placeholder="确认密码" type="password">
-                      </div>
+                    let str = `
+                    <input autocomplete="off" placeholder="原密码" type="password">
+                    <input autocomplete="off" placeholder="新密码" type="password">
+                    <input autocomplete="off" placeholder="确认密码" type="password">
                     <button cursor class="mtcbtn">提交</button>`;
                     rightMenu(e, str, debounce(function ({ close, e, inp }) {
                       if (_getTarget(e, '.mtcbtn')) {
@@ -6048,7 +5996,7 @@ $rightBox.on('click', '.r_about', debounce(
               )
             );
           } else if (_getTarget(e, '.mtcitem1')) {
-            let dian = _getData('dian') || 'y';
+            let dian = _getData('dian');
             let str = `<div cursor class="mtcitem">壁纸库</div>
                 <div cursor class="mtcitem1">背景模糊度</div>
               <div cursor class="mtcitem2">背景灰度</div>
@@ -6069,27 +6017,27 @@ $rightBox.on('click', '.r_about', debounce(
                     openbgku();
                   } else if (_getTarget(e, '.mtcitem1')) {
                     _progressBar(
-                      _filterbg / 100,
+                      curFilterBg / 100,
                       throttle(function (per) {
-                        _filterbg = parseInt(per * 100);
-                        if (_filterbg <= 0) {
+                        curFilterBg = parseInt(per * 100);
+                        if (curFilterBg <= 0) {
                           $pageBg.removeClass('mh');
                         } else {
                           $pageBg.addClass('mh');
                         }
                         $pageBg.css({
-                          filter: `blur(${_filterbg}px)`,
+                          filter: `blur(${curFilterBg}px)`,
                         });
-                        _setData('filterbg', _filterbg);
+                        _setData('filterbg', curFilterBg);
                       }, 500)
                     );
                   } else if (_getTarget(e, '.mtcitem2')) {
                     _progressBar(
-                      _pagecolor,
+                      curPageColor,
                       throttle(function (per) {
-                        _pagecolor = per;
-                        document.documentElement.style.filter = `grayscale(${_pagecolor})`;
-                        _setData('pagecolor', _pagecolor);
+                        curPageColor = per;
+                        document.documentElement.style.filter = `grayscale(${curPageColor})`;
+                        _setData('pagecolor', curPageColor);
                       }, 500)
                     );
                   } else if (_getTarget(e, '.mtcitem3')) {
@@ -6100,7 +6048,7 @@ $rightBox.on('click', '.r_about', debounce(
                         let str = '';
                         res.data.forEach((item, idx) => {
                           let name = item.slice(0, -4);
-                          str += `<div cursor data-font="${item}" class="mtcitem"><span style="font-size:16px">${(
+                          str += `<div cursor data-font="${item}" class="mtcitem ${curFontType == item ? 'active' : ''}"><span style="font-size:16px">${(
                             idx +
                             1 +
                             ''
@@ -6111,12 +6059,15 @@ $rightBox.on('click', '.r_about', debounce(
                           e,
                           str,
                           debounce(
-                            function ({ e }) {
+                            function ({ e, items }) {
                               let _this = _getTarget(e, '.mtcitem');
                               if (_this) {
                                 let $this = $(_this);
-                                let font = $this.attr('data-font');
-                                _setData('fonttype', font);
+                                let $items = $(items);
+                                $items.removeClass('active');
+                                $this.addClass('active');
+                                curFontType = $this.attr('data-font');
+                                _setData('fonttype', curFontType);
                                 handleFontType();
                               }
                             },
@@ -6139,15 +6090,19 @@ $rightBox.on('click', '.r_about', debounce(
                       _setData('dian', 'y');
                     }
                   } else if (_getTarget(e, '.mtcitem7')) {
-                    let str = `<div cursor data-flag="n" style="justify-content: center;" class="mtcitem"><span style="line-height:40px;">关闭</span></div>
-                      <div cursor data-flag="y" style="justify-content: center;" class="mtcitem"><span style="line-height:40px;">随机</span></div>`;
+                    let cur = _getData('loading');
+                    let str = `<div cursor data-flag="n" style="justify-content: center;" class="mtcitem ${cur == 'n' ? 'active' : ''}"><span style="line-height:40px;">关闭</span></div>
+                      <div cursor data-flag="y" style="justify-content: center;" class="mtcitem ${cur == 'y' ? 'active' : ''}"><span style="line-height:40px;">随机</span></div>`;
                     let [x, y] = loadingNum;
                     for (let i = x; i <= y; i++) {
-                      str += `<div cursor data-flag="${i}" style="justify-content: center;" class="mtcitem"><img style="width:40px;height:40px" src="/img/loading${i}.gif"></div>`;
+                      str += `<div cursor data-flag="${i}" style="justify-content: center;" class="mtcitem ${cur == i ? 'active' : ''}"><img style="width:40px;height:40px" src="/img/loading${i}.gif"></div>`;
                     }
-                    rightMenu(e, str, function ({ e }) {
+                    rightMenu(e, str, function ({ e, items }) {
                       let _this = _getTarget(e, '.mtcitem');
                       if (_this) {
+                        let $items = $(items);
+                        $items.removeClass('active');
+                        _this.classList.add('active');
                         let flag = _this.getAttribute('data-flag');
                         _setData('loading', flag);
                         changeLoadImg();
@@ -6267,12 +6222,13 @@ function logxuanrandefault() {
   });
   $logContent.html(str).scrollTop(0);
 }
+
 function logxuanran(y) {
   if (y) {
     logxuanrandefault();
   }
   let context = $logHeadBtns.find('.l_search_inp').val().trim(),
-    showpage = _getData('logshowpage') || 100;
+    showpage = curLogPageSize;
   _getAjax('/root/logsearch', { page: logpage, context, showpage }).then(
     (result) => {
       if (parseInt(result.code) === 0) {
@@ -6337,8 +6293,8 @@ $logContent.on(
 );
 
 $logWrap.find('.log_page_size').on('change', function () {
-  let val = $(this).val();
-  _setData('logshowpage', val);
+  curLogPageSize = $(this).val();
+  _setData('logshowpage', curLogPageSize);
   logpage = 1;
   logxuanran(true);
 });
@@ -6883,7 +6839,7 @@ function backmsg(e, tt, y, z, f, n, s) {
           copyText(z);
           close();
         } else if (_getTarget(e, '.mtcitem2')) {
-          let local = _getData('md') || [],
+          let local = _getData('md'),
             obj = {
               name: `hello_${Date.now()}`,
               data: z,
@@ -7734,9 +7690,8 @@ function handleuser() {
                 audioPause();
               }
             } else if (hd.type === 'vol') {
-              defaultvolume = hd.data;
-              vobellm();
-              _success(`${parseInt(defaultvolume * 100)}%`);
+              vobellm(hd.data);
+              _success(`${parseInt(hd.data * 100)}%`);
             } else if (hd.type === 'progress') {
               $myAudio[0].currentTime = musicobj.duration * hd.data;
             } else if (hd.type === 'playmode') {

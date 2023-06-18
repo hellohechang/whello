@@ -63,7 +63,7 @@ import { _loadingBar } from '../plugins/loadingBar'
     'click',
     debounce(
       function () {
-        let local = _getData('md') || [],
+        let local = _getData('md'),
           obj = {
             name: `hello_${Date.now()}`,
             data: text,
@@ -147,8 +147,7 @@ window.onload = function () {
     _setTimeout(() => {
       box.remove();
     }, 2000);
-    let dianji = _getData('dian') || 'y';
-    if (dianji === 'n') return;
+    if (_getData('dian') === 'n') return;
     // 心形状
     let box1 = document.createElement('div');
     let box2 = document.createElement('div');
@@ -250,9 +249,7 @@ window.addEventListener('offline', function () {
   document.body.appendChild(img);
 })();
 // 黑白
-window._pagecolor = _getData('pagecolor');
-_pagecolor === null ? (_pagecolor = 0) : null;
-document.documentElement.style.filter = `grayscale(${_pagecolor})`;
+document.documentElement.style.filter = `grayscale(${_getData('pagecolor')})`;
 
 // 捕获错误
 window.onerror = function (message, url, line, column, error) {
@@ -267,7 +264,7 @@ window.onerror = function (message, url, line, column, error) {
   let flag = null;
   function handleFontType() {
     _loadingBar.start();
-    let fontType = _getData('fonttype') || 'consolas.ttf';
+    let fontType = _getData('fonttype');
     let fontUrl =
       fontType === 'consolas.ttf'
         ? consolas

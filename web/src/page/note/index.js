@@ -56,11 +56,7 @@ const $setBtnsWrap = $('.set_btns_wrap'),
   $pageSearchWrap = $('.page_search_wrap'),
   $authorInfo = $contentWrap.find('.author_info'),
   $navigationWrap = $('.navigation_wrap');
-let themeObj = {
-  fontsz: 20,
-  fontwe: 0,
-  theme: 2,
-},
+let themeObj = _getData('themeObj'),
   highlightnum = 0,
   $highlight = null,
   titleName = '';
@@ -327,9 +323,6 @@ function highlightPosition(num) {
       behavior: "smooth"
     });
   }
-}
-if (_getData('themeObj')) {
-  themeObj = _getData('themeObj');
 }
 
 $noteBox.css({

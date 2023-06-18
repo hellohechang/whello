@@ -7,33 +7,27 @@ const { _err, _nologin, writelog } = require('../utils');
 route.get('*', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    // 去除url后的?参数
-    let url = req.url.split('?')[0];
-    // 合并url
-    let path = myconfig.filepath + url;
+    let url = req.url.replace(/(\?|\#).*$/, '').replace(/\/$/, '');
     // 获取访问目录
     let flag = url.split('/')[1];
-    // 解码
-    path = decodeURI(path);
-    if (!fs.existsSync(path)) {
-      _err(res, '文件不存在或已过期');
-      return;
-    }
     // 过滤目录
-    if (
-      flag === 'music' ||
-      flag === 'musicys' ||
-      flag === 'pic' ||
-      flag === 'picys' ||
-      flag === 'logo' ||
-      flag === 'font'
-    ) {
-      //不用登录就可以获取的目录
-    } else {
+    let publicArr = ['music', 'musicys', 'pic', 'picys', 'logo', 'font'];
+    let verifyArr = ['bg', 'bgys', 'upload', 'uploadys'];
+    if (publicArr.includes(flag)) {
+    } else if (verifyArr.includes(flag)) {
       if (!account) {
         _nologin(res);
         return;
       }
+    } else {
+      _err(res, '文件不存在或已过期');
+      return;
+    }
+    // 合并url
+    let path = decodeURI(myconfig.filepath + url);
+    if (!fs.existsSync(path)) {
+      _err(res, '文件不存在或已过期');
+      return;
     }
     res.sendFile(path);
   } catch (error) {

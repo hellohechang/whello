@@ -108,17 +108,17 @@ app.use(async (req, res, next) => {
   }
 });
 
-app.use('/user', require('./routes/user'));
-app.use('/bg', require('./routes/bg'));
-app.use('/pic', require('./routes/pic'));
-app.use('/root', require('./routes/root'));
-app.use('/player', require('./routes/player'));
-app.use('/nav', require('./routes/nav'));
-app.use('/home', require('./routes/home'));
-app.use('/chat', require('./routes/chat'));
-app.use('/search', require('./routes/search'));
-app.use('/note', require('./routes/note'));
-app.use('/getfile', require('./routes/getfile'));
+app.use('/api/user', require('./routes/user'));
+app.use('/api/bg', require('./routes/bg'));
+app.use('/api/pic', require('./routes/pic'));
+app.use('/api/root', require('./routes/root'));
+app.use('/api/player', require('./routes/player'));
+app.use('/api/nav', require('./routes/nav'));
+app.use('/api/home', require('./routes/home'));
+app.use('/api/chat', require('./routes/chat'));
+app.use('/api/search', require('./routes/search'));
+app.use('/api/note', require('./routes/note'));
+app.use('/api/getfile', require('./routes/getfile'));
 
 app.use(express.static(__dirname + '/static'));
 app.get('*', (req, res) => {

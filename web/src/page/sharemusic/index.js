@@ -37,11 +37,11 @@ import { rightMenu } from "../../plugins/rightMenu";
     $musicMvMask = $('.music_mv_mask'),
     $myVideo = $musicMvMask.find('.my_vedio');
 
-  let dmwidth = $(document).width(),
-    actionLrcIndex = null,
+  let actionLrcIndex = null,
     urlparmes = queryURLParams(myOpen()),
     HASH = urlparmes.HASH,
-    musicobj = {};
+    musicobj = {},
+    curPlaySpeed = _getData('lastplaysd');
   _setTimeout(() => {
     $pageBg.css({
       opacity: '1',
@@ -72,9 +72,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     `${mediaURL}/music/${musicobj.artist}-${musicobj.name}.mp4`
   );
   // 播放速度
-  if (_getData('lastplaysd')) {
-    $songSetBtns.find('.play_speed_btn').text(_getData('lastplaysd')[0]);
-  }
+  $songSetBtns.find('.play_speed_btn').text(curPlaySpeed[0]);
   $songSetBtns.on('click', '.play_mv_btn', function (e) {
     e.stopPropagation();
     $myAudio[0].pause();
@@ -95,22 +93,25 @@ import { rightMenu } from "../../plugins/rightMenu";
     showlrcfy = !showlrcfy;
   }).on('click', '.play_speed_btn', function (e) {
     e.stopPropagation();
-    let str = `<div cursor class="mtcitem">x2</div>
-    <div cursor class="mtcitem">x1.75</div>
-    <div cursor class="mtcitem">x1.5</div>
-    <div cursor class="mtcitem">x1.25</div>
-    <div cursor class="mtcitem">x1</div>
-    <div cursor class="mtcitem">x0.75</div>
-    <div cursor class="mtcitem">x0.25</div>`;
-    rightMenu(e, str, function ({ e }) {
+    let str = `<div cursor class="mtcitem ${curPlaySpeed[1] == 2 ? 'active' : ''}">x2</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1.75 ? 'active' : ''}">x1.75</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1.5 ? 'active' : ''}">x1.5</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1.25 ? 'active' : ''}">x1.25</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 1 ? 'active' : ''}">x1</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 0.75 ? 'active' : ''}">x0.75</div>
+            <div cursor class="mtcitem ${curPlaySpeed[1] == 0.25 ? 'active' : ''}">x0.25</div>`;
+    rightMenu(e, str, function ({ e, items }) {
       let _this = _getTarget(e, '.mtcitem');
       if (_this) {
-        let a = $(_this).text(),
+        let a = _this.innerText,
           b = +a.slice(1);
+        let $items = $(items);
+        $items.removeClass('active');
+        _this.classList.add('active');
         $songSetBtns.find('.play_speed_btn').text(a);
         $myAudio[0].playbackRate = b;
-        let c = [$songSetBtns.find('.play_speed_btn').text(), b];
-        _setData('lastplaysd', c);
+        curPlaySpeed = [a, b];
+        _setData('lastplaysd', curPlaySpeed);
         _success(b + 'X');
       }
     });
@@ -231,10 +232,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     $headSongInfo.find('.user_logo').click();
   });
   let showlrcfy = false,
-    lrcstatu = _getData('lrcstatu') || {
-      size: dmwidth > 768 ? 14 : 18,
-      statu: 'center',
-    };
+    lrcstatu = _getData('lrcstatu');
   //歌词解析函数
   function musiclrc() {
     $lrcContent.find('.lrc_list').html(
@@ -454,9 +452,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       $myVideo[0].pause();
       $musicMvMask.stop().fadeOut(_speed);
       $myAudio[0].play();
-      if (_getData('lastplaysd')) {
-        $myAudio[0].playbackRate = _getData('lastplaysd')[1];
-      }
+      $myAudio[0].playbackRate = curPlaySpeed[1];
       document.title = `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`;
       if (!$lrcContent._flag) {
         musiclrc();
