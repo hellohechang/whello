@@ -992,7 +992,7 @@ export function downloadFile(url, fileName) {
   let a = document.createElement('a');
   a.href = url;
   if (fileName) {
-    a.download = 'hello_' + fileName;
+    a.download = fileName;
   }
   document.body.appendChild(a);
   a.click();

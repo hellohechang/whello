@@ -62,15 +62,9 @@ import { rightMenu } from "../../plugins/rightMenu";
     pageErr(mobj.codeText);
     return;
   }
-  musicobj.pic = encodeURI(
-    `${mediaURL}/music/${musicobj.artist}-${musicobj.name}.jpg`
-  );
-  musicobj.url = encodeURI(
-    `${mediaURL}/music/${musicobj.artist}-${musicobj.name}.mp3`
-  );
-  musicobj.murl = encodeURI(
-    `${mediaURL}/music/${musicobj.artist}-${musicobj.name}.mp4`
-  );
+  musicobj.pic = encodeURI(`${mediaURL}/?v=${HASH}&t=pic`);
+  musicobj.url = encodeURI(`${mediaURL}/?v=${HASH}&t=url`);
+  musicobj.murl = encodeURI(`${mediaURL}/?v=${HASH}&t=murl`);
   // 播放速度
   $songSetBtns.find('.play_speed_btn').text(curPlaySpeed[0]);
   $songSetBtns.on('click', '.play_mv_btn', function (e) {

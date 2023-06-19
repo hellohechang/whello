@@ -16,11 +16,7 @@
     align-items: center;
     color: #383838;
 
-    &.active {
-      background-color: #f3f3f3;
-      color: #dc12e7;
-    }
-
+    &.active,
     &:hover {
       background-color: #f3f3f3;
       color: #127be7;
@@ -34,18 +30,19 @@
 
   textarea,
   input {
-    width: 100%;
-    margin: 10px auto 20px auto;
-    text-align: center;
-    border: 1px solid #ccc;
-    box-shadow: none;
-    color: #4a4949;
-    outline: none;
-    font-size: 18px;
-    box-sizing: border-box;
-    padding: 12px 8px;
+    display: block;
     background-color: transparent;
+    border: 1px solid #ccc;
     border-radius: 2px;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: #4a4949;
+    font-size: 18px;
+    margin: 10px auto 20px;
+    outline: none;
+    padding: 10px 8px;
+    text-align: center;
+    width: 96%;
 
     &:focus {
       border: 1px solid #868686;
@@ -70,8 +67,9 @@
     display: block;
     margin: 0 auto;
     border: 1px solid #dbdbdb;
+    border-radius: 2px;
     line-height: 25px;
-    padding: 0 20px;
+    padding: 4px 24px;
 
     &:hover {
       background-color: rgb(229 229 229);

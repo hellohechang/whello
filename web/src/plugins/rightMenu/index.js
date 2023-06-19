@@ -33,7 +33,7 @@ export function rightMenu(e, html, callback) {
       background-color: rgba(255, 255, 255);
       box-shadow: 0 0 10px #5e5c5c;
       overflow-y: auto;
-      border: 16px solid transparent;
+      border: 10px solid transparent;
       scrollbar-width: none;
       -ms-overflow-style: none;
       user-select: none;
