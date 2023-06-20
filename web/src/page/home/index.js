@@ -3057,7 +3057,7 @@ function defaultdqplaying() {
 
 //处理播放列表
 let playingPageNum = 1;
-let playingSize = 200;
+let playingSize = 100;
 function dqplaying() {
   if ($pMusicListBox.is(':hidden')) return;
   let scObj = _d.music[1].item.reduce((total, item) => {
@@ -3861,7 +3861,7 @@ function vobellm() {
   $myAudio[0].volume = curPlayVol;
   $myVideo[0].volume = curPlayVol;
   _setData('lastvol', curPlayVol);
-  if (vol <= 0) {
+  if (curPlayVol <= 0) {
     $musicHeadWrap.find('.volume').attr('class', 'volume iconfont icon-24gl-volumeCross');
   } else {
     $musicHeadWrap.find('.volume').attr('class', 'volume iconfont icon-24gl-volumeHigh');
