@@ -1474,221 +1474,214 @@ if (isios()) {
 function homeBmMenu(e, obj) {
   if (!obj.id) return;
   let str = `<div cursor class="mtcitem">弹窗打开</div>
-                <div cursor class="mtcitem1">更换图标</div>
-                  ${$homeFootMenu.is(':hidden')
-      ? '<div cursor class="mtcitem2">批量操作</div>'
-      : ''
-    }
+            <div cursor class="mtcitem1">更换图标</div>
+            ${$homeFootMenu.is(':hidden') ? '<div cursor class="mtcitem2">批量操作</div>' : ''}
             <div cursor class="mtcitem3">编辑书签</div>
-            <div cursor class="mtcitem4">移动到</div>
+            ${_d.bookmark.side.length === 0 ? '' : '<div cursor class="mtcitem4">移动到</div>'}
             <div cursor class="mtcitem5">删除</div>
             `;
-  rightMenu(
-    e,
-    str,
-    debounce(
-      function ({ close, e }) {
-        if (_getTarget(e, '.mtcitem')) {
-          close();
-          openIframe(obj.link, obj.name);
-        } else if (_getTarget(e, '.mtcitem1')) {
-          // 自定义图标
-          close();
-          let input = document.createElement('input');
-          input.type = 'file';
-          input.accept = '.jpg,.png,.gif,.jpeg';
+  rightMenu(e, str, debounce(function ({ close, e }) {
+    if (_getTarget(e, '.mtcitem')) {
+      close();
+      openIframe(obj.link, obj.name);
+    } else if (_getTarget(e, '.mtcitem1')) {
+      // 自定义图标
+      close();
+      let input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.jpg,.png,.gif,.jpeg';
 
-          input.style.display = 'none';
-          document.body.appendChild(input);
-          input.click();
-          let $input = $(input);
-          $input.change(async (e) => {
-            var file = e.target.files[0];
-            $input.remove();
-            if (!isImgFile(file.name)) {
-              _err('上传文件格式错误');
-              return;
-            }
-            let blob;
-            try {
-              blob = await compressionImg(file); //压缩图片
-            } catch (error) {
-              _err('上传失败');
-              return;
-            }
-            let fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(blob);
-            fileReader.onload = (e) => {
-              let buffer = e.target.result,
-                spark = new SparkMD5.ArrayBuffer();
-              spark.append(buffer);
-              let HASH = spark.end() + '.' + extname(file.name)[1];
-              let pro = new UpProgress(file.name);
-              _upFile(`/home/bmklogo?name=${HASH}`, blob, function (pes) {
-                pro.update(pes);
-              })
-                .then((result) => {
-                  if (parseInt(result.code) === 0) {
-                    pro.close();
-                    let purl = result.data.purl;
-                    _postAjax('/home/setlogo', { id: obj.id, purl }).then(
-                      (result) => {
-                        if (parseInt(result.code) === 0) {
-                          sendCommand({
-                            type: 'updatedata',
-                            flag: 'bookmark',
-                          });
-                          renderHomebook();
-                          return;
-                        }
-                      }
-                    ).catch(err => { });
-                    return;
+      input.style.display = 'none';
+      document.body.appendChild(input);
+      input.click();
+      let $input = $(input);
+      $input.change(async (e) => {
+        var file = e.target.files[0];
+        $input.remove();
+        if (!isImgFile(file.name)) {
+          _err('上传文件格式错误');
+          return;
+        }
+        let blob;
+        try {
+          blob = await compressionImg(file); //压缩图片
+        } catch (error) {
+          _err('上传失败');
+          return;
+        }
+        let fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(blob);
+        fileReader.onload = (e) => {
+          let buffer = e.target.result,
+            spark = new SparkMD5.ArrayBuffer();
+          spark.append(buffer);
+          let HASH = spark.end() + '.' + extname(file.name)[1];
+          let pro = new UpProgress(file.name);
+          _upFile(`/home/bmklogo?name=${HASH}`, blob, function (pes) {
+            pro.update(pes);
+          })
+            .then((result) => {
+              if (parseInt(result.code) === 0) {
+                pro.close();
+                let purl = result.data.purl;
+                _postAjax('/home/setlogo', { id: obj.id, purl }).then(
+                  (result) => {
+                    if (parseInt(result.code) === 0) {
+                      sendCommand({
+                        type: 'updatedata',
+                        flag: 'bookmark',
+                      });
+                      renderHomebook();
+                      return;
+                    }
                   }
-                  return new Promise.reject();
-                })
-                .catch(() => {
-                  pro.fail();
-                });
-            };
-          });
-        } else if (_getTarget(e, '.mtcitem2')) {
-          //批量操作
-          $homeFootMenu.stop().slideDown(_speed).find('div').attr({
-            class: 'iconfont icon-xuanzeweixuanze',
-            check: 'n',
-          });
-          let $sidenav = $homeBmWrap.find('.home_bm_item');
-          $sidenav.find('.check_home_bm').stop().fadeIn(_speed);
-          close();
-        } else if (_getTarget(e, '.mtcitem3')) {
-          //编辑书签
-          let str = `
+                ).catch(err => { });
+                return;
+              }
+              return new Promise.reject();
+            })
+            .catch(() => {
+              pro.fail();
+            });
+        };
+      });
+    } else if (_getTarget(e, '.mtcitem2')) {
+      //批量操作
+      $homeFootMenu.stop().slideDown(_speed).find('div').attr({
+        class: 'iconfont icon-xuanzeweixuanze',
+        check: 'n',
+      });
+      let $sidenav = $homeBmWrap.find('.home_bm_item');
+      $sidenav.find('.check_home_bm').stop().fadeIn(_speed);
+      close();
+    } else if (_getTarget(e, '.mtcitem3')) {
+      //编辑书签
+      let str = `
           <input autocomplete="off" placeholder="标题" value="${encodeHtml(obj.name)}" type="text">
           <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
           <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
-          rightMenu(
-            e,
-            str,
-            debounce(
-              function ({ close, e, inp }) {
-                if (_getTarget(e, '.mtcbtn')) {
-                  let b = inp[0],
-                    c = inp[1],
-                    des = inp[2];
-                  if (!isurl(c)) {
-                    _err('请输入正确的网址');
-                    return;
-                  }
-                  if (b === '') {
-                    _err('请输入书签标题');
-                    return;
-                  }
-                  let requestObj = {
-                    id: obj.id,
-                    name: b,
-                    des,
-                    logo: obj.logo,
-                    link: c,
-                  };
-                  if (requestObj.logo.includes('favicon.ico')) {
-                    requestObj.logo = '//' + getHost(c) + '/favicon.ico';
-                  }
-                  if (b === obj.name && c === obj.link && des === obj.des) return;
-                  _postAjax('/home/editbmk', requestObj).then((result) => {
-                    if (parseInt(result.code) === 0) {
-                      obj.name = b;
-                      obj.link = c;
-                      obj.des = des;
-                      close();
-                      sendCommand({ type: 'updatedata', flag: 'bookmark' });
-                      renderHomebook();
-                      return;
-                    }
-                  }).catch(err => { });
-                }
-              },
-              1000,
-              true
-            )
-          );
-        } else if (_getTarget(e, '.mtcitem4')) {
-          // 移动书签
-          let str = '';
-          if (_d.bookmark.side.length === 0) {
-            _err('未找到列表');
-            return;
-          }
-          _d.bookmark.side.forEach((v, i) => {
-            let name = encodeHtml(v.name);
-            str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><i class='iconfont icon-shoucang'></i><span style="margin-left:10px;">${name}</span></div>`;
-          });
-          let flagClose = close;
-          rightMenu(
-            e,
-            str,
-            debounce(
-              function ({ close, e }) {
-                let _this = _getTarget(e, '.mtcitem');
-                if (_this) {
-                  let $this = $(_this),
-                    nid = $this.attr('data-id'),
-                    listname = $this.attr('data-name');
-                  alert(`确认移动到 ${listname}?`, {
-                    confirm: true,
-                    handled: (m) => {
-                      if (m !== 'confirm') return;
-                      _postAjax('/home/bmktolist', {
-                        arr: [obj.id],
-                        nid,
-                      }).then((result) => {
-                        if (parseInt(result.code) === 0) {
-                          flagClose();
-                          close();
-                          sendCommand({
-                            type: 'updatedata',
-                            flag: 'bookmark',
-                          });
-                          renderHomebook();
-                          if ($mainid.css('transform') == 'none') {
-                          } else {
-                            renderAsideList();
-                          }
-                          return;
-                        }
-                      }).catch(err => { });
-                    },
-                  });
-                }
-              },
-              1000,
-              true
-            )
-          );
-        } else if (_getTarget(e, '.mtcitem5')) {
-          // 删除书签
-          alert(`确认删除？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
-              _postAjax('/home/delbmk', {
-                arr: [obj.id],
-              }).then((result) => {
+      rightMenu(
+        e,
+        str,
+        debounce(
+          function ({ close, e, inp }) {
+            if (_getTarget(e, '.mtcbtn')) {
+              let b = inp[0],
+                c = inp[1],
+                des = inp[2];
+              if (!isurl(c)) {
+                _err('请输入正确的网址');
+                return;
+              }
+              if (b === '') {
+                _err('请输入书签标题');
+                return;
+              }
+              let requestObj = {
+                id: obj.id,
+                name: b,
+                des,
+                logo: obj.logo,
+                link: c,
+              };
+              if (requestObj.logo.includes('favicon.ico')) {
+                requestObj.logo = '//' + getHost(c) + '/favicon.ico';
+              }
+              if (b === obj.name && c === obj.link && des === obj.des) return;
+              _postAjax('/home/editbmk', requestObj).then((result) => {
                 if (parseInt(result.code) === 0) {
+                  obj.name = b;
+                  obj.link = c;
+                  obj.des = des;
                   close();
                   sendCommand({ type: 'updatedata', flag: 'bookmark' });
                   renderHomebook();
                   return;
                 }
               }).catch(err => { });
-            },
-          });
-        }
-      },
-      1000,
-      true
-    )
+            }
+          },
+          1000,
+          true
+        )
+      );
+    } else if (_getTarget(e, '.mtcitem4')) {
+      // 移动书签
+      let str = '';
+      if (_d.bookmark.side.length === 0) {
+        _err('没有可移动的列表');
+        return;
+      }
+      _d.bookmark.side.forEach((v, i) => {
+        let name = encodeHtml(v.name);
+        str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><i class='iconfont icon-shoucang'></i><span style="margin-left:10px;">${name}</span></div>`;
+      });
+      let flagClose = close;
+      rightMenu(
+        e,
+        str,
+        debounce(
+          function ({ close, e }) {
+            let _this = _getTarget(e, '.mtcitem');
+            if (_this) {
+              let $this = $(_this),
+                nid = $this.attr('data-id'),
+                listname = $this.attr('data-name');
+              alert(`确认移动到 ${listname}?`, {
+                confirm: true,
+                handled: (m) => {
+                  if (m !== 'confirm') return;
+                  _postAjax('/home/bmktolist', {
+                    arr: [obj.id],
+                    nid,
+                  }).then((result) => {
+                    if (parseInt(result.code) === 0) {
+                      flagClose();
+                      close();
+                      sendCommand({
+                        type: 'updatedata',
+                        flag: 'bookmark',
+                      });
+                      renderHomebook();
+                      if ($mainid.css('transform') == 'none') {
+                      } else {
+                        renderAsideList();
+                      }
+                      return;
+                    }
+                  }).catch(err => { });
+                },
+              });
+            }
+          },
+          1000,
+          true
+        )
+      );
+    } else if (_getTarget(e, '.mtcitem5')) {
+      // 删除书签
+      alert(`确认删除？`, {
+        confirm: true,
+        handled: (m) => {
+          if (m !== 'confirm') return;
+          _postAjax('/home/delbmk', {
+            arr: [obj.id],
+          }).then((result) => {
+            if (parseInt(result.code) === 0) {
+              close();
+              sendCommand({ type: 'updatedata', flag: 'bookmark' });
+              renderHomebook();
+              return;
+            }
+          }).catch(err => { });
+        },
+      });
+    }
+  },
+    1000,
+    true
+  )
   );
 }
 
@@ -4635,6 +4628,10 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       str += `<div data-name="${name}" cursor class="mtcitem" data-id="${item.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
     }
   });
+  if (str == '') {
+    _err('没有可移动的歌单')
+    return;
+  }
   rightMenu(
     e,
     str,
@@ -4894,6 +4891,10 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               str += `<div data-name="${name}" cursor class="mtcitem" data-id="${v.id}"><img style="width: 40px;height: 40px;" src="${pic}"><span style="margin-left:10px;">${name}</span></div>`;
             }
           });
+          if (str == '') {
+            _err('没有可移动的歌单')
+            return;
+          }
           let flagClose = close;
           rightMenu(
             e,
