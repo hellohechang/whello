@@ -246,12 +246,13 @@ let $document = $(document),
 let closeLoading = function () {
   const $onloading = $('.onloading');
   return function () {
-    $onloading
-      .html('')
-      .stop()
-      .fadeOut(_speed, () => {
-        $onloading.remove();
-      });
+    $onloading.css({
+      'transform': 'translateX(100%) rotate(180deg) scale(0)',
+      transition: '2s'
+    });
+    _setTimeout(() => {
+      $onloading.remove();
+    }, 2000)
   };
 }();
 if (dmwidth <= 800) $clock.css('display', 'none');
@@ -5889,7 +5890,13 @@ function handleUserinfo() {
 }
 
 //关于
-$rightBox.on('click', '.r_about', debounce(
+$rightBox.on('click', '.user_name', function () {
+  $rightBox.removeClass('open');
+  $rightMenuMask.stop().fadeOut(_speed);
+  handleUserinfo();
+  $userInfoWrap.stop().fadeIn(_speed);
+  setZindex($userInfoWrap);
+}).on('click', '.r_about', debounce(
   function () {
     $rightBox.removeClass('open');
     $rightMenuMask.stop().fadeOut(_speed);
@@ -5935,13 +5942,9 @@ $rightBox.on('click', '.r_about', debounce(
               debounce(
                 function ({ close, e }) {
                   if (_getTarget(e, '.mtcitem')) {
-                    $rightBox.removeClass('open');
-                    $rightMenuMask.stop().fadeOut(_speed);
+                    $rightBox.find('.user_name').click();
                     flagClose();
                     close();
-                    handleUserinfo();
-                    $userInfoWrap.stop().fadeIn(_speed);
-                    setZindex($userInfoWrap);
                   } else if (_getTarget(e, '.mtcitem1')) {
                     let str = `
                     <input autocomplete="off" placeholder="原密码" type="password">
