@@ -773,7 +773,7 @@ function asideBmMenu(e, obj) {
             if (parseInt(result.code) === 0) {
               close();
               hideAside();
-              openIframe(`/page/sharelist`, '分享列表');
+              openIframe(`/sharelist`, '分享列表');
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem3')) {
@@ -1818,7 +1818,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
         myOpen(`${href}${xx}`, '_blank');
       }
     } else if (x === 'note') {
-      openIframe(`/page/note/?v=${noteid}`, xx);
+      openIframe(`/note/?v=${noteid}`, xx);
     } else if (x === 'bmk') {
       myOpen(xxx, '_blank');
     }
@@ -1927,7 +1927,7 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
       }
     } else if (_getTarget(e, '.mtcitem1')) {
       close();
-      openIframe('/page/history/', '历史记录管理');
+      openIframe('/history/', '历史记录管理');
     } else if (_getTarget(e, '.mtcitem2')) {
       let _close = close;
       let str = ``;
@@ -3446,7 +3446,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
             duration: sobj.duration
           }).then((result) => {
             if (parseInt(result.code) === 0) {
-              openIframe(`/page/sharelist`, '分享列表');
+              openIframe(`/sharelist`, '分享列表');
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem5')) {
@@ -3823,7 +3823,7 @@ document.onkeydown = function (e) {
     }
     // 跳到历史记录
     if (key === 'h') {
-      openIframe('/page/history', '历史记录管理');
+      openIframe('/history', '历史记录管理');
     }
     // 跳到笔记
     if (key === 'n') {
@@ -4856,7 +4856,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             duration: sobj.duration
           }).then((result) => {
             if (parseInt(result.code) === 0) {
-              openIframe(`/page/sharelist`, '分享列表');
+              openIframe(`/sharelist`, '分享列表');
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
@@ -5199,7 +5199,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       duration: musicobj.duration
     }).then((result) => {
       if (parseInt(result.code) === 0) {
-        openIframe(`/page/sharelist`, '分享列表');
+        openIframe(`/sharelist`, '分享列表');
       }
     }).catch(err => { });
   },
@@ -5893,7 +5893,7 @@ $rightBox.on('click', '.r_about', debounce(
   function () {
     $rightBox.removeClass('open');
     $rightMenuMask.stop().fadeOut(_speed);
-    openIframe('/page/note/?v=about', 'About');
+    openIframe('/note/?v=about', 'About');
   },
   1000,
   true
@@ -5901,7 +5901,7 @@ $rightBox.on('click', '.r_about', debounce(
   function () {
     $rightBox.removeClass('open');
     $rightMenuMask.stop().fadeOut(_speed);
-    openIframe('/page/recycle', 'Recycle');
+    openIframe('/recycle', 'Recycle');
   },
   1000,
   true
@@ -5980,7 +5980,7 @@ $rightBox.on('click', '.r_about', debounce(
                                 alert(result.codeText, {
                                   handled: (_) => {
                                     _delData();
-                                    myOpen('/page/login/');
+                                    myOpen('/login/');
                                   },
                                 });
                                 return;
@@ -6129,7 +6129,7 @@ $rightBox.on('click', '.r_about', debounce(
   function () {
     $rightBox.removeClass('open');
     $rightMenuMask.stop().fadeOut(_speed);
-    openIframe(`/page/notes/`, 'Notes');
+    openIframe(`/notes/`, 'Notes');
   },
   1000,
   true
@@ -6137,7 +6137,7 @@ $rightBox.on('click', '.r_about', debounce(
   function () {
     $rightBox.removeClass('open');
     $rightMenuMask.stop().fadeOut(_speed);
-    openIframe(`/page/sharelist/`, 'Sharelist');
+    openIframe(`/sharelist/`, 'Sharelist');
   },
   1000,
   true
@@ -6197,14 +6197,14 @@ $rightBox.on('click', '.r_about', debounce(
         if (parseInt(result.code) === 0) {
           _delData('state');
           _setData('originurl', '/');
-          myOpen('/page/login/');
+          myOpen('/login/');
           return;
         }
       }).catch(err => { });
     },
   });
 }).on('click', '.user_managa', function () {
-  openIframe(`/page/root`, '用户管理')
+  openIframe(`/root`, '用户管理')
 })
 
 // 日志
@@ -6664,7 +6664,7 @@ $chatListBox
               }
             }).catch(err => { });
           } else if (_getTarget(e, '.mtcitem1')) {
-            let url = `/page/allnote/#${a}`;
+            let url = `/allnote/#${a}`;
             openIframe(url, b);
             close();
           } else if (_getTarget(e, '.mtcitem2')) {
@@ -6847,7 +6847,7 @@ function backmsg(e, tt, y, z, f, n, s) {
             };
           local.push(obj);
           _setData('md', local);
-          openIframe(`/page/edit/#${obj.name}`, 'Edit');
+          openIframe(`/edit/#${obj.name}`, 'Edit');
           close();
         } else if (_getTarget(e, '.mtcitem3')) {
           let type = null;
@@ -7341,7 +7341,7 @@ $userListBox.on('click', '.user_item', function (e) {
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
-          let url = `/page/allnote/#${a}`;
+          let url = `/allnote/#${a}`;
           openIframe(url, b);
           close();
           $userListBox.stop().slideUp(_speed, () => {

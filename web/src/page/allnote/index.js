@@ -118,7 +118,7 @@ import { pagination } from '../../plugins/pagination';
       val = $headWrap.find('input').val().trim();
     val = val.split(' ')[0];
     val = encodeURIComponent(val);
-    _myOpen(`/page/note/?v=${a}${val ? '#' + val : ''}`, name);
+    _myOpen(`/note/?v=${a}${val ? '#' + val : ''}`, name);
   }, 500)
   ).on('click', '.pagingbox', debounce(function (e) {
     let target = e.target,

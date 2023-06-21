@@ -84,7 +84,7 @@ if (HASH) {
   $headBtns.find('.note_title').remove();
   //变为本地模式,并添加标识
   HASH = `hello_${Date.now()}`;
-  myOpen(`/page/edit/#${HASH}`);
+  myOpen(`/edit/#${HASH}`);
 }
 // 渲染转换显示
 function rende() {
@@ -256,7 +256,7 @@ $noteListMask
   .on('click', '.note_name', function () {
     let $this = $(this);
     let name = $this.parent().attr('data-name');
-    _myOpen(`/page/edit/#${name}`, $this.text());
+    _myOpen(`/edit/#${name}`, $this.text());
   })
   .on('click', '.delete_note', function () {
     let $this = $(this),
@@ -285,7 +285,7 @@ function saveNote() {
       $headBtns.find('.save_btn').removeClass('active');
       if (result.data) {
         HASH = result.data.id;
-        myOpen(`/page/edit/#${HASH}`);
+        myOpen(`/edit/#${HASH}`);
         _success(result.codeText);
         return;
       }

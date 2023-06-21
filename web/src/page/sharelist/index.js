@@ -29,7 +29,7 @@ function renderList() {
       res.data.reverse();
       res.data.forEach(item => {
         let { id, type } = item,
-          url = `${getPreUrl()}/${type === 'music' ? `page/sharemusic/#${id}` : `page/sharebm/#${id}`}`;
+          url = `${getPreUrl()}/${type === 'music' ? `sharemusic/#${id}` : `sharebm/#${id}`}`;
         str += `<li data-id="${id}" data-url="${url}">
             <div class="item_type_logo iconfont ${type === 'music' ? 'icon-yinle' : 'icon-shuqian1'}"></div>
             <div class="url_text">${url}</div>

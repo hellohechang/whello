@@ -396,7 +396,7 @@ export function _postAjax(url, data, y) {
         } else if (data.code == 2) {
           _delData('state');
           _setData('originurl', myOpen());
-          myOpen('/page/login/');
+          myOpen('/login/');
           return;
         }
         resolve(data);
@@ -446,7 +446,7 @@ export function _getAjax(url, data, y, time) {
         } else if (data.code == 2) {
           _delData('state');
           _setData('originurl', myOpen());
-          myOpen('/page/login');
+          myOpen('/login');
           return;
         }
         resolve(data);
@@ -501,7 +501,7 @@ export function _upFile(url, file, callback) {
         } else if (data.code == 2) {
           _delData('state');
           _setData('originurl', myOpen());
-          myOpen('/page/login');
+          myOpen('/login');
           return;
         }
         resolve(data);

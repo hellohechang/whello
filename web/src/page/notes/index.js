@@ -138,10 +138,10 @@ $contentWrap
             let val = $headWrap.find('input').val().trim();
             val = val.split(' ')[0];
             val = encodeURIComponent(val);
-            myOpen(`/page/note/?v=${id}${val ? '#' + val : ''}`, name);
+            myOpen(`/note/?v=${id}${val ? '#' + val : ''}`, name);
           } else if (_getTarget(e, '.mtcitem1')) {
             close();
-            _myOpen(`/page/edit/#${id}`, name);
+            _myOpen(`/edit/#${id}`, name);
           } else if (_getTarget(e, '.mtcitem2')) {
             alert(`确认删除：${name}？`, {
               confirm: true,
@@ -173,7 +173,7 @@ $contentWrap
         val = $headWrap.find('input').val().trim();
       val = val.split(' ')[0];
       val = encodeURIComponent(val);
-      _myOpen(`/page/note/?v=${a}${val ? '#' + val : ''}`, name);
+      _myOpen(`/note/?v=${a}${val ? '#' + val : ''}`, name);
     }, 500)
   )
   .on('contextmenu', '.item_box', function (e) {
@@ -266,7 +266,7 @@ $headWrap
     'click',
     '.h_add_item_btn',
     debounce(function (e) {
-      _myOpen('/page/edit/#new', 'New note');
+      _myOpen('/edit/#new', 'New note');
     }, 500)
   )
   .on('click', '.h_check_item_btn', function (e) {

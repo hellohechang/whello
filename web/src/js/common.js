@@ -71,9 +71,9 @@ import { _loadingBar } from '../plugins/loadingBar'
         local.push(obj);
         _setData('md', local);
         if (window.openIframe) {
-          openIframe(`/page/edit/#${obj.name}`, 'Edit');
+          openIframe(`/edit/#${obj.name}`, 'Edit');
         } else {
-          _myOpen(`/page/edit/#${obj.name}`, 'Edit');
+          _myOpen(`/edit/#${obj.name}`, 'Edit');
         }
       },
       1000,

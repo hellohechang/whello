@@ -61,7 +61,7 @@ let themeObj = _getData('themeObj'),
   $highlight = null,
   titleName = '';
 $setBtnsWrap.on('click', '.edit_note_btn', debounce(function () {
-  _myOpen(`/page/edit/#${urlparmes.v}`, titleName);
+  _myOpen(`/edit/#${urlparmes.v}`, titleName);
 }, 500)).on('click', '.to_top_btn', function () {
   window.scrollTo({
     top: 0,
@@ -185,9 +185,9 @@ $authorInfo.on('click', '.logo', debounce(
       debounce(
         function ({ close, e }) {
           if (_getTarget(e, '.mtcitem1')) {
-            let url = `/page/allnote/#${account}`;
+            let url = `/allnote/#${account}`;
             if (own === 'y') {
-              url = `/page/notes/`;
+              url = `/notes/`;
             }
             _myOpen(url, username);
             close();

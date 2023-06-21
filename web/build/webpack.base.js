@@ -25,7 +25,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/page/login/index.html',
-      filename: 'page/login/index.html',
+      filename: 'login/index.html',
       chunks: ['login'],
       minify: {
         removeComments: true,
@@ -47,7 +47,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/allnote/index.html',
-      filename: 'page/allnote/index.html',
+      filename: 'allnote/index.html',
       chunks: ['allnote'],
       minify: {
         removeComments: true,
@@ -58,7 +58,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/getpd/index.html',
-      filename: 'page/getpd/index.html',
+      filename: 'getpd/index.html',
       chunks: [],
       minify: {
         removeComments: true,
@@ -69,7 +69,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/edit/index.html',
-      filename: 'page/edit/index.html',
+      filename: 'edit/index.html',
       chunks: ['edit'],
       minify: {
         removeComments: true,
@@ -80,7 +80,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/history/index.html',
-      filename: 'page/history/index.html',
+      filename: 'history/index.html',
       chunks: ['history'],
       minify: {
         removeComments: true,
@@ -91,7 +91,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/note/index.html',
-      filename: 'page/note/index.html',
+      filename: 'note/index.html',
       chunks: ['note'],
       minify: {
         removeComments: true,
@@ -102,7 +102,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/notes/index.html',
-      filename: 'page/notes/index.html',
+      filename: 'notes/index.html',
       chunks: ['notes'],
       minify: {
         removeComments: true,
@@ -113,7 +113,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/pic/index.html',
-      filename: 'page/pic/index.html',
+      filename: 'pic/index.html',
       chunks: ['pic'],
       minify: {
         removeComments: true,
@@ -124,7 +124,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/recycle/index.html',
-      filename: 'page/recycle/index.html',
+      filename: 'recycle/index.html',
       chunks: ['recycle'],
       minify: {
         removeComments: true,
@@ -135,7 +135,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/root/index.html',
-      filename: 'page/root/index.html',
+      filename: 'root/index.html',
       chunks: ['root'],
       minify: {
         removeComments: true,
@@ -146,7 +146,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/sharebm/index.html',
-      filename: 'page/sharebm/index.html',
+      filename: 'sharebm/index.html',
       chunks: ['sharebm'],
       minify: {
         removeComments: true,
@@ -157,7 +157,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/sharemusic/index.html',
-      filename: 'page/sharemusic/index.html',
+      filename: 'sharemusic/index.html',
       chunks: ['sharemusic'],
       minify: {
         removeComments: true,
@@ -168,7 +168,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/page/sharelist/index.html',
-      filename: 'page/sharelist/index.html',
+      filename: 'sharelist/index.html',
       chunks: ['sharelist'],
       minify: {
         removeComments: true,
@@ -182,7 +182,10 @@ module.exports = {
     rules: [
       {
         test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
-        type: "asset"
+        type: "asset",
+        generator: {
+          filename: "img/[name].[hash:8][ext]"
+        }
       },
       {
         test: /\.html$/i,
