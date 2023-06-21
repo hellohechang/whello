@@ -116,7 +116,6 @@ const $pageBg = $('.page_bg'),
   $bgList = $allBgWrap.find('.bg_list'),
   $searchBoxBtn = $('.search_box_btn'),
   $mainid = $('#main'),
-  $titleid = $('#title'),
   $clock = $('.clock');
 
 let $document = $(document),
@@ -1070,7 +1069,7 @@ _getAjax('/user/getuserinfo').then((result) => {
     _d.userInfo = result.data;
     _d.myTitle = `Hello ${_d.userInfo.username}`;
     if ($myAudio[0].paused) {
-      $titleid.text(_d.myTitle);
+      document.title = _d.myTitle;
     }
     if (_d.userInfo.account !== 'root') {
       $rightBox.find('.show_log').remove();
@@ -2587,7 +2586,6 @@ function playallmusic() {
           : deepClone(musics);
       _d.playingList = deepClone(musics);
       dqplaying();
-      gaolianging();
       musicPlay(musicarr[0]);
       return;
     }
@@ -2597,7 +2595,7 @@ function playallmusic() {
 // 暂停
 function audioPause() {
   $myAudio[0].pause();
-  $titleid.text(_d.myTitle);
+  document.title = _d.myTitle;
   $lrcProgressBar.find('.dolt').css('animation-play-state', 'paused');
   $playingSongLogo.css('animation-play-state', 'paused');
   $musicFootBox.find('.right_btns .play_btn').attr('class', 'play_btn iconfont icon-65zanting').css('animation', 'none');
@@ -2621,9 +2619,7 @@ function audioPlay() {
       }
     });
   } else {
-    $titleid.text(
-      `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`
-    );
+    document.title = `\xa0\xa0\xa0♪正在播放：${musicobj.artist} - ${musicobj.name}`;
     $myAudio[0].play();
     if ($myAudio[0].buffered.length === 0) {
       //音乐没有缓冲
@@ -5433,6 +5429,7 @@ function musicMv(obj) {
   $musicMvWrap.stop().fadeIn(_speed);
   setZindex($musicMvWrap);
   gaoliang(false);
+  gaolianging(false);
   _postAjax(
     '/player/updatemusicinfo',
     {
@@ -7474,7 +7471,7 @@ function handleuser() {
       _d.myTitle = `Hello ${_d.userInfo.username}`;
       _setData('account', _d.userInfo.username);
       if ($myAudio[0].paused) {
-        $titleid.text(_d.myTitle);
+        document.title = _d.myTitle;
       }
       $rightBox.find('.user_name')
         .text(_d.userInfo.username)

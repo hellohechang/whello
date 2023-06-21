@@ -447,7 +447,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       $musicMvMask.stop().fadeOut(_speed);
       $myAudio[0].play();
       $myAudio[0].playbackRate = curPlaySpeed[1];
-      document.title = `\xa0\xa0\xa0♪Playing：${musicobj.artist} - ${musicobj.name}`;
+      document.title = `\xa0\xa0\xa0♪正在播放：${musicobj.artist} - ${musicobj.name}`;
       if (!$lrcContent._flag) {
         musiclrc();
       }
