@@ -376,7 +376,15 @@ function rAsideList() {
     }
   });
   str += `<div cursor title="新增列表" class="add_list_btn iconfont icon-icon-test"></div>`;
-  $aside.find('.list').html(str);
+  const $aList = $aside.find('.list');
+  $aList.html(str);
+  let curIdx = _d.bookmark.side.findIndex(item => item.id == $asideBtn.activeId)
+  if (curIdx >= 0) {
+    const $listTitle = $aList.find('.list_title').eq(curIdx);
+    $aList.stop().animate({
+      scrollTop: _position($listTitle[0]).top + $aList[0].scrollTop - 5,
+    }, _speed);
+  }
   hdAsideListItemLogo();
 }
 //处理侧边书签logo
@@ -7660,8 +7668,9 @@ function handleuser() {
                 audioPause();
               }
             } else if (hd.type === 'vol') {
-              vobellm(hd.data);
-              _success(`${parseInt(hd.data * 100)}%`);
+              curPlayVol = hd.data;
+              vobellm();
+              _success(`${parseInt(curPlayVol * 100)}%`);
             } else if (hd.type === 'progress') {
               $myAudio[0].currentTime = musicobj.duration * hd.data;
             } else if (hd.type === 'playmode') {
