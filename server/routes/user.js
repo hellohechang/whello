@@ -113,6 +113,18 @@ queryData('user', 'account').then(() => { }).catch(async () => {
       account TEXT NOT NULL,
       data    TEXT NOT NULL
       );`);
+
+    await runSqlite(`CREATE TABLE musics (
+      id       TEXT PRIMARY KEY
+                    UNIQUE
+                    NOT NULL,
+      name     TEXT NOT NULL,
+      artist   TEXT NOT NULL,
+      duration TEXT NOT NULL,
+      mv       TEXT NOT NULL
+                    DEFAULT ('') 
+      );`);
+
     await runSqlite(`CREATE TABLE lastmusic (
       state   TEXT DEFAULT (0) 
                     NOT NULL,
@@ -461,7 +473,7 @@ route.post('/delaccount', async (req, res) => {
     let account = req._userInfo.account;
     // 过滤管理员和测速账号
     if (account === 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
     } else {
       await updateData(
         'user',
@@ -739,11 +751,7 @@ route.post('/deleterecycle', async (req, res) => {
   try {
     let { arr, type } = req.body,
       account = req._userInfo.account;
-    await deleteData(
-      type,
-      `WHERE id IN (${new Array(arr.length)
-        .fill('?')
-        .join(',')}) AND account=? AND state=?`,
+    await deleteData(type, `WHERE id IN (${new Array(arr.length).fill('?').join(',')}) AND account=? AND state=?`,
       [...arr, account, '1']
     );
     if (type === 'booklist') {

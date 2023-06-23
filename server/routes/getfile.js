@@ -15,6 +15,12 @@ route.get('*', async (req, res) => {
         return;
       }
       let obj = JSON.parse(arr[0].data);
+      let mArr = await queryData('musics', '*', `WHERE id=?`, [obj.id]);
+      if (mArr.length == 0) {
+        _err(res, '文件不存在或已过期');
+        return;
+      }
+      obj = mArr[0];
       let path = '';
       if (t === 'pic') {
         path = 'jpg';

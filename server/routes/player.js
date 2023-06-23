@@ -2,7 +2,8 @@ const express = require('express'),
   fs = require('fs'),
   { filepath } = require('../myconfig'),
   route = express.Router();
-const { insertData, updateData, queryData } = require('../sqlite');
+const { deepClone } = require('../utils');
+const { insertData, updateData, queryData, deleteData } = require('../sqlite');
 const {
   handleMusicList,
   writelog,
@@ -23,6 +24,7 @@ const {
   isImgFile,
   _rename,
   hdSearch,
+  getMusicObj,
 } = require('../utils');
 
 //获取歌词
@@ -91,6 +93,12 @@ route.get('/musicshare', async (req, res) => {
       return;
     }
     let obj = JSON.parse(arr[0].data);
+    let mArr = await queryData('musics', '*', `WHERE id=?`, [obj.id]);
+    if (mArr.length == 0) {
+      _err(res, '歌曲不存在')
+      return;
+    }
+    obj = mArr[0];
     obj.account = arr[0].account;
     obj.username = arr[0].username;
     _success(res, 'ok', obj);
@@ -111,19 +119,9 @@ route.use((req, res, next) => {
 route.get('/search', async (req, res) => {
   try {
     let { a } = req.query,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, ['root']))[0]
-          .data
-      ),
-      ar = [];
+      ar = await queryData('musics', '*');
+    ar.reverse();
     if (a) {
-      arr.forEach((v, i) => {
-        if (i < 2) return;
-        v.item.forEach((y) => {
-          ar.push(y);
-        });
-      });
-      ar = qucong(ar);
       let sArr = [];
       ar.forEach((item) => {
         let { name, artist } = item;
@@ -142,29 +140,12 @@ route.get('/search', async (req, res) => {
       if (sArr.length === 0) {
         await writelog(req, `未搜索到歌曲[${a}]`);
       }
-      ar = sArr;
+      ar = sArr.map(item => {
+        delete item.sNum;
+        return item;
+      });
     }
     _success(res, 'ok', ar.slice(0, 100));
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-});
-//获取所有歌曲
-route.get('/getall', async (req, res) => {
-  try {
-    let arr = JSON.parse(
-      (await queryData('musicinfo', 'data', `WHERE account=?`, ['root']))[0]
-        .data
-    ),
-      ar = [];
-    arr.forEach((v, i) => {
-      if (i < 2) return;
-      v.item.forEach((y) => {
-        ar.push(y);
-      });
-    });
-    _success(res, 'ok', qucong(ar));
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -173,30 +154,43 @@ route.get('/getall', async (req, res) => {
 //获取列表
 route.get('/getlist', async (req, res) => {
   try {
-    let account = req._userInfo.account;
-    let { id } = req.query;
-    let arr = await queryData('musicinfo', '*', `WHERE account IN (?,?)`, [
-      'root',
-      account,
-    ]);
-    let rarr = JSON.parse(
-      arr.filter((item) => item.account === 'root')[0].data
-    );
-    if (account !== 'root') {
-      let aarr = JSON.parse(
-        arr.filter((item) => item.account === account)[0].data
-      );
-      rarr = [...aarr.slice(0, 2), ...rarr.slice(2)];
+    let account = req._userInfo.account,
+      { id } = req.query,
+      arr = await queryData('musics', '*'),
+      mObj = getMusicObj(arr),
+      uArr = JSON.parse((await queryData('musicinfo', 'data', 'WHERE account=?', [account]))[0].data);
+    let flag = false;
+    uArr.forEach((item) => {
+      for (let i = 0; i < item.item.length; i++) {
+        let y = item.item[i];
+        if (mObj.hasOwnProperty(y.id)) {
+          item.item[i] = mObj[y.id];
+        } else {
+          flag = true;
+          item.item.splice(i, 1);
+          i--;
+        }
+      }
+    })
+    if (flag) {
+      let marr = deepClone(uArr);
+      marr.forEach((item) => {
+        item.item = item.item.map(y => ({ id: y.id }))
+      })
+      await updateData('musicinfo', {
+        data: JSON.stringify(marr),
+      }, `WHERE account=?`, [account]);
     }
-    rarr = handleMusicList(rarr); //处理封面
-    id ? null : (id = rarr[0].id);
-    rarr = rarr.map((item, i) => {
+    uArr.splice(2, 0, { id: 'all', item: arr.reverse(), name: '全部' })
+    uArr = handleMusicList(uArr); //处理封面
+    id ? null : (id = uArr[1].id);
+    uArr = uArr.map((item, i) => {
       if (item.id !== id && i != 1) {
         delete item.item;
       }
       return item;
     });
-    _success(res, 'ok', rarr);
+    _success(res, 'ok', uArr);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -206,39 +200,25 @@ route.get('/getlist', async (req, res) => {
 route.post('/updatemusicinfo', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let r = await updateData(
-      'lastmusic',
-      {
-        data: JSON.stringify(req.body),
-      },
-      `WHERE account=?`,
-      [account]
-    );
+    let obj = req.body;
+    let r = await updateData('lastmusic', {
+      data: JSON.stringify(obj),
+    }, `WHERE account=?`, [account]);
     if (r.changes == 0) {
-      await insertData('lastmusic', [
-        {
-          account,
-          data: JSON.stringify(req.body),
-        },
-      ]);
+      await insertData('lastmusic', [{
+        account,
+        data: JSON.stringify(obj),
+      },]);
     }
     // 增加播放历史记录
-    let { lastplay, history } = req.body;
+    let { lastplay, history } = obj;
     if (history === 'y') {
-      let arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
-      arr[0].item.unshift(lastplay);
+      let arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      arr[0].item.unshift({ id: lastplay.id });
       arr[0].item = qucong(arr[0].item);
-      await updateData(
-        'musicinfo',
-        {
-          data: JSON.stringify(arr),
-        },
-        `WHERE account=?`,
-        [account]
-      );
+      await updateData('musicinfo', {
+        data: JSON.stringify(arr),
+      }, `WHERE account=?`, [account]);
     }
     _success(res);
   } catch (error) {
@@ -250,16 +230,14 @@ route.post('/updatemusicinfo', async (req, res) => {
 route.get('/getmusicinfo', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let obj = await queryData('lastmusic', 'data', `WHERE account=?`, [
-      account,
-    ]);
-    if (obj.length !== 0) {
-      obj = JSON.parse(obj[0].data);
-    } else {
-      obj = {
-        currentTime: 0,
-        duration: 0,
-      };
+    let lastm = await queryData('lastmusic', 'data', `WHERE account=?`, [account]);
+    let obj = {
+      currentTime: 0,
+      duration: 0,
+      lastplay: { id: 'xxx', name: 'xxx', artist: 'xxx', duration: 0, mv: '' }
+    };
+    if (lastm.length > 0) {
+      obj = JSON.parse(lastm[0].data);
     }
     _success(res, 'ok', obj);
   } catch (error) {
@@ -271,21 +249,13 @@ route.get('/getmusicinfo', async (req, res) => {
 route.post('/updateplaying', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let r = await updateData(
-      'playing',
-      {
-        data: JSON.stringify(req.body.data),
-      },
-      `WHERE account=?`,
-      [account]
-    );
+    let r = await updateData('playing', {
+      data: JSON.stringify(req.body.data),
+    }, `WHERE account=?`, [account]);
     if (r.changes == 0) {
-      await insertData('playing', [
-        {
-          account,
-          data: JSON.stringify(req.body.data),
-        },
-      ]);
+      await insertData('playing', [{
+        account, data: JSON.stringify(req.body.data),
+      },]);
     }
     _success(res);
   } catch (error) {
@@ -298,7 +268,7 @@ route.get('/getplaying', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let arr = await queryData('playing', 'data', `WHERE account=?`, [account]);
-    if (arr.length !== 0) {
+    if (arr.length > 0) {
       arr = JSON.parse(arr[0].data);
     }
     _success(res, 'ok', arr);
@@ -307,15 +277,10 @@ route.get('/getplaying', async (req, res) => {
     _err(res);
   }
 });
-//歌单列表移动位置
 // 歌单列表移动
 route.post('/listmove', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
-      return;
-    }
     let { fromId, toId } = req.body,
       arr = JSON.parse(
         (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
@@ -346,10 +311,6 @@ route.post('/listmove', async (req, res) => {
 route.post('/dellist', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
-      return;
-    }
     let { id } = req.body,
       arr = JSON.parse(
         (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
@@ -357,7 +318,7 @@ route.post('/dellist', async (req, res) => {
       );
     let i = arr.findIndex((item) => item.id === id);
     if (i > 1) {
-      arr.splice(i, 1)[0];
+      let r = arr.splice(i, 1)[0];
       await updateData(
         'musicinfo',
         {
@@ -366,7 +327,7 @@ route.post('/dellist', async (req, res) => {
         `WHERE account=?`,
         [account]
       );
-      await writelog(req, `删除歌单[${id}]`);
+      await writelog(req, `删除歌单[${r.name}(${id})]`);
       _success(res);
       return;
     }
@@ -380,10 +341,6 @@ route.post('/dellist', async (req, res) => {
 route.post('/editlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
-      return;
-    }
     let { id, name, des } = req.body,
       arr = JSON.parse(
         (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
@@ -401,7 +358,7 @@ route.post('/editlist', async (req, res) => {
         `WHERE account=?`,
         [account]
       );
-      await writelog(req, `修改歌单信息[${name}(${id})]`);
+      await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
       _success(res);
       return;
     }
@@ -416,38 +373,19 @@ route.post('/editsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
-    let [oldObj, newObj] = req.body;
-    let arr = JSON.parse(
-      (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-        .data
-    );
-    arr.forEach((v, i) => {
-      if (i < 2) return;
-      v.item.forEach((y) => {
-        if (y.artist + y.name == oldObj.artist + oldObj.name) {
-          y.artist = newObj.artist;
-          y.name = newObj.name;
-        }
-      });
-    });
-    await updateData(
-      'musicinfo',
-      {
-        data: JSON.stringify(arr),
-      },
-      `WHERE account=?`,
-      [account]
-    );
-    await writelog(req, `编辑歌曲[${newObj.artist}-${newObj.name}]`);
+    let { id, oldObj, newObj } = req.body;
+    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp3`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp3`).catch(err => { });
+    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp4`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp4`).catch(err => { });
+    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/music/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
+    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.lrc`, `${filepath}/music/${newObj.artist}-${newObj.name}.lrc`).catch(err => { });
+    await _rename(`${filepath}/musicys/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/musicys/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
+
+    await updateData('musics', newObj, `WHERE id=?`, [id])
+    await writelog(req, `编辑歌曲[${oldObj.artist}-${oldObj.name}=>${newObj.artist}-${newObj.name}]`);
     _success(res);
-    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp3`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp3`).catch(err => { });
-    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp4`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp4`).catch(err => { });
-    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/music/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
-    _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.lrc`, `${filepath}/music/${newObj.artist}-${newObj.name}.lrc`).catch(err => { });
-    _rename(`${filepath}/musicys/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/musicys/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -458,49 +396,26 @@ route.post('/addsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
-    let { id, arr: ar } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
-
-    let i = arr.findIndex((item) => item.id === id);
-    if (i > 1) {
-      if (ar.length > 0) {
-        arr[i].item = [...ar, ...arr[i].item];
-        arr[i].item = qucong(arr[i].item);
-      }
-    }
-    // 刷新歌曲数据
+    let mArr = await queryData('musics', '*');
     let musicfilearr = await _readdir(`${filepath}/music`);
     let mp4arr = musicfilearr.filter((v) => {
       return extname(v)[1].toLowerCase() === 'mp4';
     });
-    arr.forEach((v, i) => {
-      if (i < 2) return;
-      v.item.forEach((y) => {
-        mp4arr.some((v) => `${y.artist}-${y.name}.mp4` == v)
-          ? (y.mv = 'y')
-          : (y.mv = '');
-      });
-    });
-    let strarr = ar.map((item) => {
-      return `${item.artist}-${item.name}`;
-    });
-    if (strarr.length > 0) {
-      await writelog(req, `上传歌曲[${strarr.join(',')}]`);
-    }
-    await updateData(
-      'musicinfo',
-      {
-        data: JSON.stringify(arr),
-      },
-      `WHERE account=?`,
-      [account]
-    );
+    let hasArr = [],
+      noArr = [];
+    mArr.forEach((item) => {
+      let { name, artist, id } = item;
+      if (mp4arr.includes(`${artist}-${name}.mp4`)) {
+        hasArr.push(id);
+      } else {
+        noArr.push(id)
+      }
+    })
+    await updateData('musics', { mv: 'y' }, `WHERE id IN (${new Array(hasArr.length).fill('?').join(',')})`, [...hasArr]);
+    await updateData('musics', { mv: '' }, `WHERE id IN (${new Array(noArr.length).fill('?').join(',')})`, [...noArr]);
     _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -512,10 +427,6 @@ route.post('/addsong', async (req, res) => {
 route.post('/addlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
-      return;
-    }
     let { name, des } = req.body,
       arr = JSON.parse(
         (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
@@ -547,26 +458,20 @@ route.post('/addlist', async (req, res) => {
 route.post('/songmove', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
-      return;
-    }
-    let { a, b, id } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
+    let { fid, tid, id } = req.body,
+      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
     let i = arr.findIndex((item) => item.id === id);
     if (i > 0) {
-      arr[i].item.splice(b, 0, ...arr[i].item.splice(a, 1));
-      await updateData(
-        'musicinfo',
-        {
-          data: JSON.stringify(arr),
-        },
-        `WHERE account=?`,
-        [account]
-      );
+      let fIdx = arr[i].item.findIndex(item => item.id == fid),
+        tIdx = arr[i].item.findIndex(item => item.id == tid);
+      if (fIdx < 0 || tIdx < 0 || fIdx == tIdx) {
+        _err(res);
+        return;
+      }
+      arr[i].item.splice(tIdx, 0, ...arr[i].item.splice(fIdx, 1));
+      await updateData('musicinfo', {
+        data: JSON.stringify(arr),
+      }, `WHERE account=?`, [account]);
       _success(res);
       return;
     }
@@ -581,20 +486,13 @@ route.post('/collectsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { ar } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
-    arr[1].item = [...ar, ...arr[1].item];
+      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+    let add = ar.map(item => ({ id: item.id }));
+    arr[1].item = [...add, ...arr[1].item];
     arr[1].item = qucong(arr[1].item);
-    await updateData(
-      'musicinfo',
-      {
-        data: JSON.stringify(arr),
-      },
-      `WHERE account=?`,
-      [account]
-    );
+    await updateData('musicinfo', {
+      data: JSON.stringify(arr),
+    }, `WHERE account=?`, [account]);
     let strarr = ar.map((item) => {
       return `${item.artist}-${item.name}`;
     });
@@ -609,21 +507,11 @@ route.post('/closecollectsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let obj = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
-    arr[1].item = arr[1].item.filter(
-      (v) => v.artist + v.name !== obj.artist + obj.name
-    );
-    await updateData(
-      'musicinfo',
-      {
-        data: JSON.stringify(arr),
-      },
-      `WHERE account=?`,
-      [account]
-    );
+      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+    arr[1].item = arr[1].item.filter((v) => v.id !== obj.id);
+    await updateData('musicinfo', {
+      data: JSON.stringify(arr),
+    }, `WHERE account=?`, [account]);
     await writelog(req, `移除收藏歌曲[${obj.artist}-${obj.name}]`);
     _success(res, '移除歌曲成功');
   } catch (error) {
@@ -635,37 +523,31 @@ route.post('/closecollectsong', async (req, res) => {
 route.post('/delsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let { id, ar } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
-    let i = arr.findIndex((item) => item.id === id);
-    if (i >= 0) {
-      if (account !== 'root' && i > 1) {
-      } else {
-        let strarr = [];
-        ar.forEach((e) => {
-          arr[i].item = arr[i].item.filter(
-            (v) => v.name + v.artist !== e.name + e.artist
-          );
-          strarr.push(`${e.artist}-${e.name}`);
-        });
-        if (i == 1) {
-          await writelog(req, `移除收藏歌曲[${strarr.join(',')}]`);
-        } else if (i > 1) {
-          await writelog(req, `删除歌曲[${strarr.join(',')}]`);
-        }
+    let { id, ar = [] } = req.body;
+    if (ar.length == 0) {
+      _err(res);
+      return;
+    }
+    let strarr = ar.map((item) => {
+      return `${item.artist}-${item.name}`;
+    });
+    if (id == 'all') {
+      if (account !== 'root') {
+        _err('没有权限操作')
+        return;
+      }
+      let iArr = ar.map(item => item.id);
+      await deleteData('musics', `WHERE id IN (${new Array(iArr.length).fill('?').join(',')})`, [...iArr]);
+      await writelog(req, `删除(all)歌曲[${strarr.join(',')}]`);
+    } else {
+      let arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      let i = arr.findIndex((item) => item.id === id);
+      if (i >= 0) {
+        arr[i].item = arr[i].item.filter(item => !ar.some(y => y.id == item.id));
+        await updateData('musicinfo', { data: JSON.stringify(arr), }, `WHERE account=?`, [account]);
+        await writelog(req, `删除(${arr[i].name})歌曲[${strarr.join(',')}]`);
       }
     }
-    await updateData(
-      'musicinfo',
-      {
-        data: JSON.stringify(arr),
-      },
-      `WHERE account=?`,
-      [account]
-    );
     _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -677,33 +559,34 @@ route.post('/delsong', async (req, res) => {
 route.post('/songtolist', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
-      return;
-    }
     let { id, tid, ar } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
+      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+    let strarr = ar.map((item) => {
+      return `${item.artist}-${item.name}`;
+    });
+    ar = ar.map(item => ({ id: item.id }));
     let i = arr.findIndex((item) => item.id === id),
       ii = arr.findIndex((item) => item.id === tid);
-    if (i > 1 && ii > 1) {
-      ar.forEach((e) => {
-        arr[i].item = arr[i].item.filter(
-          (v) => v.name + v.artist !== e.name + e.artist
-        );
-      });
+    if ((id == 'all' && ii > 1 && id !== tid) || (i >= 0 && i < 2 && ii > 1)) {
       arr[ii].item = [...ar, ...arr[ii].item];
       arr[ii].item = qucong(arr[ii].item);
-      await updateData(
-        'musicinfo',
-        {
-          data: JSON.stringify(arr),
-        },
-        `WHERE account=?`,
-        [account]
-      );
+      await updateData('musicinfo', {
+        data: JSON.stringify(arr),
+      }, `WHERE account=?`, [account]);
+      let stext = id == 'all' ? `all=>${arr[ii].name}` : `${arr[i].name}=>${arr[ii].name}`;
+      await writelog(req, `(${stext})[${strarr.join(',')}]`);
+      _success(res);
+      return;
+    }
+    if (i > 1 && ii > 1, id !== tid) {
+      arr[i].item = arr[i].item.filter(item => !ar.some(y => y.id == item.id))
+      arr[ii].item = [...ar, ...arr[ii].item];
+      arr[ii].item = qucong(arr[ii].item);
+      await updateData('musicinfo', {
+        data: JSON.stringify(arr),
+      }, `WHERE account=?`, [account]);
+      let stext = `${arr[i].name}=>${arr[ii].name}`;
+      await writelog(req, `(${stext})[${strarr.join(',')}]`);
       _success(res);
       return;
     }
@@ -718,34 +601,13 @@ route.post('/delmv', async (req, res) => {
   try {
     const account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
-    let { id, sobj } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
-    let i = arr.findIndex((item) => item.id === id);
-    if (i > 1) {
-      arr[i].item.forEach((item) => {
-        if (item.artist + item.name === sobj.artist + sobj.name) {
-          item.mv = '';
-        }
-      });
-      await updateData(
-        'musicinfo',
-        {
-          data: JSON.stringify(arr),
-        },
-        `WHERE account=?`,
-        [account]
-      );
-      await writelog(req, `删除 MV [${sobj.artist}-${sobj.name}]`);
-      _success(res);
-      return;
-    }
-    _err(res);
+    let { sobj } = req.body;
+    await updateData('musics', { mv: '' }, `WHERE id=?`, [sobj.id])
+    await writelog(req, `删除 MV [${sobj.artist}-${sobj.name}]`);
+    _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -772,7 +634,7 @@ route.post('/editlrc', async (req, res) => {
   try {
     const account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
     let { name, artist, val } = req.body,
@@ -797,7 +659,7 @@ route.post('/musicshare', async (req, res) => {
       type: 'music',
     };
     await insertData('share', [obj]);
-    await writelog(req, `分享歌曲[/page/sharemusic/#${id}]`);
+    await writelog(req, `分享歌曲[/sharemusic/#${id}]`);
     _success(res, 'ok', { id });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -809,7 +671,7 @@ route.post('/up', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
     let path = `${filepath}/tem/${req.query.HASH}`;
@@ -826,10 +688,10 @@ route.post('/mergefile', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
-    let { HASH, count, name } = req.body;
+    let { HASH, count, name, duration } = req.body;
     if (!/(\.JPG|\.LRC|\.MP3|\.MP4)$/gi.test(name)) {
       _err(res);
       return;
@@ -837,17 +699,23 @@ route.post('/mergefile', async (req, res) => {
     await delDir(`${filepath}/music/${name}`);
     await delDir(`${filepath}/musicys/${name}`);
     if (isImgFile(name)) {
-      await _rename(
-        `${filepath}/tem/${HASH}/_hello`,
-        `${filepath}/musicys/${name}`
-      );
+      await _rename(`${filepath}/tem/${HASH}/_hello`, `${filepath}/musicys/${name}`);
       --count;
     }
-    await mergefile(
-      count,
-      `${filepath}/tem/${HASH}`,
-      `${filepath}/music/${name}`
-    );
+    await mergefile(count, `${filepath}/tem/${HASH}`, `${filepath}/music/${name}`);
+    let [a, b] = extname(name);
+    if (b.toLowerCase() == 'mp3') {
+      let id = nanoid();
+      let arr = a.split('-');
+      await insertData('musics', [{
+        id,
+        artist: arr[0],
+        name: arr[1],
+        duration,
+        mv: ''
+      }])
+      await writelog(req, `上传歌曲[${a}]`);
+    }
     _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -859,7 +727,7 @@ route.post('/breakpoint', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
     let { HASH } = req.body,
@@ -876,7 +744,7 @@ route.post('/repeatfile', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
     let { name } = req.body;

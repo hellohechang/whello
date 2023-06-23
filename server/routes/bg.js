@@ -58,7 +58,7 @@ route.post('/updatabg', async (req, res) => {
       '0',
     ]);
     _success(res);
-    await writelog(req, `更换壁纸[${bg}]`);
+    await writelog(req, `更换壁纸->[${bg}]`);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -94,7 +94,7 @@ route.post('/delbg', async (req, res) => {
   try {
     let account = req._userInfo.account;
     if (account !== 'root') {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
       return;
     }
     let url = req.body.url;

@@ -20,7 +20,7 @@ const {
 //拦截器
 route.use((req, res, next) => {
   if (req._userInfo.account !== 'root') {
-    _err(res, '当前账号没有权限执行该操作');
+    _err(res, '没有权限操作');
   } else {
     next();
   }
@@ -86,7 +86,7 @@ route.post('/deluser', async (req, res) => {
       }
       await writelog(req, `${flag == 0 ? '激活' : '关闭'} 账号[${ac}]`);
     } else {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -103,7 +103,7 @@ route.post('/delaccount', async (req, res) => {
       await writelog(req, `销毁账号[${ac}]`);
       _success(res, '成功销毁账号');
     } else {
-      _err(res, '当前账号没有权限执行该操作');
+      _err(res, '没有权限操作');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -205,19 +205,7 @@ route.get('/clearchatdata', async (req, res) => {
 //删除多余歌曲文件
 route.get('/delmusicfile', async (req, res) => {
   try {
-    const account = req._userInfo.account;
-    let musics = [];
-    let arr = JSON.parse(
-      (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-        .data
-    );
-    arr.forEach((v, i) => {
-      if (i < 2) return;
-      v.item.forEach((y) => {
-        musics.push(y);
-      });
-    });
-    musics = qucong(musics);
+    let musics = await queryData('musics', '*');
     let delarr = '';
     (await _readdir(`${filepath}/music`)).forEach((item) => {
       let i = item.lastIndexOf('.');

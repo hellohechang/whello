@@ -226,9 +226,9 @@ function encryption(str) {
 function qucong(arr) {
   var hash = {};
   arr = arr.reduce((item, next) => {
-    hash.hasOwnProperty(next.name + next.artist)
+    hash.hasOwnProperty(next.id)
       ? ''
-      : ((hash[next.name + next.artist] = true), item.push(next));
+      : ((hash[next.id] = true), item.push(next));
     return item;
   }, []);
   return arr;
@@ -371,8 +371,8 @@ function mergefile(count, from, to) {
     }
   });
 }
-function nanoid() {
-  return (+(Date.now() + Math.random().toFixed(5).slice(-5))).toString(16);
+function nanoid(num = 0) {
+  return (+(Date.now() + num + Math.random().toFixed(5).slice(-5))).toString(16);
 }
 
 // 音乐排序
@@ -505,7 +505,41 @@ function hdSearch(searchVal, content) {
   });
   return res;
 }
+function getMusicObj(arr) {
+  return arr.reduce((total, item) => {
+    total[item.id] = item;
+    return total;
+  }, {})
+}
+function deepClone(obj) {
+  //判断传入对象为数组或者对象
+  let result = Array.isArray(obj) ? [] : {};
+  // for in遍历
+  for (let key in obj) {
+    // 判断是否为自身的属性值（排除原型链干扰）
+    if (obj.hasOwnProperty(key)) {
+      // 判断对象的属性值中存储的数据类型是否为对象
+      if (typeof obj[key] === 'object') {
+        // 有可能等于null
+        if (obj[key] === null) {
+          result[key] = null;
+          continue;
+        }
+        // 递归调用
+        result[key] = deepClone(obj[key]); //递归复制
+      }
+      // 不是的话直接赋值
+      else {
+        result[key] = obj[key];
+      }
+    }
+  }
+  // 返回新的对象
+  return result;
+}
 module.exports = {
+  deepClone,
+  getMusicObj,
   hdSearch,
   _hdCopy,
   isImgFile,

@@ -23,7 +23,7 @@ route.use((req, res, next) => {
   if (req._userInfo.account === 'root') {
     next();
   } else {
-    _err(res, '当前账号没有权限执行该操作');
+    _err(res, '没有权限操作');
   }
 });
 // 图床

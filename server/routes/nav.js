@@ -382,7 +382,7 @@ route.post('/share', async (req, res) => {
       type: 'bookmk',
     };
     await insertData('share', [obj]);
-    await writelog(req, `分享书签列表[/page/sharebm/#${r}]`);
+    await writelog(req, `分享书签列表[/sharebm/#${r}]`);
     _success(res, 'ok', { id: r });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -429,7 +429,7 @@ route.get('/saveshare', async (req, res) => {
       };
     });
     await insertData('bookmk', arr);
-    await writelog(req, `收藏书签分享[/page/sharebm/#${id}]`);
+    await writelog(req, `收藏书签分享[/sharebm/#${id}]`);
     _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
