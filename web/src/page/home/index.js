@@ -3661,7 +3661,7 @@ function musicsea() {
                     <div class="set_menu iconfont icon-icon"></div>
                   </li>`;
           });
-          $searchMusicWrap.find('ul').html(str);
+          $searchMusicWrap.find('ul').html(str).scrollTop(0);
           lazyImg($searchMusicWrap.find('ul'), '.song_item', '.logo', 1);
         } else {
           $searchMusicWrap.find('ul').html(
