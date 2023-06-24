@@ -2711,6 +2711,7 @@ body {
             // 右部操作按钮
             .sheck_song_btn,
             .upload_song_btn,
+            .share_song_list_btn,
             .edit_song_list_btn,
             .sort_songs {
               flex: none;
@@ -2733,6 +2734,7 @@ body {
               }
             }
 
+            .share_song_list_btn i,
             .edit_song_list_btn i {
               font-size: 22px;
             }
@@ -3614,20 +3616,22 @@ body {
         .p_head {
           width: 100%;
           height: 40px;
-          padding: 5px;
+          padding: 5px 0;
           box-sizing: border-box;
 
           .left {
             float: left;
             line-height: 30px;
+            margin-left: 5px;
           }
 
+          .share_playing_list,
           .clear_playing_list {
             float: right;
             line-height: 30px;
             text-align: center;
             height: 30px;
-            width: 30px;
+            width: 40px;
             font-size: 20px;
 
 
@@ -3639,6 +3643,10 @@ body {
               transition: 0s;
               opacity: .2;
             }
+          }
+
+          .share_playing_list {
+            font-size: 18px;
           }
         }
 

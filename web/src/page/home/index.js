@@ -2586,9 +2586,11 @@ function audioPause() {
   $miniPlayer.find('.play_btn').attr('class', 'play_btn iconfont icon-65zanting').css('animation', 'none');
 }
 //播放音乐
-$lrcMenuWrap.find('.play_speed_btn').text(curPlaySpeed[0]);
 function audioPlay() {
   videoPause();
+  if (!$musicMvWrap.is(':hidden')) {
+    $musicMvWrap.stop().fadeOut(_speed);
+  }
   if (!musicobj) return;
   if (_d.remoteState) {
     //远程播放
@@ -2957,10 +2959,6 @@ function musicPlay(obj) {
   playtimer = setTimeout(() => {
     playtimer = null;
     audioPlay();
-    if (!$musicMvWrap.is(':hidden')) {
-      videoPause();
-      $musicMvWrap.stop().fadeOut(_speed);
-    }
     if (!_d.remoteState) {
       //未开启远程
       musicflagnum = 0; //初始化倒计时
@@ -3009,6 +3007,7 @@ $musicFootBox.on('click', '.right_btns .playing_list_btn', function (e) {
   var a = $(this).text();
   $(this).attr('title', a);
 });
+
 function defaultdqplaying() {
   let str = ``;
   new Array(50).fill(null).forEach(() => {
@@ -3106,7 +3105,14 @@ $pMusicListBox.on('click', '.clear_playing_list', function () {
   _d.playingList = [];
   musicarr = [];
   dqplaying();
-});
+}).on('click', '.share_playing_list', debounce(function () {
+  let arr = _d.playingList.map(item => ({ id: item.id }));
+  _postAjax('/player/musicshare', arr).then((result) => {
+    if (parseInt(result.code) === 0) {
+      openIframe(`/sharelist`, '分享列表');
+    }
+  }).catch(err => { });
+}, 1000, true));
 //选择播放列表歌曲播放
 $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   let $this = $(this).parent();
@@ -3396,7 +3402,6 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     name: $this.attr('data-name'),
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
-    issc: $this.attr('data-issc'),
     duration: $this.attr('data-duration'),
     id: $this.attr('data-id')
   };
@@ -3407,7 +3412,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span style="margin-left: 10px;">封面</span></div>
           <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">添加到</span></div>`;
   if (_d.userInfo.account === 'root') {
-    str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>`;
+    str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`;
   };
   rightMenu(
     e,
@@ -3416,13 +3422,31 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
           close();
-          _postAjax('/player/musicshare', {
+          _postAjax('/player/musicshare', [{
             id: sobj.id
-          }).then((result) => {
+          }]).then((result) => {
             if (parseInt(result.code) === 0) {
               openIframe(`/sharelist`, '分享列表');
             }
           }).catch(err => { });
+        } else if (_getTarget(e, '.mtcitem1')) {
+          alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
+            confirm: true,
+            handled: (m) => {
+              if (m !== 'confirm') return;
+              _postAjax('/player/delsong', {
+                id: 'all', ar: [sobj]
+              }).then((result) => {
+                if (parseInt(result.code) === 0) {
+                  _success();
+                  close();
+                  sendCommand({ type: 'updatedata', flag: 'music' });
+                  renderMusicList();
+                  return;
+                }
+              }).catch(err => { });
+            },
+          });
         } else if (_getTarget(e, '.mtcitem3')) {
           let str = '';
           _d.music.forEach((v, i) => {
@@ -4075,7 +4099,8 @@ function rendermusicitem(gao) {
       <div cursor class="play_list_btn iconfont icon-65zanting"></div>
       <div class="list_total_num">播放全部<span>(${marr.item.length})</span></div>
       ${ind > 2 ? `<div cursor class="edit_song_list_btn"><i class="iconfont icon-bianji"></i></div>` : ''}
-      ${ind == 2 && _d.userInfo.account == 'root' ? '<div cursor class="upload_song_btn"><i class="iconfont icon-shangchuan1"></i></div>`' : ''}
+      ${ind == 2 && _d.userInfo.account == 'root' ? '<div cursor class="upload_song_btn"><i class="iconfont icon-shangchuan1"></i></div>' : ''}
+      <div cursor class="share_song_list_btn"><i class="iconfont icon-fenxiang_2"></i></div>
       <div cursor class="sheck_song_btn"><i class="iconfont icon-quanxuan1"></i></div>
       ${ind > 0 ? `<div cursor class="sort_songs"><i class="iconfont icon-paixu"></i></div>` : ''}
     </div>`;
@@ -4111,6 +4136,7 @@ function rendermusicitem(gao) {
   str += `
       <div class="check_all_menu_wrap">
         <div cursor x='1' class="check_all_song_btn">全选</div>
+        <div cursor class="share_all_song_btn">分享</div>
         <div cursor title="添加到播放列表" class="add_all_playing_btn">添加</div>
         ${ind == 1 ? '' : '<div cursor class="collect_songs_btn">收藏</div>'}
         <div cursor class="move_song_btn">${ind < 3 ? '添加到' : '移动到'}</div>
@@ -4312,7 +4338,17 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       ).catch(err => { });
     }
   }, 1000, true));
-}).on('click', '.upload_song_btn', async function (e) {
+}).on('click', '.share_song_list_btn', debounce(function () {
+  let id = curSongListId;
+  let index = _d.music.findIndex((item) => item.id === id);
+  if (index < 0) return;
+  let arr = _d.music[index].item.map(item => ({ id: item.id }));
+  _postAjax('/player/musicshare', arr).then((result) => {
+    if (parseInt(result.code) === 0) {
+      openIframe(`/sharelist`, '分享列表');
+    }
+  }).catch(err => { });
+}, 1000, true)).on('click', '.upload_song_btn', async function (e) {
   // 上传歌曲
   if (_d.userInfo.account !== 'root') return;
   let input = document.createElement('input');
@@ -4506,7 +4542,26 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     num = 0;
   }
   _success(`选中：${num}`, true);
-}).on('click', '.collect_songs_btn', function (e) {
+}).on('click', '.share_all_song_btn', debounce(function () {
+  let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
+    $selectarr = $songlist.filter(
+      (index, item) => $(item).find('.check_state').attr('check') === 'y'
+    );
+  if ($selectarr.length === 0) return;
+  let arr = [];
+  $selectarr.each((i, v) => {
+    let $v = $(v);
+    arr.push({
+      id: $v.attr('data-id')
+    });
+  });
+  _postAjax('/player/musicshare', arr).then((result) => {
+    if (parseInt(result.code) === 0) {
+      $msuicContentBox.find('.list_items_wrap .sheck_song_btn').click();
+      openIframe(`/sharelist`, '分享列表');
+    }
+  }).catch(err => { });
+}, 1000, true)).on('click', '.collect_songs_btn', function (e) {
   //收藏选中
   let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
     $selectarr = $songlist.filter(
@@ -4791,9 +4846,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
           close();
-          _postAjax('/player/musicshare', {
+          _postAjax('/player/musicshare', [{
             id: sobj.id
-          }).then((result) => {
+          }]).then((result) => {
             if (parseInt(result.code) === 0) {
               openIframe(`/sharelist`, '分享列表');
             }
@@ -5111,9 +5166,9 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
 }).on('click', '.lrc_translate_btn', (e) => {
   let showfy = _getData('showfy');
   if (showfy) {
-    $('.lrcfy').css('display', 'none');
+    $lrcListWrap.find('.lrc_items .lrcfy').css('display', 'none');
   } else {
-    $('.lrcfy').css('display', 'block');
+    $lrcListWrap.find('.lrc_items .lrcfy').css('display', 'block');
   }
   handleLrc(true);
   showfy = !showfy;
@@ -5121,7 +5176,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
 }).on('click', '.share_song_btn', debounce(
   function (e) {
     if (!musicobj) return;
-    _postAjax('/player/musicshare', { id: musicobj.id }).then((result) => {
+    _postAjax('/player/musicshare', [{ id: musicobj.id }]).then((result) => {
       if (parseInt(result.code) === 0) {
         openIframe(`/sharelist`, '分享列表');
       }
@@ -5139,7 +5194,8 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
             <div cursor class="mtcitem5">编辑歌词</div>
             <div cursor class="mtcitem6">封面</div>
             <div cursor class="mtcitem7">复制信息</div>
-            <div cursor class="mtcitem8">添加到</div>`;
+            <div cursor class="mtcitem8">添加到</div>
+            ${_d.userInfo.account == 'root' ? '<div cursor class="mtcitem9">删除</div>' : ''}`;
     rightMenu(e, str, function ({ close, e }) {
       if (_getTarget(e, '.mtcitem')) {
         let { size } = lrcstatu;
@@ -5286,7 +5342,27 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
             true
           )
         );
-      }
+      } else if (_getTarget(e, '.mtcitem9')) {
+        if (!musicobj) return;
+        let sobj = deepClone(musicobj);
+        alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
+          confirm: true,
+          handled: (m) => {
+            if (m !== 'confirm') return;
+            _postAjax('/player/delsong', {
+              id: 'all', ar: [sobj]
+            }).then((result) => {
+              if (parseInt(result.code) === 0) {
+                _success();
+                close();
+                sendCommand({ type: 'updatedata', flag: 'music' });
+                renderMusicList();
+                return;
+              }
+            }).catch(err => { });
+          },
+        });
+      };
     });
   },
   500,
@@ -5314,7 +5390,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       _success(b + 'X');
     }
   });
-});
+}).find('.play_speed_btn').text(curPlaySpeed[0]);
 // 自动触发定时函数
 function zidonghide(timemax, el, ell, fn, fn2, fel) {
   let time = timemax,
@@ -5584,7 +5660,7 @@ _mySlide({
   el: '.music_lrc_wrap',
   right(e) {
     if (_getTarget(e, '.lrc_foot_wrap')) return;
-    $lrcHead.find('.close').click();
+    $lrcFootBtnWrap.find('.prev_play_btn').click();
   },
   down(e) {
     if (_getTarget(e, '.lrc_foot_wrap')) return;
@@ -5683,26 +5759,19 @@ function csfz() {
   imgjz(
     musicobj.pic,
     () => {
-      $playingSongLogo.css('background-image', `none`);
-      $playingSongLogo.find('img').attr('src', musicobj.pic).stop().fadeIn(_speed);
-      $lrcBg.css('background-image', `url("${musicobj.pic}")`);
+      $playingSongLogo.css('background-image', `none`).find('img').attr('src', musicobj.pic).stop().fadeIn(_speed);
+      $lrcBg.css('background-image', `url("${musicobj.pic}")`).removeClass('lrcbgss');
       $miniPlayer.css('background-image', `url("${musicobj.pic}")`);
-      $musicPlayerBg.css('background-image', `url("${musicobj.pic}")`);
-      $lrcBg.removeClass('lrcbgss');
-      $musicPlayerBg.removeClass('lrcbgss');
+      $musicPlayerBg.css('background-image', `url("${musicobj.pic}")`).removeClass('lrcbgss');
     },
     () => {
-      $playingSongLogo.css('background-image', `none`);
-      $playingSongLogo
-        .find('img')
+      $playingSongLogo.css('background-image', `none`).find('img')
         .attr('src', '/img/music.jpg')
         .stop()
         .fadeIn(_speed);
-      $lrcBg.css('background-image', `url("/img/music.jpg")`);
+      $lrcBg.css('background-image', `url("/img/music.jpg")`).removeClass('lrcbgss');
       $miniPlayer.css('background-image', `url("/img/music.jpg")`);
-      $musicPlayerBg.css('background-image', `url("/img/music.jpg")`);
-      $lrcBg.removeClass('lrcbgss');
-      $musicPlayerBg.removeClass('lrcbgss');
+      $musicPlayerBg.css('background-image', `url("/img/music.jpg")`).removeClass('lrcbgss');
     }
   );
 }
@@ -5814,7 +5883,7 @@ $userInfoWrap
               }
               let blob;
               try {
-                blob = await compressionImg(file); //压缩图片
+                blob = await compressionImg(file, 800, 800); //压缩图片
                 let pro = new UpProgress(file.name);
                 _upFile(`/user/upuserlogo`, blob, function (pes) {
                   pro.update(pes);

@@ -227,10 +227,6 @@ queryData('user', 'account').then(() => { }).catch(async () => {
         DELETE from note WHERE account = old.account;
         DELETE from chat WHERE (_from=old.account OR _to=old.account) AND flag !='chang';
       END;`);
-    let musicArr = [
-      { name: '播放历史', pic: 'img/history.jpg', item: [], id: 'history' },
-      { name: '收藏', pic: 'img/music.jpg', item: [], id: 'favorites' },
-    ];
     await insertData('user', [
       {
         username: 'root',
@@ -241,12 +237,6 @@ queryData('user', 'account').then(() => { }).catch(async () => {
         dailybg: 'n',
         flag: '0',
         password: '90089e402b00',
-      }
-    ]);
-    await insertData('musicinfo', [
-      {
-        account: 'root',
-        data: JSON.stringify(musicArr),
       }
     ]);
     await _mkdir(`${filepath}/logo/root`); //创建书签图标目录
@@ -297,20 +287,8 @@ route.post('/register', async (req, res) => {
         flag: '0',
       },
     ]);
-    await insertData('musicinfo', [
-      {
-        account,
-        data: JSON.stringify([
-          { name: '播放历史', pic: 'img/history.jpg', item: [], id: 'history' },
-          { name: '收藏', pic: 'img/music.jpg', item: [], id: 'favorites' },
-        ]),
-      },
-    ]);
     await _mkdir(`${filepath}/logo/${account}`); //创建书签图标目录
-    fs.copyFileSync(
-      `admin.jpg`,
-      `${filepath}/logo/${account}/${account}.png`
-    );
+    fs.copyFileSync(`admin.jpg`, `${filepath}/logo/${account}/${account}.png`);
     await writelog(req, `注册账号[${username}(${account})]`);
     // 生成token
     let token = jwten(account);

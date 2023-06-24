@@ -84,24 +84,30 @@ route.get('/lrc', async (req, res) => {
 route.get('/musicshare', async (req, res) => {
   try {
     let id = req.query.id;
-    let arr = await queryData('getshare', '*', `WHERE id=? AND type=?`, [
-      id,
-      'music',
-    ]);
-    if (arr.length === 0) {
+    let sArr = await queryData('getshare', '*', `WHERE id=? AND type=?`, [id, 'music',]);
+    if (sArr.length === 0) {
       _err(res, '分享已被取消');
       return;
     }
-    let obj = JSON.parse(arr[0].data);
-    let mArr = await queryData('musics', '*', `WHERE id=?`, [obj.id]);
-    if (mArr.length == 0) {
+    let arr = JSON.parse(sArr[0].data);
+    let mObj = getMusicObj((await queryData('musics', '*')));
+    for (let i = 0; i < arr.length; i++) {
+      if (mObj.hasOwnProperty(arr[i].id)) {
+        arr[i] = mObj[arr[i].id];
+      } else {
+        arr.splice(i, 1);
+        i--;
+      }
+    }
+    if (arr.length == 0) {
       _err(res, '歌曲不存在')
       return;
     }
-    obj = mArr[0];
-    obj.account = arr[0].account;
-    obj.username = arr[0].username;
-    _success(res, 'ok', obj);
+    _success(res, 'ok', {
+      account: sArr[0].account,
+      username: sArr[0].username,
+      list: arr
+    });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -151,6 +157,23 @@ route.get('/search', async (req, res) => {
     _err(res);
   }
 });
+async function getMusicList(account) {
+  let arr = await queryData('musicinfo', 'data', `WHERE account=?`, [account]);
+  if (arr.length == 0) {
+    arr = [
+      { name: '播放历史', pic: 'img/history.jpg', item: [], id: 'history' },
+      { name: '收藏', pic: 'img/music.jpg', item: [], id: 'favorites' },
+    ];
+    await insertData('musicinfo', [
+      {
+        account,
+        data: JSON.stringify(arr),
+      }
+    ]);
+    return arr;
+  }
+  return JSON.parse(arr[0].data);
+}
 //获取列表
 route.get('/getlist', async (req, res) => {
   try {
@@ -158,7 +181,7 @@ route.get('/getlist', async (req, res) => {
       { id } = req.query,
       arr = await queryData('musics', '*'),
       mObj = getMusicObj(arr),
-      uArr = JSON.parse((await queryData('musicinfo', 'data', 'WHERE account=?', [account]))[0].data);
+      uArr = await getMusicList(account);
     let flag = false;
     uArr.forEach((item) => {
       for (let i = 0; i < item.item.length; i++) {
@@ -213,7 +236,7 @@ route.post('/updatemusicinfo', async (req, res) => {
     // 增加播放历史记录
     let { lastplay, history } = obj;
     if (history === 'y') {
-      let arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      let arr = await getMusicList(account);
       arr[0].item.unshift({ id: lastplay.id });
       arr[0].item = qucong(arr[0].item);
       await updateData('musicinfo', {
@@ -282,10 +305,7 @@ route.post('/listmove', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { fromId, toId } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
+      arr = await getMusicList(account);
     let fid = arr.findIndex((item) => item.id === fromId),
       tid = arr.findIndex((item) => item.id === toId);
     if (fid > 1 && tid > 1 && fid !== tid) {
@@ -312,10 +332,7 @@ route.post('/dellist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
+      arr = await getMusicList(account);
     let i = arr.findIndex((item) => item.id === id);
     if (i > 1) {
       let r = arr.splice(i, 1)[0];
@@ -342,10 +359,7 @@ route.post('/editlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id, name, des } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
+      arr = await getMusicList(account);
     let i = arr.findIndex((item) => item.id === id);
     if (i > 1) {
       arr[i].name = name;
@@ -428,10 +442,7 @@ route.post('/addlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { name, des } = req.body,
-      arr = JSON.parse(
-        (await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0]
-          .data
-      );
+      arr = await getMusicList(account);
     let id = nanoid();
     arr.push({
       name,
@@ -459,7 +470,7 @@ route.post('/songmove', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { fid, tid, id } = req.body,
-      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      arr = await getMusicList(account);
     let i = arr.findIndex((item) => item.id === id);
     if (i > 0) {
       let fIdx = arr[i].item.findIndex(item => item.id == fid),
@@ -486,7 +497,7 @@ route.post('/collectsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { ar } = req.body,
-      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      arr = await getMusicList(account);
     let add = ar.map(item => ({ id: item.id }));
     arr[1].item = [...add, ...arr[1].item];
     arr[1].item = qucong(arr[1].item);
@@ -507,7 +518,7 @@ route.post('/closecollectsong', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let obj = req.body,
-      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      arr = await getMusicList(account);
     arr[1].item = arr[1].item.filter((v) => v.id !== obj.id);
     await updateData('musicinfo', {
       data: JSON.stringify(arr),
@@ -540,7 +551,7 @@ route.post('/delsong', async (req, res) => {
       await deleteData('musics', `WHERE id IN (${new Array(iArr.length).fill('?').join(',')})`, [...iArr]);
       await writelog(req, `删除(all)歌曲[${strarr.join(',')}]`);
     } else {
-      let arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      let arr = await getMusicList(account);
       let i = arr.findIndex((item) => item.id === id);
       if (i >= 0) {
         arr[i].item = arr[i].item.filter(item => !ar.some(y => y.id == item.id));
@@ -560,7 +571,7 @@ route.post('/songtolist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id, tid, ar } = req.body,
-      arr = JSON.parse((await queryData('musicinfo', 'data', `WHERE account=?`, [account]))[0].data);
+      arr = await getMusicList(account);
     let strarr = ar.map((item) => {
       return `${item.artist}-${item.name}`;
     });
@@ -759,5 +770,29 @@ route.post('/repeatfile', async (req, res) => {
     _success(res, 'ok', []);
   }
 });
-
+route.get('/savesharesongs', async function (req, res) {
+  try {
+    const account = req._userInfo.account;
+    let { id } = req.query;
+    let arr = await queryData('share', 'data', `WHERE id=? AND type=?`, [id, 'music']);
+    if (arr.length < 0) {
+      _err(res);
+      return;
+    }
+    arr = JSON.parse(arr[0].data);
+    let uArr = await getMusicList(account);
+    uArr.push({
+      name: '新歌单',
+      id: nanoid(),
+      item: arr,
+      des: ''
+    })
+    await updateData('musicinfo', { data: JSON.stringify(uArr) }, `WHERE account=?`, [account]);
+    await writelog(req, `转存歌单[/sharemusic/#${id}]`)
+    _success(res);
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _success(res, 'ok', []);
+  }
+})
 module.exports = route;
