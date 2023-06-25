@@ -540,7 +540,7 @@ import { rightMenu } from "../../plugins/rightMenu";
           <span class = "song_name">${name}</span>
           <span class="artist_name"><i class="artist_name_text">${artist}</i></span>
           </div>
-          ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin"></div>` : ''}
+          ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin2"></div>` : ''}
           <div cursor class="del iconfont icon-guanbi"></div>
         </li>`;
     });

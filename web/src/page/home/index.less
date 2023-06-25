@@ -2149,7 +2149,7 @@ body {
       position: absolute;
       right: 0;
       bottom: 0;
-      font-size: 22px;
+      font-size: 24px;
       color: #ff5500;
     }
 
@@ -2663,7 +2663,7 @@ body {
             width: 100%;
             display: flex;
             box-sizing: border-box;
-            padding: 0 5px;
+            padding: 0 3px;
 
             &.sct {
               position: fixed;
@@ -2780,7 +2780,7 @@ body {
 
             // 操作按钮
             .play_mv,
-            .icon-icon-,
+            .like_hear,
             .add_song_playing_btn,
             .set_song_btn {
               flex: none;
@@ -2788,28 +2788,17 @@ body {
               line-height: 60px;
               text-align: center;
               width: 40px;
+              font-size: 20px;
+            }
+
+            .like_hear {
+              font-size: 18px;
             }
 
             .play_mv:hover,
             .add_song_playing_btn:hover,
             .set_song_btn:hover {
               color: rgb(209, 20, 178);
-            }
-
-            .icon-icon- {
-              font-size: 18px;
-            }
-
-            .set_song_btn {
-              font-size: 20px;
-            }
-
-            .add_song_playing_btn {
-              font-size: 22px;
-            }
-
-            .play_mv {
-              font-size: 24px;
             }
 
             .song_logo_box {
@@ -3198,6 +3187,12 @@ body {
               white-space: nowrap;
               text-overflow: ellipsis;
 
+              .artist_name_text {
+                &:hover {
+                  border-bottom: 1px solid #fff;
+                }
+              }
+
               @media (max-width: 800px) {
                 & {
                   font-size: 13px;
@@ -3261,11 +3256,11 @@ body {
             text-align: center;
             font-size: 24px;
             color: #999595bd;
-            margin-left: 30px;
+            margin-left: 20px;
             float: left;
 
             @media (max-width: 800px) {
-              font-size: 28px;
+              font-size: 26px;
             }
 
             &:active {
@@ -3519,15 +3514,19 @@ body {
             }
 
             .play_mv,
-            .icon-icon-,
+            .like_hear,
             .set_menu,
             .add_palying_list {
               flex: none;
               width: 40px;
               line-height: 60px;
               text-align: center;
-              font-size: 18px;
+              font-size: 20px;
               color: #5a5a5a;
+            }
+
+            .like_hear {
+              font-size: 18px;
             }
 
             .play_mv:hover,
@@ -3688,12 +3687,16 @@ body {
             }
 
             .play_mv,
-            .icon-icon-,
+            .like_hear,
             .del {
               flex: none;
               text-align: center;
               line-height: 60px;
               width: 40px;
+              font-size: 20px;
+            }
+
+            .like_hear {
               font-size: 18px;
             }
 

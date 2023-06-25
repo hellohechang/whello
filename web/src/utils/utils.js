@@ -950,7 +950,7 @@ export function fileLogoType(fname) {
       fname
     )
   ) {
-    return 'icon-shipin1';
+    return 'icon-shipin2';
   } else if (/(\.mp3|\.wma|\.wav|\.mid|\.ape|\.flac)$/gi.test(fname)) {
     return 'icon-yinle';
   } else if (/(\.docx|\.doc|\.dot|\.RTF|\.rtf)$/gi.test(fname)) {

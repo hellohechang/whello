@@ -2900,6 +2900,10 @@ $lrcHead.on('click', '.remote_play', function (e) {
   }
 }).on('click', '.close', function () {
   $musicLrcWrap.removeClass('active');
+}).on('click', '.artist_name_text', function (e) {
+  e.stopPropagation();
+  $musicHeadWrap.find('.search_music_inp').val(this.innerText);
+  _musicsea();
 });
 //歌单播放
 function musicobjInit(obj) {
@@ -2946,9 +2950,9 @@ function musicPlay(obj) {
   musicInitial();
   //处理收藏按钮
   if (_d.music && _d.music[1].item.some((v) => v.id === musicobj.id)) {
-    $lrcMenuWrap.find('.collect_song_btn').addClass('active');
+    $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear-full active');
   } else {
-    $lrcMenuWrap.find('.collect_song_btn').removeClass('active');
+    $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear');
   }
   // mv图标
   if (musicobj.mv == 'y') {
@@ -3053,8 +3057,8 @@ function dqplaying() {
           <span class = "song_name">${name}</span>
           <span class="artist_name"><i class="artist_name_text">${artist}</i></span>
           </div>
-          ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin"></div>` : ''}
-          <div style="color:${issc ? '#fd4747' : '#ccc'}" class="iconfont icon-icon-"></div>
+          ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin2"></div>` : ''}
+          <div style="color:${issc ? '#fd4747' : '#ccc'}" class="like_hear iconfont ${issc ? 'icon-hear-full' : 'icon-hear'}"></div>
           <div cursor class="del iconfont icon-guanbi"></div>
         </li>`;
   });
@@ -3177,7 +3181,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   lazyImg($pMusicListBox.find('.p_foot'), '.song_item', '.logo');
 }, 100)).on('click', '.logo_wrap', function () {
   $(this).parent().find('.song_info_wrap').click();
-}).on('click', '.icon-icon-', function () {
+}).on('click', '.like_hear', function () {
   let $this = $(this).parent();
   let sobj = {
     name: $this.attr('data-name'),
@@ -3587,7 +3591,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
   musicarr.reverse();
   _success('添加成功');
   updatePlayingList();
-}).on('click', '.icon-icon-', function () {
+}).on('click', '.like_hear', function () {
   let $this = $(this).parent();
   let issc = $this.attr('data-issc');
   let sobj = {
@@ -3681,8 +3685,8 @@ function musicsea() {
                       <span class="song_name">${name}</span>
                       <span class="artist_name">${artist}</span>
                     </div>
-                    ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin"></div>` : ''}
-                    <div style="color:${issc ? '#fd4747' : '#ccc'};" class="iconfont icon-icon-"></div>
+                    ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin2"></div>` : ''}
+                    <div style="color:${issc ? '#fd4747' : '#ccc'};" class="like_hear iconfont ${issc ? 'icon-hear-full' : 'icon-hear'}"></div>
                     <div class="set_menu iconfont icon-icon"></div>
                   </li>`;
           });
@@ -3915,9 +3919,9 @@ $playingSongLogo.on('click', function () {
     $lrcMenuWrap.find('.play_mv_btn').stop().hide(_speed);
   }
   if (_d.music && musicobj && _d.music[1].item.some((v) => v.id === musicobj.id)) {
-    $lrcMenuWrap.find('.collect_song_btn').addClass('active');
+    $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear-full active');
   } else {
-    $lrcMenuWrap.find('.collect_song_btn').removeClass('active');
+    $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear');
   }
 });
 
@@ -4102,7 +4106,7 @@ function rendermusicitem(gao) {
       ${ind > 2 || _d.userInfo.account == 'root' ? `<div cursor class="edit_song_list_btn"><i class="iconfont icon-bianji"></i></div>` : ''}
       ${ind == 2 && _d.userInfo.account == 'root' ? '<div cursor class="upload_song_btn"><i class="iconfont icon-shangchuan1"></i></div>' : ''}
       <div cursor class="share_song_list_btn"><i class="iconfont icon-fenxiang_2"></i></div>
-      <div cursor class="sheck_song_btn"><i class="iconfont icon-quanxuan1"></i></div>
+      <div cursor class="sheck_song_btn"><i class="iconfont icon-duoxuan"></i></div>
       ${ind > 0 ? `<div cursor class="sort_songs"><i class="iconfont icon-paixu"></i></div>` : ''}
     </div>`;
   let pageTotal = Math.ceil(marr.item.length / musicPageSize);
@@ -4123,8 +4127,8 @@ function rendermusicitem(gao) {
           <span class="song_name">${name}</span>
           <span class="artist_name"><i class="viptu iconfont icon-vip1"></i><i class="artist_name_text">${artist}</i></span>
         </div>
-        ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin"></div>` : ''}
-        ${ind == 1 ? '' : `<div style="color:${issc ? '#fd4747' : '#ccc'};" class="iconfont icon-icon-"></div>`}
+        ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin2"></div>` : ''}
+        ${ind == 1 ? '' : `<div style="color:${issc ? '#fd4747' : '#ccc'};" class="like_hear iconfont ${issc ? 'icon-hear-full' : 'icon-hear'}"></div>`}
         <div title="添加到播放列表" class="add_song_playing_btn iconfont icon-icon-test"></div>
         <div class="set_song_btn iconfont icon-icon"></div>
       </div>`;
@@ -4808,7 +4812,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     _d.playingList = deepClone(musicarrjl);
   };
   musicMv(sobj);
-}).on('click', '.icon-icon-', function () {
+}).on('click', '.like_hear', function () {
   let $this = $(this).parent();
   let issc = $this.attr('data-issc');
   let sobj = {
@@ -5147,7 +5151,8 @@ if (isios()) {
 
 $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
   if (!musicobj) return;
-  if (!$(this).hasClass('active')) {
+  const $this = $(this);
+  if (!$this.hasClass('active')) {
     _postAjax('/player/collectsong', {
       ar: [{
         id: musicobj.id,
@@ -5160,7 +5165,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
-        $(this).addClass('active');
+        $this.attr('class', 'collect_song_btn iconfont icon-hear-full active');
         return;
       }
     }).catch(err => { });
@@ -5175,7 +5180,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
-        $(this).removeClass('active');
+        $this.attr('class', 'collect_song_btn iconfont icon-hear');
         return;
       }
     }).catch(err => { });
@@ -5777,7 +5782,7 @@ function csfz() {
   if (!musicobj) return;
   $musicFootBox.find('.playing_song_info').text(`${musicobj.artist} - ${musicobj.name}`);
   $lrcHead.find('.song_name').text(musicobj.name);
-  $lrcHead.find('.artist_name').text(musicobj.artist);
+  $lrcHead.find('.artist_name i').text(musicobj.artist);
   $myAudio.attr('src', `${musicobj.url}`);
   $playingSongLogo.css('background-image', `url("/img/musicbg.png")`);
   imgjz(

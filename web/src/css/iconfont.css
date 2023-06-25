@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2809795 */
-  src: url('iconfont.woff2?t=1676964689782') format('woff2'),
-       url('iconfont.woff?t=1676964689782') format('woff'),
-       url('iconfont.ttf?t=1676964689782') format('truetype');
+  src: url('iconfont.woff2?t=1687674871370') format('woff2'),
+       url('iconfont.woff?t=1687674871370') format('woff'),
+       url('iconfont.ttf?t=1687674871370') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,34 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-fangda:before {
+  content: "\e62a";
+}
+
+.icon-24gf-playlistMusic4:before {
+  content: "\ea86";
+}
+
+.icon-duoxuan:before {
+  content: "\e60b";
+}
+
+.icon-tubiao-fanyi:before {
+  content: "\e61d";
+}
+
+.icon-hear-full:before {
+  content: "\e99f";
+}
+
+.icon-hear:before {
+  content: "\e9a0";
+}
+
+.icon-shipin2:before {
+  content: "\e656";
 }
 
 .icon-fenge:before {
@@ -297,10 +325,6 @@
   content: "\e79c";
 }
 
-.icon-bofangliebiao:before {
-  content: "\e64d";
-}
-
 .icon-shuqian1:before {
   content: "\e64e";
 }
@@ -311,14 +335,6 @@
 
 .icon-vip1:before {
   content: "\e600";
-}
-
-.icon-icon-:before {
-  content: "\e612";
-}
-
-.icon-quanxuan1:before {
-  content: "\e829";
 }
 
 .icon-bianji:before {
@@ -379,10 +395,6 @@
 
 .icon-shoucang:before {
   content: "\e632";
-}
-
-.icon-shipin:before {
-  content: "\e60c";
 }
 
 .icon-65zanting:before {
