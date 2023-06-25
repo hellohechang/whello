@@ -206,12 +206,12 @@ route.get('/clearchatdata', async (req, res) => {
 route.get('/delmusicfile', async (req, res) => {
   try {
     let musics = await queryData('musics', '*');
-    let delarr = '';
+    let delarr = [];
     (await _readdir(`${filepath}/music`)).forEach((item) => {
       let i = item.lastIndexOf('.');
       if (!musics.some((v) => `${v.artist}-${v.name}` === item.slice(0, i))) {
         _unlink(`${filepath}/music/${item}`);
-        delarr += `${item}\n`;
+        delarr.push(item);
       }
       if (item.slice(i).toLowerCase() === '.mp4') {
         if (
@@ -220,7 +220,7 @@ route.get('/delmusicfile', async (req, res) => {
           )
         ) {
           _unlink(`${filepath}/music/${item}`);
-          delarr += `${item}\n`;
+          delarr.push(item);
         }
       }
     });
@@ -228,15 +228,11 @@ route.get('/delmusicfile', async (req, res) => {
       let i = item.lastIndexOf('.');
       if (!musics.some((v) => `${v.artist}-${v.name}` === item.slice(0, i))) {
         _unlink(`${filepath}/musicys/${item}`);
-        delarr += `${item}\n`;
+        delarr.push(item);
       }
     });
-    await writelog(req, `更新歌曲文件`);
-    if (delarr.length === 0) {
-      _success(res, 'ok', '没有多余歌曲文件');
-      return;
-    }
-    _success(res, 'ok', `删除文件:\n ${delarr}`);
+    await writelog(req, `删除歌曲文件 [${delarr.join(',')}]`);
+    _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

@@ -181,7 +181,8 @@ route.get('/getlist', async (req, res) => {
       { id } = req.query,
       arr = await queryData('musics', '*'),
       mObj = getMusicObj(arr),
-      uArr = await getMusicList(account);
+      uArr = await getMusicList(account),
+      { songList } = await _readFile('./config.json');
     let flag = false;
     uArr.forEach((item) => {
       for (let i = 0; i < item.item.length; i++) {
@@ -204,7 +205,11 @@ route.get('/getlist', async (req, res) => {
         data: JSON.stringify(marr),
       }, `WHERE account=?`, [account]);
     }
-    uArr.splice(2, 0, { id: 'all', item: arr.reverse(), name: '全部' })
+    uArr.splice(2, 0, { id: 'all', item: arr.reverse() });
+    for (let i = 0; i < 3; i++) {
+      uArr[i].name = songList[i].name;
+      uArr[i].des = songList[i].des;
+    }
     uArr = handleMusicList(uArr); //处理封面
     id ? null : (id = uArr[1].id);
     uArr = uArr.map((item, i) => {
@@ -359,9 +364,22 @@ route.post('/editlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id, name, des } = req.body,
-      arr = await getMusicList(account);
+      arr = await getMusicList(account),
+      config = await _readFile('./config.json');
     let i = arr.findIndex((item) => item.id === id);
-    if (i > 1) {
+    if (id == 'all' && account == 'root') {
+      config.songList[2].name = name;
+      config.songList[2].des = des;
+      await _writeFile('./config.json', config);
+      await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
+      _success(res);
+    } else if (i < 2 && i >= 0 && account == 'root') {
+      config.songList[i].name = name;
+      config.songList[i].des = des;
+      await _writeFile('./config.json', config);
+      await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
+      _success(res);
+    } else if (i > 1) {
       arr[i].name = name;
       arr[i].des = des;
       await updateData(
@@ -374,9 +392,9 @@ route.post('/editlist', async (req, res) => {
       );
       await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
       _success(res);
-      return;
+    } else {
+      _err(res);
     }
-    _err(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -556,7 +574,7 @@ route.post('/delsong', async (req, res) => {
       if (i >= 0) {
         arr[i].item = arr[i].item.filter(item => !ar.some(y => y.id == item.id));
         await updateData('musicinfo', { data: JSON.stringify(arr), }, `WHERE account=?`, [account]);
-        await writelog(req, `删除(${arr[i].name})歌曲[${strarr.join(',')}]`);
+        await writelog(req, `移除(${arr[i].name})歌曲[${strarr.join(',')}]`);
       }
     }
     _success(res);

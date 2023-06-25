@@ -3441,6 +3441,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                   _success();
                   close();
                   sendCommand({ type: 'updatedata', flag: 'music' });
+                  _musicsea();
                   renderMusicList();
                   return;
                 }
@@ -4098,7 +4099,7 @@ function rendermusicitem(gao) {
     <div class="items_list_top_menu">
       <div cursor class="play_list_btn iconfont icon-65zanting"></div>
       <div class="list_total_num">播放全部<span>(${marr.item.length})</span></div>
-      ${ind > 2 ? `<div cursor class="edit_song_list_btn"><i class="iconfont icon-bianji"></i></div>` : ''}
+      ${ind > 2 || _d.userInfo.account == 'root' ? `<div cursor class="edit_song_list_btn"><i class="iconfont icon-bianji"></i></div>` : ''}
       ${ind == 2 && _d.userInfo.account == 'root' ? '<div cursor class="upload_song_btn"><i class="iconfont icon-shangchuan1"></i></div>' : ''}
       <div cursor class="share_song_list_btn"><i class="iconfont icon-fenxiang_2"></i></div>
       <div cursor class="sheck_song_btn"><i class="iconfont icon-quanxuan1"></i></div>
@@ -4140,7 +4141,8 @@ function rendermusicitem(gao) {
         <div cursor title="添加到播放列表" class="add_all_playing_btn">添加</div>
         ${ind == 1 ? '' : '<div cursor class="collect_songs_btn">收藏</div>'}
         <div cursor class="move_song_btn">${ind < 3 ? '添加到' : '移动到'}</div>
-        ${_d.userInfo.account === 'root' || ind != 2 ? '<div cursor class="del_songs_btn">删除</div>' : ''}
+        ${_d.userInfo.account === 'root' || ind != 2 ? `<div cursor class="del_songs_btn">${ind == 2 ? '删除' : '移除'}</div>` : ''}
+        ${ind < 2 ? '<div cursor class="clear_all_song_btn">清空</div>' : ''}
       </div>`;
   $songItemsBox.html(str)._check = false;
   musicarrjl = marr.item;
@@ -4222,10 +4224,16 @@ if (isios()) {
 // 删除歌单
 function gedanmenu(e, id) {
   let index = _d.music.findIndex((item) => item.id === id);
-  if (index < 3) return;
   let { des, name } = _d.music[index];
-  let str = `<div cursor class="mtcitem1">编辑</div>
-    <div cursor class="mtcitem">删除歌单</div>`;
+  let str = '';
+  if (_d.userInfo.account == 'root') {
+    str = `<div cursor class="mtcitem1">编辑</div>
+        ${index > 2 ? '<div cursor class="mtcitem">删除歌单</div>' : ''}`;
+  } else {
+    if (index < 3) return;
+    str = `<div cursor class="mtcitem1">编辑</div>
+        <div cursor class="mtcitem">删除歌单</div>`;
+  }
   rightMenu(
     e,
     str,
@@ -4311,7 +4319,6 @@ let songItemsBoxHide = debounce(function () {
 $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', function (e) {
   let id = curSongListId;
   let index = _d.music.findIndex((item) => item.id === id);
-  if (index < 3) return;
   let { des, name } = _d.music[index];
   let str = `
   <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
@@ -4595,7 +4602,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       (index, item) => $(item).find('.check_state').attr('check') === 'y'
     );
   if ($selectarr.length === 0) return;
-  alert(`确认删除？`, {
+  alert(`确认${this.innerText}？`, {
     confirm: true,
     handled: (m) => {
       if (m !== 'confirm') return;
@@ -4611,6 +4618,23 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         });
       });
       _postAjax('/player/delsong', { id, ar: arr }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'music' });
+          renderMusicList();
+          return;
+        }
+      }).catch(err => { });
+    },
+  });
+}).on('click', '.clear_all_song_btn', function () {
+  let id = curSongListId;
+  let idx = _d.music.findIndex((item) => item.id === id);
+  if (idx > 1 || id == 'all') return;
+  alert(`确认清空？`, {
+    confirm: true,
+    handled: (m) => {
+      if (m !== 'confirm') return;
+      _postAjax('/player/delsong', { id, ar: _d.music[idx].item }).then((result) => {
         if (parseInt(result.code) === 0) {
           sendCommand({ type: 'updatedata', flag: 'music' });
           renderMusicList();
@@ -4837,7 +4861,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     }
   }
   if (_d.userInfo.account === 'root' || ii != 2) {
-    str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`
+    str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">${ii == 2 ? '删除' : '移除'}</span></div>`
   }
   rightMenu(
     e,
@@ -4854,7 +4878,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
-          alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
+          alert(`确认${ii == 2 ? '删除' : '移除'}：${sobj.artist}-${sobj.name}？`, {
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
@@ -5977,7 +6001,7 @@ $rightBox.on('click', '.user_name', function () {
           if (_getTarget(e, '.mtcitem')) {
             let str = `<div cursor class="mtcitem">个人信息</div>
               <div cursor class="mtcitem1">修改密码</div>
-              <div cursor class="mtcitem2">删除账号</div>`;
+              <div cursor class="mtcitem2">注销账号</div>`;
             let flagClose = close;
             rightMenu(
               e,
@@ -6016,7 +6040,7 @@ $rightBox.on('click', '.user_name', function () {
                       }
                     }, 500, true));
                   } else if (_getTarget(e, '.mtcitem2')) {
-                    alert('确认删除账号？', {
+                    alert('确认注销账号？', {
                       confirm: true,
                       handled: (m) => {
                         if (m === 'confirm') {
@@ -6853,11 +6877,11 @@ if (isios()) {
 function backmsg(e, tt, y, z, f, n, s) {
   let obj = deepClone(chatobj),
     str = `${y === 'null'
-      ? '<div cursor class="mtcitem1">复制</div><div cursor class="mtcitem2">编辑</div>'
+      ? `${isurl(z) ? '<div cursor class="mtcitem4">打开</div>' : ''}<div cursor class="mtcitem1">复制</div><div cursor class="mtcitem2">编辑</div>`
       : '<div cursor class="mtcitem3">下载</div>'
       }
             ${f === _d.userInfo.account
-        ? '<div cursor class="mtcitem">删除</div>'
+        ? '<div cursor class="mtcitem">撤回</div>'
         : ''
       }`;
   rightMenu(
@@ -6913,6 +6937,8 @@ function backmsg(e, tt, y, z, f, n, s) {
             }
             _err(`${type}已过期`);
           }).catch(err => { });
+        } else if (_getTarget(e, '.mtcitem4')) {
+          myOpen(z, '_blank');
         }
       },
       1000,

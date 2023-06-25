@@ -449,7 +449,6 @@ route.post('/changeusername', async (req, res) => {
 route.post('/delaccount', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    // 过滤管理员和测速账号
     if (account === 'root') {
       _err(res, '没有权限操作');
     } else {
@@ -467,7 +466,7 @@ route.post('/delaccount', async (req, res) => {
       ]);
       await writelog(req, `关闭账号`);
       res.clearCookie('token');
-      _success(res, '成功删除账号');
+      _success(res);
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);

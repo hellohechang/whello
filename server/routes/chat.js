@@ -252,7 +252,7 @@ route.post('/delmsg', async (req, res) => {
       `WHERE id=? AND state=? AND _from=?`,
       [tt, '0', account]
     );
-    await writelog(req, `删除消息[${tt}]`);
+    await writelog(req, `撤回消息[${tt}]`);
     _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
