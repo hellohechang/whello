@@ -397,7 +397,6 @@ body {
       bottom: 0;
       right: 0;
       width: 100%;
-      max-width: 500px;
       height: 70%;
       color: #6c6c6c;
       overflow: hidden;
@@ -405,6 +404,12 @@ body {
       box-sizing: border-box;
       padding: 0 2px;
       background-color: rgba(255, 255, 255);
+
+      @media (min-width:800px) {
+        & {
+          max-width: 500px;
+        }
+      }
 
       .p_head {
         width: 100%;
