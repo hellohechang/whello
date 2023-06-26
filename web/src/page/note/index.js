@@ -177,8 +177,8 @@ $authorInfo.on('click', '.logo', debounce(
     let { account, username, own } = $authorInfo._uobj;
     let uname = encodeHtml(username);
     let str = `<div cursor class="mtcitem" style="justify-content: center;">${uname}</div>
-    <div cursor class="mtcitem1">查看更多</div>
-    ${own === 'y' ? '' : `<div cursor class="mtcitem2">@${uname}</div>`}`;
+    <div cursor class="mtcitem1"><i class="iconfont icon-chakan"></i><span>查看笔记列表</span></div>
+    ${own === 'y' ? '' : `<div cursor class="mtcitem2"><i class="iconfont icon-huaban"></i><span>@${uname}</span></div>`}`;
     rightMenu(
       e,
       str,

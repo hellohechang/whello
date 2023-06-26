@@ -215,8 +215,8 @@ if (isios()) {
   });
 }
 function bgitemmenu(e, url) {
-  let str = `<div cursor class="mtcitem">复制网址</div>
-    <div cursor class="mtcitem1">删除</div>`;
+  let str = `<div cursor class="mtcitem"><i class="iconfont icon-fuzhi"></i><span>复制网址</span></div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
   rightMenu(
     e,
     str,

@@ -689,10 +689,10 @@ if (isios()) {
 }
 //操作列表
 function asideBmMenu(e, obj) {
-  let str = `<div cursor class="mtcitem">重命名</div>
-              <div cursor class="mtcitem1">新增书签</div>
-              <div cursor class="mtcitem2">分享列表</div>
-              <div cursor class="mtcitem3">删除列表</div>`;
+  let str = `<div cursor class="mtcitem"><i class="iconfont icon-bianji"></i><span>重命名</span></div>
+              <div cursor class="mtcitem1"><i class="iconfont icon-icon-test"></i><span>新增书签</span></div>
+              <div cursor class="mtcitem2"><i class="iconfont icon-fenxiang_2"></i><span>分享</span></div>
+              <div cursor class="mtcitem3"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
   rightMenu(
     e,
     str,
@@ -808,15 +808,15 @@ function asideBmMenu(e, obj) {
 }
 //操作书签
 function asideListMenu(e, obj) {
-  let str = `<div cursor class="mtcitem">弹窗打开</div>
-                  <div cursor class="mtcitem1">更换图标</div>
+  let str = `<div cursor class="mtcitem"><i class="iconfont icon-danchuang"></i><span>弹窗打开</span></div>
+                  <div cursor class="mtcitem1"><i class="iconfont icon-shangchuan1"></i><span>上传图标</span></div>
                   ${$aside.find('.foot_menu').is(':hidden')
-      ? '<div cursor class="mtcitem2">批量操作</div>'
+      ? '<div cursor class="mtcitem2"><i class="iconfont icon-duoxuan"></i><span>选中</span></div>'
       : ''
     }
-                  <div cursor class="mtcitem3">编辑书签</div>
-                  <div cursor class="mtcitem4">移动到</div>
-                  <div cursor class="mtcitem5">删除</div>`;
+                  <div cursor class="mtcitem3"><i class="iconfont icon-bianji"></i><span>编辑书签</span></div>
+                  <div cursor class="mtcitem4"><i class="iconfont icon-moveto"></i><span>移动到</span></div>
+                  <div cursor class="mtcitem5"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
   rightMenu(
     e,
     str,
@@ -1481,12 +1481,12 @@ if (isios()) {
 // 编辑书签
 function homeBmMenu(e, obj) {
   if (!obj.id) return;
-  let str = `<div cursor class="mtcitem">弹窗打开</div>
-            <div cursor class="mtcitem1">更换图标</div>
-            ${$homeFootMenu.is(':hidden') ? '<div cursor class="mtcitem2">批量操作</div>' : ''}
-            <div cursor class="mtcitem3">编辑书签</div>
-            ${_d.bookmark.side.length === 0 ? '' : '<div cursor class="mtcitem4">移动到</div>'}
-            <div cursor class="mtcitem5">删除</div>
+  let str = `<div cursor class="mtcitem"><i class="iconfont icon-danchuang"></i><span>弹窗打开</span></div>
+            <div cursor class="mtcitem1"><i class="iconfont icon-shangchuan1"></i><span>上传图标</span></div>
+            ${$homeFootMenu.is(':hidden') ? '<div cursor class="mtcitem2"><i class="iconfont icon-duoxuan"></i><span>选中</span></div>' : ''}
+            <div cursor class="mtcitem3"><i class="iconfont icon-bianji"></i><span>编辑书签</span></div>
+            ${_d.bookmark.side.length === 0 ? '' : '<div cursor class="mtcitem4"><i class="iconfont icon-moveto"></i><span>移动到</span></div>'}
+            <div cursor class="mtcitem5"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>
             `;
   rightMenu(e, str, debounce(function ({ close, e }) {
     if (_getTarget(e, '.mtcitem')) {
@@ -1915,9 +1915,9 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
   e.stopPropagation();
   let callWord = _getData('callword');
   let str = `
-    <div cursor data-callword="${callWord}" class="mtcitem">百度提示词 [${callWord === 'y' ? '开' : '关'}]</div>
-    <div cursor class="mtcitem1">历史记录管理</div>
-    <div cursor class="mtcitem2">切换搜索引擎</div>
+    <div cursor data-callword="${callWord}" class="mtcitem"><i class="iconfont icon-tishi"></i><span>百度提示词</span><i class="iconfont ${callWord === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}"></i></div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-lishijilu"></i><span>历史记录管理</span></div>
+    <div cursor class="mtcitem2"><i class="iconfont icon-search"></i><span>切换搜索引擎</span></div>
     `;
   rightMenu(e, str, debounce(function ({ e, close }) {
     let item = _getTarget(e, '.mtcitem');
@@ -1926,11 +1926,11 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
       let flag = _this.attr('data-callword');
       if (flag === 'y') {
         _this.attr('data-callword', 'n');
-        _this.text('百度提示词 [关]');
+        _this.html(`<i class="iconfont icon-tishi"></i><span>百度提示词</span><i class="iconfont icon-kaiguan-guan"></i>`);
         _setData('callword', 'n');
       } else {
         _this.attr('data-callword', 'y');
-        _this.text('百度提示词 [开]');
+        _this.html(`<i class="iconfont icon-tishi"></i><span>百度提示词</span><i class="iconfont icon-kaiguan-kai1"></i>`);
         _setData('callword', 'y');
       }
     } else if (_getTarget(e, '.mtcitem1')) {
@@ -2173,9 +2173,9 @@ $allBgWrap.on('click', '.upload_bg', function () {
 })();
 function bgitemmenu(e, url) {
   let str = '';
-  str += `<div cursor class="mtcitem">设为壁纸</div>`;
+  str += `<div cursor class="mtcitem"><i class="iconfont icon-bizhishezhi"></i><span>设为壁纸</span></div>`;
   if (_d.userInfo.account === 'root') {
-    str += `<div cursor class="mtcitem1">删除</div>`;
+    str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
   }
   rightMenu(
     e,
@@ -2386,7 +2386,7 @@ $randomChangeBgBtn.on('click', throttle(function () {
   let url = $pageBg.attr('data-bg');
   if (_d.userInfo.account !== 'root' || !url) return;
   e.preventDefault();
-  let str = `<div cursor class="mtcitem">删除壁纸</div>`;
+  let str = `<div cursor class="mtcitem"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除壁纸</span></div>`;
   rightMenu(e, str, debounce(function ({ e, close }) {
     if (_getTarget(e, '.mtcitem')) {
       alert('确认删除？', {
@@ -3410,14 +3410,14 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     id: $this.attr('data-id')
   };
   let str = '';
-  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
-          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
-          <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>
-          <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span style="margin-left: 10px;">封面</span></div>
-          <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">添加到</span></div>`;
+  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
+          <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
+          <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
+          <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>`;
   if (_d.userInfo.account === 'root') {
-    str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>
-    <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除</span></div>`;
+    str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span>编辑歌曲信息</span></div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
   };
   rightMenu(
     e,
@@ -4231,12 +4231,12 @@ function gedanmenu(e, id) {
   let { des, name } = _d.music[index];
   let str = '';
   if (_d.userInfo.account == 'root') {
-    str = `<div cursor class="mtcitem1">编辑</div>
-        ${index > 2 ? '<div cursor class="mtcitem">删除歌单</div>' : ''}`;
+    str = `<div cursor class="mtcitem1"><i class="iconfont icon-bianji"></i><span>编辑</span></div>
+        ${index > 2 ? '<div cursor class="mtcitem"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除歌单</span></div>' : ''}`;
   } else {
     if (index < 3) return;
-    str = `<div cursor class="mtcitem1">编辑</div>
-        <div cursor class="mtcitem">删除歌单</div>`;
+    str = `<div cursor class="mtcitem1"><i class="iconfont icon-bianji"></i><span>编辑</span></div>
+        <div cursor class="mtcitem"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除歌单</span></div>`;
   }
   rightMenu(
     e,
@@ -4853,19 +4853,19 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   let ii = _d.music.findIndex((item) => item.id === curSongListId);
   if (ii < 0) return;
   let str = '';
-  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span style="margin-left: 10px;">分享歌曲</span></div>
-          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span style="margin-left: 10px;">复制信息</span></div>
-          <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌词</span></div>
-          <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span style="margin-left: 10px;">封面</span></div>
-          <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span style="margin-left: 10px;">${ii < 3 ? '添加到' : '移动到'}</span></div>`;
+  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
+          <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
+          <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
+          <div cursor class="mtcitem3"><i class="iconfont ${ii < 3 ? 'icon-icon-test' : 'icon-moveto'}"></i><span>${ii < 3 ? '添加到' : '移动到'}</span></div>`;
   if (_d.userInfo.account === 'root') {
-    str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span style="margin-left: 10px;">编辑歌曲信息</span></div>`;
+    str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span>编辑歌曲信息</span></div>`;
     if (sobj.mv === 'y') {
-      str += `<div cursor  class="mtcitem4"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">删除 MV</span></div>`;
+      str += `<div cursor  class="mtcitem4"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除 MV</span></div>`;
     }
   }
   if (_d.userInfo.account === 'root' || ii != 2) {
-    str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span style="margin-left: 10px;">${ii == 2 ? '删除' : '移除'}</span></div>`
+    str += `<div cursor class="mtcitem1"><i class="iconfont ${ii == 2 ? 'icon-cangpeitubiao_shanchu' : 'icon-guanbi1'}"></i><span>${ii == 2 ? '删除' : '移除'}</span></div>`
   }
   rightMenu(
     e,
@@ -5215,16 +5215,16 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
   true
 )).on('click', '.set_lrc_btn', debounce(
   function (e) {
-    let str = `<div cursor class="mtcitem">放大字体</div>
-            <div cursor class="mtcitem1">缩小字体</div>
-            <div cursor class="mtcitem2">靠左</div>
-            <div cursor class="mtcitem3">居中</div>
-            <div cursor class="mtcitem4">靠右</div>
-            <div cursor class="mtcitem5">编辑歌词</div>
-            <div cursor class="mtcitem6">封面</div>
-            <div cursor class="mtcitem7">复制信息</div>
-            <div cursor class="mtcitem8">添加到</div>
-            ${_d.userInfo.account == 'root' ? '<div cursor class="mtcitem9">删除</div>' : ''}`;
+    let str = `<div cursor class="mtcitem"><i class="iconfont icon-24gl-fontSizeIncrease"></i><span>放大字体</span></div>
+            <div cursor class="mtcitem1"><i class="iconfont icon-24gl-fontSizeDecrease"></i><span>缩小字体</span></div>
+            <div cursor class="mtcitem2"><i class="iconfont icon-kaozuo"></i><span>靠左</span></div>
+            <div cursor class="mtcitem3"><i class="iconfont icon-geci"></i><span>居中</span></div>
+            <div cursor class="mtcitem4"><i class="iconfont icon-kaoyou"></i><span>靠右</span></div>
+            <div cursor class="mtcitem5"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
+            <div cursor class="mtcitem6"><i class="iconfont icon-tupian"></i><span>封面</span></div>
+            <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
+            <div cursor class="mtcitem8"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>
+            ${_d.userInfo.account == 'root' ? '<div cursor class="mtcitem9"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>' : ''}`;
     rightMenu(e, str, function ({ close, e }) {
       if (_getTarget(e, '.mtcitem')) {
         let { size } = lrcstatu;
@@ -5888,8 +5888,8 @@ $userInfoWrap
   ).on('click', '.u_close_btn', () => {
     $userInfoWrap.stop().fadeOut(_speed);
   }).on('click', '.user_logo div', (e) => {
-    let str = `<div cursor class="mtcitem">上传头像</div>
-    <div cursor class="mtcitem1">查看</div>`;
+    let str = `<div cursor class="mtcitem"><i class="iconfont icon-shangchuan1"></i><span>上传头像</span></div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-yanjing_xianshi_o"></i><span>查看</span></div>`;
     rightMenu(
       e,
       str,
@@ -5996,17 +5996,17 @@ $rightBox.on('click', '.user_name', function () {
   });
 }).on('click', '.r_setting', debounce(
   function (e) {
-    let str = `<div cursor class="mtcitem">账号管理</div>
-                <div cursor class="mtcitem1">个性化</div>`;
+    let str = `<div cursor class="mtcitem"><i class="iconfont icon-duoren"></i><span>账号管理</span></div>
+                <div cursor class="mtcitem1"><i class="iconfont icon-huabi"></i><span>个性化</span></div>`;
     rightMenu(
       e,
       str,
       debounce(
         function ({ e, close }) {
           if (_getTarget(e, '.mtcitem')) {
-            let str = `<div cursor class="mtcitem">个人信息</div>
-              <div cursor class="mtcitem1">修改密码</div>
-              <div cursor class="mtcitem2">注销账号</div>`;
+            let str = `<div cursor class="mtcitem"><i class="iconfont icon-zhanghao"></i><span>个人信息</span></div>
+              <div cursor class="mtcitem1"><i class="iconfont icon-suo"></i><span>修改密码</span></div>
+              <div cursor class="mtcitem2"><i class="iconfont icon-zhuxiao"></i><span>注销账号</span></div>`;
             let flagClose = close;
             rightMenu(
               e,
@@ -6073,13 +6073,12 @@ $rightBox.on('click', '.user_name', function () {
             );
           } else if (_getTarget(e, '.mtcitem1')) {
             let dian = _getData('dian');
-            let str = `<div cursor class="mtcitem">壁纸库</div>
-                <div cursor class="mtcitem1">背景模糊度</div>
-              <div cursor class="mtcitem2">背景灰度</div>
-              <div cursor class="mtcitem3">选择字体</div>
-              <div cursor data-dian="${dian}" class="mtcitem6">点击爱心 [${dian === 'y' ? '开' : '关'
-              }]</div>
-              <div cursor class="mtcitem7">加载动画</div>`;
+            let str = `<div cursor class="mtcitem"><i class="iconfont icon-bizhishezhi"></i><span>壁纸库</span></div>
+                <div cursor class="mtcitem1"><i class="iconfont icon-mohu"></i><span>背景模糊</span></div>
+              <div cursor class="mtcitem2"><i class="iconfont icon-heibai"></i><span>背景黑白</span></div>
+              <div cursor class="mtcitem3"><i class="iconfont icon-font-size"></i><span>更换字体</span></div>
+              <div cursor data-dian="${dian}" class="mtcitem6"><i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont ${dian === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}"></i></div>
+              <div cursor class="mtcitem7"><i class="iconfont icon-jiazai"></i><span>加载动画</span></div>`;
             let flagClose = close;
             rightMenu(
               e,
@@ -6158,11 +6157,11 @@ $rightBox.on('click', '.user_name', function () {
                     let flag = _this.attr('data-dian');
                     if (flag === 'y') {
                       _this.attr('data-dian', 'n');
-                      _this.text(`点击爱心 [关]`);
+                      _this.html(`<i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont icon-kaiguan-guan"></i>`);
                       _setData('dian', 'n');
                     } else {
                       _this.attr('data-dian', 'y');
-                      _this.text(`点击爱心 [开]`);
+                      _this.html(`<i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont icon-kaiguan-kai1"></i>`);
                       _setData('dian', 'y');
                     }
                   } else if (_getTarget(e, '.mtcitem7')) {
@@ -6713,9 +6712,9 @@ $chatListBox
     }
     let str = `
     <div cursor class="mtcitem2" style="justify-content: center;">${b}</div>
-    ${obj.account == 'chang' ? '<div cursor class="mtcitem">发送消息</div>' : ''
+    ${obj.account == 'chang' ? '<div cursor class="mtcitem"><i class="iconfont icon-huaban"></i><span>发送消息</span></div>' : ''
       }
-    <div cursor class="mtcitem1">查看笔记</div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-bijiben"></i><span>查看笔记</span></div>
     `;
     rightMenu(
       e,
@@ -6882,11 +6881,13 @@ if (isios()) {
 function backmsg(e, tt, y, z, f, n, s) {
   let obj = deepClone(chatobj),
     str = `${y === 'null'
-      ? `${isurl(z) ? '<div cursor class="mtcitem4">打开</div>' : ''}<div cursor class="mtcitem1">复制</div><div cursor class="mtcitem2">编辑</div>`
-      : '<div cursor class="mtcitem3">下载</div>'
+      ? `${isurl(z) ? '<div cursor class="mtcitem4"><i class="iconfont icon-link"></i><span>打开链接</span></div>' : ''}
+      <div cursor class="mtcitem1"><i class="iconfont icon-fuzhi"></i><span>复制</span></div>
+      <div cursor class="mtcitem2"><i class="iconfont icon-bianji"></i><span>编辑</span></div>`
+      : '<div cursor class="mtcitem3"><i class="iconfont icon-xiazai"></i><span>下载</span></div>'
       }
             ${f === _d.userInfo.account
-        ? '<div cursor class="mtcitem">撤回</div>'
+        ? '<div cursor class="mtcitem"><i class="iconfont icon-chexiao"></i><span>撤回</span></div>'
         : ''
       }`;
   rightMenu(
@@ -7390,8 +7391,8 @@ $userListBox.on('click', '.user_item', function (e) {
   if (_d.userInfo.account == a) return;
   let str = `
     <div cursor class="mtcitem2" style="justify-content: center;">${b}</div>
-    <div cursor class="mtcitem">发送消息</div>
-    <div cursor class="mtcitem1">查看笔记</div>
+    <div cursor class="mtcitem"><i class="iconfont icon-huaban"></i><span>发送消息</span></div>
+    <div cursor class="mtcitem1"><i class="iconfont icon-bijiben"></i><span>查看笔记</span></div>
     `;
   rightMenu(
     e,
@@ -7808,7 +7809,7 @@ function handleuser() {
           <div cursor class="i_hide_btn iconfont icon-jianhao"></div>
           <div class="i_title_text"></div>
           <div cursor title="刷新" class="i_refresh_btn iconfont icon-suijibofang"></div>
-          <div cursor title="新标签打开" class="i_new_page_open_btn iconfont icon-iconzhengli_tiaozhuan"></div>
+          <div cursor title="新标签打开" class="i_new_page_open_btn iconfont icon-link"></div>
         </div>
         <iframe src="${url}" frameborder="0"></iframe>
       `;
@@ -7900,9 +7901,9 @@ function handleuser() {
     let $this = $(_this),
       htarget = _this._boxflag,
       url = htarget._url;
-    let str = `<div cursor class="mtcitem">在新标签页打开</div>
-                <div cursor class="mtcitem1">关闭</div>
-                <div cursor class="mtcitem2">关闭所有</div>`;
+    let str = `<div cursor class="mtcitem"><i class="iconfont icon-link"></i><span>新标签打开</span></div>
+                <div cursor class="mtcitem1"><i class="iconfont icon-guanbi"></i><span>关闭</span></div>
+                <div cursor class="mtcitem2"><i class="iconfont icon-guanbi1"></i><span>关闭所有</span></div>`;
     rightMenu(
       e,
       str,

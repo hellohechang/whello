@@ -125,9 +125,9 @@ $contentWrap
     let id = $this.parent().attr('data-id'),
       name = $this.parent().attr('x'),
       str = `
-        <div cursor class="mtcitem">在新标签页打开</div>
-        <div cursor class="mtcitem1">编辑笔记</div>
-        <div cursor class="mtcitem2">删除</div>`;
+        <div cursor class="mtcitem"><i class="iconfont icon-link"></i><span>新标签打开</span></div>
+        <div cursor class="mtcitem1"><i class="iconfont icon-bianji"></i><span>编辑笔记</span></div>
+        <div cursor class="mtcitem2"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
     rightMenu(
       e,
       str,

@@ -692,13 +692,13 @@ import { rightMenu } from "../../plugins/rightMenu";
     _setData('showfy', showfy);
   }).on('click', '.set_lrc_btn', debounce(
     function (e) {
-      let str = `<div cursor class="mtcitem">放大字体</div>
-            <div cursor class="mtcitem1">缩小字体</div>
-            <div cursor class="mtcitem2">靠左</div>
-            <div cursor class="mtcitem3">居中</div>
-            <div cursor class="mtcitem4">靠右</div>
-            <div cursor class="mtcitem6">封面</div>
-            <div cursor class="mtcitem7">复制信息</div>`
+      let str = `<div cursor class="mtcitem"><i class="iconfont icon-24gl-fontSizeIncrease"></i><span>放大字体</span></div>
+            <div cursor class="mtcitem1"><i class="iconfont icon-24gl-fontSizeDecrease"></i><span>缩小字体</span></div>
+            <div cursor class="mtcitem2"><i class="iconfont icon-kaozuo"></i><span>靠左</span></div>
+            <div cursor class="mtcitem3"><i class="iconfont icon-geci"></i><span>居中</span></div>
+            <div cursor class="mtcitem4"><i class="iconfont icon-kaoyou"></i><span>靠右</span></div>
+            <div cursor class="mtcitem6"><i class="iconfont icon-tupian"></i><span>封面</span></div>
+            <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>`
       rightMenu(e, str, function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
           let { size } = lrcstatu;

@@ -81,7 +81,7 @@ body {
 
     li {
       display: flex;
-      padding: 5px 10px;
+      padding: 5px;
       align-items: center;
       border-bottom: 1px solid rgb(240, 238, 238);
 
@@ -104,20 +104,20 @@ body {
         color: #1389a7;
       }
 
-      button {
+      .copy_link,
+      .go,
+      .delete {
         flex: none;
-        outline: none;
-        height: 30px;
-        border: none;
-        padding: 0 8px;
-        background: #ccc;
+        height: 40px;
+        width: 40px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 20px;
         transition: 0.3s;
-        margin: 0 5px;
-        color: rgb(108, 108, 108);
+        color: #6c6c6c;
 
         &:hover {
-          color: rgb(255, 255, 255);
-          background-color: #aaa;
+          color: #127be7;
         }
 
         &:active {

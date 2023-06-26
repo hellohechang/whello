@@ -33,9 +33,9 @@ function renderList() {
         str += `<li data-id="${id}" data-url="${url}">
             <div class="item_type_logo iconfont ${type === 'music' ? 'icon-yinle' : 'icon-shuqian1'}"></div>
             <div class="url_text">${url}</div>
-            <button cursor class="copy_link">复制</button>
-            <button cursor class="go">访问</button>
-            <button cursor class="delete">删除</button>
+            <div cursor class="copy_link iconfont icon-fuzhi"></div>
+            <div cursor class="go iconfont icon-link"></div>
+            <div cursor class="delete iconfont icon-guanbi"></div>
           </li>
           `;
       });
