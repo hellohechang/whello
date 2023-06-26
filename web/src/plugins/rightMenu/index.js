@@ -1,5 +1,5 @@
 import { LevelObj } from '../../config';
-import { _setTimeout } from '../../utils/utils';
+import { _position, _setTimeout } from '../../utils/utils';
 import './index.less'
 // 右键菜单
 export function rightMenu(e, html, callback) {
@@ -45,6 +45,11 @@ export function rightMenu(e, html, callback) {
       this.rightBox.innerHTML = this.html;
       this.allInp = this.rightBox.querySelectorAll('input,textarea');
       this.allDiv = this.rightBox.querySelectorAll('div');
+      let curDiv = Array.prototype.find.call(this.allDiv, item => item.className.includes('active'));
+      if (curDiv) {
+        let t = _position(curDiv).top;
+        this.rightBox.scrollTop = t;
+      }
       this.rikey(this.e);
       this.newHdClick = this.hdClick.bind(this);
       this.newHdKeyup = this.hdKeyup.bind(this);

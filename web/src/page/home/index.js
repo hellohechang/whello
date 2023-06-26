@@ -2315,7 +2315,7 @@ $bgList
             bgxuanran(true);
           } else if (flag === 'go') {
             let val = document
-              .querySelector('.bg_paging_box #paginationBox input')
+              .querySelector('.bg_paging_box .paginationBox input')
               .value.trim();
             val = parseInt(val);
             if (isNaN(val)) return;
@@ -3053,7 +3053,7 @@ function dqplaying() {
   });
   str += `<div style="padding:20px 0;text-align:center;" class="playing_list_paging">
       ${totalPage > 1 ? `<span style="${playingPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="prev_page iconfont icon-prev"></span>
-      <span style="padding:0 30px">${playingPageNum}/${totalPage}</span>
+      <span cursor class="input_num" style="margin:0 30px">${playingPageNum}/${totalPage}</span>
       <span style="${playingPageNum == totalPage ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="next_page iconfont icon-page-next"></span>` : ''}
     </div>`;
   $pMusicListBox.find('.p_foot').html(str);
@@ -3147,6 +3147,21 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
   dqplaying();
   gaolianging();
+}).on('click', '.input_num', function (e) {
+  let str = `
+    <input autocomplete="off" value="${playingPageNum}" type="number">
+    <button cursor class="mtcbtn">Go</button>`;
+  rightMenu(e, str, debounce(function ({ e, inp, close }) {
+    if (_getTarget(e, '.mtcbtn')) {
+      let val = parseInt(inp[0]);
+      if (isNaN(val)) return;
+      close();
+      playingPageNum = val;
+      $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
+      dqplaying();
+      gaolianging();
+    }
+  }, 1000, true))
 }).on('click', '.del', function (e) {
   e.stopPropagation();
   let $this = $(this),
@@ -4126,7 +4141,7 @@ function rendermusicitem(gao) {
   });
   str += `<div style="padding:20px 0;text-align:center;" class="song_list_paging">
       ${pageTotal > 1 ? `<span class="prev_page iconfont icon-prev" style="${musicPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor></span>
-      <span style="padding:0 30px">${musicPageNum}/${pageTotal}</span>
+      <span cursor class="input_num" style="margin:0 30px">${musicPageNum}/${pageTotal}</span>
       <span class="next_page iconfont icon-page-next" style="${musicPageNum == pageTotal ? 'pointer-events: none;opacity:.4;' : ''}" cursor></span>` : ''}
     </div>`;
   str += `
@@ -5107,6 +5122,20 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   musicPageNum++;
   $msuicContentBox.find('.list_items_wrap')[0].scrollTop = 0;
   rendermusicitem();
+}).on('click', '.input_num', function (e) {
+  let str = `
+    <input autocomplete="off" value="${musicPageNum}" type="number">
+    <button cursor class="mtcbtn">Go</button>`;
+  rightMenu(e, str, debounce(function ({ e, inp, close }) {
+    if (_getTarget(e, '.mtcbtn')) {
+      let val = parseInt(inp[0]);
+      if (isNaN(val)) return;
+      close();
+      musicPageNum = val;
+      $msuicContentBox.find('.list_items_wrap')[0].scrollTop = 0;
+      rendermusicitem();
+    }
+  }, 1000, true))
 });
 if (isios()) {
   $msuicContentBox.find('.list_items_wrap')[0]._longPress('.song_item', function (e) {
@@ -5505,6 +5534,7 @@ function musicMv(obj) {
   setZindex($musicMvWrap);
   gaoliang(false);
   gaolianging(false);
+  toggleLrcMenuWrapBtnsState();
   _postAjax('/player/updatemusicinfo', {
     history: 'y',
     lastplay: {
@@ -6334,7 +6364,7 @@ $logContent.on(
           logxuanran(true);
         } else if (flag === 'go') {
           let val = document
-            .querySelector('.log_content #paginationBox input')
+            .querySelector('.log_content .paginationBox input')
             .value.trim();
           val = parseInt(val);
           if (isNaN(val)) return;

@@ -546,7 +546,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     });
     str += `<div style="padding:20px 0;text-align:center;" class="playing_list_paging">
       ${totalPage > 1 ? `<span style="${playingPageNum == 1 ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="prev_page iconfont icon-prev"></span>
-      <span style="padding:0 30px">${playingPageNum}/${totalPage}</span>
+      <span cursor class="input_num" style="margin:0 30px">${playingPageNum}/${totalPage}</span>
       <span style="${playingPageNum == totalPage ? 'pointer-events: none;opacity:.4;' : ''}" cursor class="next_page iconfont icon-page-next"></span>` : ''}
     </div>`;
     $pMusicListBox.find('.p_foot').html(str);
@@ -618,6 +618,21 @@ import { rightMenu } from "../../plugins/rightMenu";
     $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
     dqplaying();
     gaolianging();
+  }).on('click', '.input_num', function (e) {
+    let str = `
+    <input autocomplete="off" value="${playingPageNum}" type="number">
+    <button cursor class="mtcbtn">Go</button>`;
+    rightMenu(e, str, debounce(function ({ e, inp, close }) {
+      if (_getTarget(e, '.mtcbtn')) {
+        let val = parseInt(inp[0]);
+        if (isNaN(val)) return;
+        close();
+        playingPageNum = val;
+        $pMusicListBox.find('.p_foot')[0].scrollTop = 0;
+        dqplaying();
+        gaolianging();
+      }
+    }, 1000, true))
   }).on('click', '.del', function (e) {
     e.stopPropagation();
     let $this = $(this),

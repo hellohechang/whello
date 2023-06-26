@@ -1,0 +1,61 @@
+.paginationBox {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 0;
+  line-height: 40px;
+
+  span,
+  button {
+    display: inline-block;
+    font-size: 16px;
+    height: 30px;
+    line-height: 30px;
+    outline: none;
+  }
+
+  button {
+    margin: 0 5px;
+    padding: 0px 5px;
+    transition: .1s;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #1389a7c7;
+    min-width: 40px;
+    box-shadow: 2px 2px 5px #0000008a;
+
+    &:hover {
+      background-color: #1389a7;
+    }
+
+    &.active {
+      color: #fff;
+      background-color: #fe5d59c9;
+    }
+
+    &:active {
+      transition: 0;
+      transform: scale(.8);
+    }
+  }
+
+  span {
+    margin: 0 5px;
+    padding: 0;
+  }
+
+  input {
+    display: inline-block;
+    font-size: 16px;
+    height: 30px;
+    outline: none;
+    width: 30px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-bottom: 1px solid #aaa;
+    text-align: center;
+    color: inherit;
+  }
+}

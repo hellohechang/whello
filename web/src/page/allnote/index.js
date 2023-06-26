@@ -134,7 +134,7 @@ import { pagination } from '../../plugins/pagination';
         renderList(true);
       } else if (flag === 'go') {
         let val = document
-          .querySelector('.pagingbox #paginationBox input')
+          .querySelector('.pagingbox .paginationBox input')
           .value.trim();
         val = parseInt(val);
         if (isNaN(val)) return;
