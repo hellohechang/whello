@@ -82,9 +82,8 @@ function renderList(y) {
                   <div cursor check="n" class="check_state"></div>
                   <li class="item_type iconfont icon-bijiben"></li>
                   <li title="${name}" class="item_title">${name}</li>
-                  <li title="${share === 'n' ? 'locking' : 'open'
-              }" class="lock_state ${share === 'n' ? 'open' : ''
-              } iconfont icon-suo"></li>
+                  <li class="lock_state iconfont ${share === 'n' ? 'icon-24gl-unlock2 open' : 'icon-24gl-unlock4'
+              }"></li>
                   <li class="set_btn iconfont icon-icon"></li>
                   </ul>`;
             if (con && con.length > 0) {

@@ -10,7 +10,6 @@ const {
   _readdir,
   _unlink,
   delDir,
-  qucong,
   _success,
   _err,
   jwten,

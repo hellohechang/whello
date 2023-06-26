@@ -3,7 +3,7 @@ const express = require('express'),
   { filepath } = require('../myconfig'),
   route = express.Router();
 const { deepClone } = require('../utils');
-const { insertData, updateData, queryData, deleteData } = require('../sqlite');
+const { insertData, updateData, queryData, deleteData, runSqlite } = require('../sqlite');
 const {
   handleMusicList,
   writelog,
@@ -85,6 +85,7 @@ route.get('/musicshare', async (req, res) => {
   try {
     let id = req.query.id;
     let sArr = await queryData('getshare', '*', `WHERE id=? AND type=?`, [id, 'music',]);
+    await writelog(req, `访问音乐分享[/sharemusic/#${id}]`);
     if (sArr.length === 0) {
       _err(res, '分享已被取消');
       return;
@@ -242,6 +243,8 @@ route.post('/updatemusicinfo', async (req, res) => {
     let { lastplay, history } = obj;
     if (history === 'y') {
       let arr = await getMusicList(account);
+      await writelog(req, `播放歌曲[${lastplay.artist}-${lastplay.name}]`);
+      await runSqlite(`update musics set play_count=play_count+1 where id=?`, [lastplay.id]);
       arr[0].item.unshift({ id: lastplay.id });
       arr[0].item = qucong(arr[0].item);
       await updateData('musicinfo', {
@@ -525,6 +528,8 @@ route.post('/collectsong', async (req, res) => {
     let strarr = ar.map((item) => {
       return `${item.artist}-${item.name}`;
     });
+    let ad = add.map(item => item.id);
+    await runSqlite(`update musics set collect_count=collect_count+1 WHERE id IN (${new Array(ad.length).fill('?').join(',')})`, [...ad]);
     await writelog(req, `收藏歌曲[${strarr.join(',')}]`);
     _success(res, '收藏歌曲成功');
   } catch (error) {
@@ -649,6 +654,7 @@ route.get('/getlrc', async (req, res) => {
       url = `${filepath}/music/${artist}-${name}.lrc`;
     if (fs.existsSync(url)) {
       let str = (await _readFile(url, true)).toString();
+      await writelog(req, `查看歌词[${artist}-${name}]`);
       _success(res, 'ok', str);
     } else {
       _writeFile(url, '');
@@ -741,7 +747,9 @@ route.post('/mergefile', async (req, res) => {
         artist: arr[0],
         name: arr[1],
         duration,
-        mv: ''
+        mv: '',
+        collect_count: 0,
+        play_count: 0
       }])
       await writelog(req, `上传歌曲[${a}]`);
     }

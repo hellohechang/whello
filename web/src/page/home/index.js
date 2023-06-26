@@ -3411,10 +3411,13 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
     artist: $this.attr('data-artist'),
     mv: $this.attr('data-mv'),
     duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
+    id: $this.attr('data-id'),
+    pcount: $this.attr('data-pcount'),
+    ccount: $this.attr('data-ccount')
   };
   let str = '';
-  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
+  str += `<div class="mtcitem9" style="justify-content: center;font-size: 14px;color: #5a5a5a;">收藏(${sobj.ccount}) 播放(${sobj.pcount})</div>
+          <div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
           <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
@@ -3676,11 +3679,11 @@ function musicsea() {
         searchMusicList = arr;
         if (arr.length > 0) {
           arr.forEach((v) => {
-            let { artist, name, mv, duration, id } = v;
+            let { artist, name, mv, duration, id, collect_count, play_count } = v;
             let issc = scObj.hasOwnProperty(id);
             artist = encodeHtml(artist);
             name = encodeHtml(name);
-            str += `<li class="song_item" data-id="${id}" data-duration="${duration}" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-mv="${mv}" cursor>
+            str += `<li class="song_item" data-pcount="${play_count}" data-ccount="${collect_count}" data-id="${id}" data-duration="${duration}" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-mv="${mv}" cursor>
                     <div class="add_palying_list iconfont icon-icon-test"></div>
                     <div class="logo_wrap">
                     <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
@@ -4086,6 +4089,14 @@ function rendermusicitem(gao) {
       marr.item = arrSortMinToMax(marr.item, 'artist');
     } else if (listpx === 'name') {
       marr.item = arrSortMinToMax(marr.item, 'name');
+    } else if (listpx === 'playCount') {
+      marr.item.sort((a, b) => {
+        return b.play_count - a.play_count;
+      })
+    } else if (listpx === 'collectCount') {
+      marr.item.sort((a, b) => {
+        return b.collect_count - a.collect_count;
+      })
     }
   }
   let scObj = ind == 1 ? {} : _d.music[1].item.reduce((total, item) => {
@@ -4119,11 +4130,11 @@ function rendermusicitem(gao) {
   musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null);
   let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize);
   sliceList.forEach((item) => {
-    let { name, artist, mv, duration, id } = item;
+    let { name, artist, mv, duration, id, collect_count, play_count } = item;
     let issc = scObj.hasOwnProperty(id);
     name = encodeHtml(name);
     artist = encodeHtml(artist);
-    str += `<div class="song_item" data-duration="${duration}" data-id="${id}" draggable="true" data-issc="${issc}" m="${mv}" xn="${name}" xa="${artist}" cursor>
+    str += `<div class="song_item" data-pcount="${play_count}" data-ccount="${collect_count}" data-duration="${duration}" data-id="${id}" draggable="true" data-issc="${issc}" m="${mv}" xn="${name}" xa="${artist}" cursor>
         <div cursor check="n" class="check_state"></div>
         <div class="song_logo_box">
           <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
@@ -4854,12 +4865,15 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     name: $this.attr('xn'),
     id: $this.attr('data-id'),
     mv: $this.attr('m'),
-    duration: $this.attr('data-duration')
+    duration: $this.attr('data-duration'),
+    pcount: $this.attr('data-pcount'),
+    ccount: $this.attr('data-ccount')
   };
   let ii = _d.music.findIndex((item) => item.id === curSongListId);
   if (ii < 0) return;
   let str = '';
-  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
+  str += `<div class="mtcitem9" style="justify-content: center;font-size: 14px;color: #5a5a5a;">收藏(${sobj.ccount}) 播放(${sobj.pcount})</div>
+          <div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
           <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
@@ -5048,7 +5062,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   //歌曲排序
   let str = `<div cursor data-type="default" class="mtcitem ${curSongListSort == 'default' ? 'active' : ''}">默认排序</div>
       <div cursor data-type="artist" class="mtcitem ${curSongListSort == 'artist' ? 'active' : ''}">按歌手名排序</div>
-      <div cursor data-type="name" class="mtcitem ${curSongListSort == 'name' ? 'active' : ''}">按歌曲名排序</div>`;
+      <div cursor data-type="name" class="mtcitem ${curSongListSort == 'name' ? 'active' : ''}">按歌曲名排序</div>
+      <div cursor data-type="playCount" class="mtcitem ${curSongListSort == 'playCount' ? 'active' : ''}">按播放量排序</div>
+      <div cursor data-type="collectCount" class="mtcitem ${curSongListSort == 'collectCount' ? 'active' : ''}">按收藏量排序</div>`;
   rightMenu(e, str, debounce(function ({ e, items }) {
     let _this = _getTarget(e, '.mtcitem');
     if (_this) {
@@ -5057,7 +5073,13 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       $items.removeClass('active');
       _this.classList.add('active');
       _setData('lastpx', curSongListSort);
-      rendermusicitem();
+      musicPageNum = 1;
+      $msuicContentBox.find('.list_items_wrap')[0].scrollTop = 0;
+      if (curSongListSort == 'playCount' || curSongListSort == 'collectCount') {
+        renderMusicItem();
+      } else {
+        rendermusicitem();
+      }
     }
   }, 1000, true));
 }).on('click', '.to_top', function () {
@@ -5972,8 +5994,7 @@ function handleUserinfo() {
     _d.userInfo.username
   )}</li><li cursor class="edit_user_name">修改</li></ul>
     <ul><li>账号</li><li>${_d.userInfo.account}</li></ul>
-    <ul><li>壁纸</li><li>每日自动更换壁纸</li><li class="dailybg" cursor>${_d.userInfo.dailybg && _d.userInfo.dailybg === 'y' ? '开' : '关'
-    }</li></ul>`;
+    <ul><li>壁纸</li><li>每日自动更换壁纸</li><li style="color: #1389a7;" class="dailybg iconfont ${_d.userInfo.dailybg && _d.userInfo.dailybg === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}" cursor></li></ul>`;
   $userInfoWrap.find('.user_list').html(str);
   $userInfoWrap.find('.user_logo div').css(
     'background-image',

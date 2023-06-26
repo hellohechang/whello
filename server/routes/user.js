@@ -63,120 +63,117 @@ route.get('/isregister', async (req, res) => {
 queryData('user', 'account').then(() => { }).catch(async () => {
   try {
     await runSqlite(`CREATE TABLE chat (
-      state TEXT DEFAULT (0) 
+        state TEXT DEFAULT (0),
+        id    TEXT PRIMARY KEY
                   NOT NULL,
-      id    TEXT PRIMARY KEY
-                  NOT NULL,
-      _from TEXT NOT NULL,
-      _to   TEXT NOT NULL,
-      flag  TEXT NOT NULL,
-      time  TEXT NOT NULL,
-      date  TEXT NOT NULL,
-      data  TEXT NOT NULL,
-      isrc  TEXT,
-      size  TEXT
-      );`);
+        _from TEXT NOT NULL,
+        _to   TEXT NOT NULL,
+        flag  TEXT NOT NULL,
+        time  TEXT NOT NULL,
+        date  TEXT NOT NULL,
+        data  TEXT NOT NULL,
+        isrc  TEXT,
+        size  TEXT
+    );
+    `);
     await runSqlite(`CREATE TABLE bookmk (
-      state   TEXT DEFAULT (0) 
+        state   TEXT DEFAULT (0),
+        num     INT  NOT NULL,
+        id      TEXT PRIMARY KEY
                     NOT NULL,
-      num     INT  NOT NULL,
-      id      TEXT PRIMARY KEY
-                    NOT NULL,
-      listid  TEXT NOT NULL,
-      account TEXT NOT NULL,
-      name    TEXT NOT NULL,
-      link    TEXT NOT NULL,
-      logo    TEXT NOT NULL,
-      des     TEXT
-      );`);
+        listid  TEXT NOT NULL,
+        account TEXT NOT NULL,
+        name    TEXT NOT NULL,
+        link    TEXT NOT NULL,
+        logo    TEXT NOT NULL,
+        des     TEXT
+    );
+    `);
     await runSqlite(`CREATE TABLE booklist (
-      state   TEXT DEFAULT (0) 
+        state   TEXT DEFAULT (0),
+        id      TEXT PRIMARY KEY
                     NOT NULL,
-      id      TEXT PRIMARY KEY
-                    NOT NULL,
-      account TEXT NOT NULL,
-      num     INT  NOT NULL,
-      name    TEXT NOT NULL
-      );`);
+        account TEXT NOT NULL,
+        num     INT  NOT NULL,
+        name    TEXT NOT NULL
+    );
+    `);
     await runSqlite(`CREATE TABLE friends (
-      account TEXT NOT NULL,
-      friend  TEXT NOT NULL,
-      islook  TEXT DEFAULT y
-                    NOT NULL,
-      time    TEXT NOT NULL
-      );`);
+        account TEXT NOT NULL,
+        friend  TEXT NOT NULL,
+        islook  TEXT DEFAULT y,
+        time    TEXT NOT NULL
+    );
+    `);
     await runSqlite(`CREATE TABLE history (
-      state   TEXT DEFAULT (0) 
+        state   TEXT DEFAULT (0),
+        id      TEXT PRIMARY KEY
                     NOT NULL,
-      id      TEXT PRIMARY KEY
-                    NOT NULL,
-      account TEXT NOT NULL,
-      data    TEXT NOT NULL
-      );`);
-
+        account TEXT NOT NULL,
+        data    TEXT NOT NULL
+    );
+    `);
     await runSqlite(`CREATE TABLE musics (
-      id       TEXT PRIMARY KEY
-                    UNIQUE
-                    NOT NULL,
-      name     TEXT NOT NULL,
-      artist   TEXT NOT NULL,
-      duration TEXT NOT NULL,
-      mv       TEXT NOT NULL
-                    DEFAULT ('') 
-      );`);
-
+        id            TEXT PRIMARY KEY
+                          UNIQUE
+                          NOT NULL,
+        name          TEXT NOT NULL,
+        artist        TEXT NOT NULL,
+        duration      TEXT NOT NULL,
+        mv            TEXT DEFAULT (''),
+        collect_count TEXT DEFAULT (0),
+        play_count    TEXT DEFAULT (0) 
+    );
+    `);
     await runSqlite(`CREATE TABLE lastmusic (
-      state   TEXT DEFAULT (0) 
+        state   TEXT DEFAULT (0),
+        account TEXT PRIMARY KEY
                     NOT NULL,
-      account TEXT PRIMARY KEY
-                    NOT NULL,
-      data    TEXT NOT NULL
-      );`);
+        data    TEXT NOT NULL
+    );
+    `);
     await runSqlite(`CREATE TABLE musicinfo (
       account TEXT PRIMARY KEY
                     NOT NULL,
       data    TEXT NOT NULL
       );`);
     await runSqlite(`CREATE TABLE note (
-      state   TEXT DEFAULT (0) 
+        state   TEXT DEFAULT (0),
+        id      TEXT PRIMARY KEY
                     NOT NULL,
-      id      TEXT PRIMARY KEY
-                    NOT NULL,
-      account TEXT NOT NULL,
-      name    TEXT NOT NULL,
-      share   TEXT DEFAULT n
-                    NOT NULL,
-      data    TEXT NOT NULL,
-      time    TEXT NOT NULL
-      );`);
+        account TEXT NOT NULL,
+        name    TEXT NOT NULL,
+        share   TEXT DEFAULT n,
+        data    TEXT NOT NULL,
+        time    TEXT NOT NULL
+    );
+    `);
     await runSqlite(`CREATE TABLE playing (
       account TEXT PRIMARY KEY
                     NOT NULL,
       data    TEXT NOT NULL
       );`);
     await runSqlite(`CREATE TABLE share (
-      type    TEXT DEFAULT (0) 
+        type    TEXT DEFAULT (0),
+        id      TEXT PRIMARY KEY
                     NOT NULL,
-      id      TEXT PRIMARY KEY
-                    NOT NULL,
-      account TEXT NOT NULL,
-      data    TEXT NOT NULL
-      );`);
+        account TEXT NOT NULL,
+        data    TEXT NOT NULL
+    );
+    `);
     await runSqlite(`CREATE TABLE user (
-      state    TEXT DEFAULT (0) 
-                    NOT NULL,
-      account  TEXT PRIMARY KEY
-                    NOT NULL,
-      username TEXT NOT NULL,
-      password TEXT NOT NULL,
-      time     TEXT NOT NULL,
-      bg       TEXT NOT NULL,
-      bgxs     TEXT NOT NULL,
-      dailybg  TEXT DEFAULT n
-                    NOT NULL,
-      flag     TEXT NOT NULL
-                    DEFAULT (0) 
-      );`);
+        state    TEXT DEFAULT (0),
+        account  TEXT PRIMARY KEY
+                      NOT NULL,
+        username TEXT NOT NULL,
+        password TEXT NOT NULL,
+        time     TEXT NOT NULL,
+        bg       TEXT NOT NULL,
+        bgxs     TEXT NOT NULL,
+        dailybg  TEXT DEFAULT n,
+        flag     TEXT DEFAULT (0) 
+    );
+    `);
     await runSqlite(`CREATE VIEW getchat AS
       SELECT u.username name,
             c.state,

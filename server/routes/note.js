@@ -17,6 +17,7 @@ route.get('/getnote', async (req, res) => {
     let ntobj = (
       await queryData('getnote', '*', `WHERE state=? AND id=?`, ['0', id])
     )[0];
+    await writelog(req, `访问笔记[/note/?v=${id}]`);
     if (ntobj) {
       let { username, share, name, data, account: acc } = ntobj;
       if (share === 'y' || acc === account) {
@@ -49,11 +50,12 @@ route.get('/allsearchlist', async (req, res) => {
       aa = await queryData(
         'getnote',
         '*',
-        `WHERE state=? AND share=? AND account = ?`,
-        ['0', 'y', acc]
+        `WHERE state=? AND account = ?`,
+        ['0', acc]
       );
-    aa.reverse()
+    aa.reverse();
     if (a) {
+      aa = aa.filter(item => item.share === 'y');
       let arr = [];
       aa.forEach((item) => {
         let { name, data, id, share } = item;
@@ -85,7 +87,6 @@ route.get('/allsearchlist', async (req, res) => {
       delete v.data;
       delete v.time;
       delete v.state;
-      delete v.share;
       return v;
     });
     showpage > 200 ? showpage = 200 : null;

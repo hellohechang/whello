@@ -24,6 +24,7 @@ route.get('/share', async (req, res) => {
       id,
       'bookmk',
     ]);
+    await writelog(req, `访问书签分享[/sharebm/#${id}]`);
     if (arr.length === 0) {
       _err(res, '分享已被取消');
       return;

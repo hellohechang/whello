@@ -78,6 +78,7 @@ route.get('/getbg', async (req, res) => {
     bgarr = bgarr.map((item) => item.name);
     page > pagenum ? (page = pagenum) : page <= 0 ? (page = 1) : null;
     let arr = bgarr.slice(showpage * (page - 1), showpage * page);
+
     _success(res, 'ok', {
       total: bgarr.length,
       totalPage: pagenum,

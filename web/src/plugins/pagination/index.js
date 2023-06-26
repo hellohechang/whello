@@ -7,7 +7,7 @@ import './index.less'
  *continuous:连续页码条数
  */
 export function pagination(opations) {
-  let { pageNo, pageSize, total, continuous = 3 } = opations;
+  let { pageNo, pageSize, total, continuous = window.innerWidth > 800 ? 5 : 3 } = opations;
   pageNo = +pageNo;
   pageSize = +pageSize;
   total = +total;

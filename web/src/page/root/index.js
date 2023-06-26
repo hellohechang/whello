@@ -163,13 +163,13 @@ $headBtns.on('click', '.clear_upload', function () {
 }).on('click', '.register_state', function () {
   _postAjax('/root/isregister').then(res => {
     if (res.code == 0) {
-      $headBtns.find('.register_state').text(res.data === 'y' ? '注册：开' : '注册：关');
+      $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`);
       _success(res.data === 'y' ? '开放注册成功' : '已关闭注册');
     }
   }).catch(() => { });
 });
 _getAjax('/user/isregister').then(res => {
   if (res.code == 0) {
-    $headBtns.find('.register_state').text(res.data === 'y' ? '注册：开' : '注册：关');
+    $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`)
   }
 }).catch(() => { });

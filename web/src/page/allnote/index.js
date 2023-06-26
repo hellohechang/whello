@@ -78,11 +78,12 @@ import { pagination } from '../../plugins/pagination';
           str += `<p>It feels lonely here...</p>`;
         } else {
           data.forEach((v) => {
-            let { name, id, con } = v;
+            let { name, id, con, share } = v;
             name = encodeHtml(name);
             str += `<ul class="item_box" data-id="${id}" cursor x='${name}'>
                   <li class="item_type iconfont icon-bijiben"></li>
                   <li title="${name}" class="item_title">${name}</li>
+                  <li class="lock_state iconfont ${share === 'n' ? 'icon-24gl-unlock2 open' : 'icon-24gl-unlock4'}"></li>
                   </ul>`;
             if (con && con.length > 0) {
               let s = '';
