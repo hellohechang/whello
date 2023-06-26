@@ -2948,18 +2948,7 @@ function musicPlay(obj) {
   $playingSongLogo.css('animation', 'none');
   csfz();
   musicInitial();
-  //处理收藏按钮
-  if (_d.music && _d.music[1].item.some((v) => v.id === musicobj.id)) {
-    $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear-full active');
-  } else {
-    $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear');
-  }
-  // mv图标
-  if (musicobj.mv == 'y') {
-    $lrcMenuWrap.find('.play_mv_btn').stop().show(_speed);
-  } else {
-    $lrcMenuWrap.find('.play_mv_btn').stop().hide(_speed);
-  }
+  toggleLrcMenuWrapBtnsState();
   playtimer = setTimeout(() => {
     playtimer = null;
     audioPlay();
@@ -3913,18 +3902,19 @@ $playingSongLogo.on('click', function () {
   $musicLrcWrap.addClass('active');
   handleLrc();
   $lrcHead.find('.close').stop().fadeIn(_speed);
+});
+function toggleLrcMenuWrapBtnsState() {
   if (musicobj && musicobj.mv == 'y') {
     $lrcMenuWrap.find('.play_mv_btn').stop().show(_speed);
   } else {
     $lrcMenuWrap.find('.play_mv_btn').stop().hide(_speed);
   }
-  if (_d.music && musicobj && _d.music[1].item.some((v) => v.id === musicobj.id)) {
+  if (_d.music && _d.music[1].item.some((v) => v.id === musicobj.id)) {
     $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear-full active');
   } else {
     $lrcMenuWrap.find('.collect_song_btn').attr('class', 'collect_song_btn iconfont icon-hear');
   }
-});
-
+}
 //歌单列表
 (function () {
   let fromDom = null;
@@ -3977,6 +3967,7 @@ function renderMusicList() {
       _getAjax('/player/getlist', { id }).then((result) => {
         if (parseInt(result.code) === 0) {
           _d.music = result.data;
+          toggleLrcMenuWrapBtnsState();
           dqplaying();
           gaolianging();
           rendermusiclist();
