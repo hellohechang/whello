@@ -32,7 +32,7 @@ import {
   _postAjax,
   _getAjax,
   _upFile,
-  newDate,
+  formatDate,
   copyText,
   computeSize,
   encodeHtml,
@@ -2413,7 +2413,7 @@ $randomChangeBgBtn.on('click', throttle(function () {
 //{0}年{1}月{2}日 {3}时{4}分{5}秒 星期{6}
 let musicflagnum = 0;
 function showTime(time = Date.now()) {
-  let arr = newDate('{0}-{1}-{2}-{3}-{4}-{5}-{6}', +time).split('-'),
+  let arr = formatDate({ template: '{0}-{1}-{2}-{3}-{4}-{5}-{6}', timestamp: +time }).split('-'),
     [year, month, date, hour, minute, second, strDate] = arr;
   // 报时
   if (
@@ -6564,7 +6564,7 @@ function sxliuyan(carr) {
     rnum = Math.random();
   carr.forEach((v, i) => {
     let { id, data, time, isrc, _from, _to, name, size, showTime } = v;
-    let date = newDate('{0}-{1}-{2} {3}:{4}', time).split(' ');
+    let date = formatDate({ template: '{0}-{1}-{2} {3}:{4}', timestamp: time }).split(' ');
     let showname = false;
     if (_to === 'chang') {
       showname = true;

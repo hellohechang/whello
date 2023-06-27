@@ -12,10 +12,10 @@ async function writelog(req, str) {
   if (str.trim() === '') return;
   if (req) {
     let { username, account } = req._userInfo;
-    str = `[${newDate('{0}-{1}-{2} {3}:{4}')}] - ${username || ''}${account ? `(${account})` : ''
+    str = `[${formatDate({ template: '{0}-{1}-{2} {3}:{4}' })}] - ${username || ''}${account ? `(${account})` : ''
       }(${req._ip}) - ${str} - ${req._os}\n`;
   } else {
-    str = `[${newDate('{0}-{1}-{2} {3}:{4}')}] - ${str}\n`;
+    str = `[${formatDate({ template: '{0}-{1}-{2} {3}:{4}' })}] - ${str}\n`;
   }
   await _appendFile('./hello.log', str);
 }
@@ -158,29 +158,26 @@ function delDir(path) {
     });
   });
 }
-// 格式化当前日期或时间戳日期
-function newDate(templete, timestamp) {
-  templete ? null : (templete = '{0}年{1}月{2}日 {3}时{4}分{5}秒 星期{6}');
-  let currentDate = timestamp ? new Date(+timestamp) : new Date();
-  let year = currentDate.getFullYear(),
-    month = currentDate.getMonth() + 1,
-    date = currentDate.getDate(),
-    hour = currentDate.getHours(),
-    minute = currentDate.getMinutes(),
-    second = currentDate.getSeconds(),
-    weekArr = ['日', '一', '二', '三', '四', '五', '六'],
-    n_day = currentDate.getDay();
-  let formattedDateString = `${year}-${month}-${date}-${hour}-${minute}-${second}-${n_day}`,
-    timeArr = formattedDateString.match(/\d+/g);
-  return templete.replace(/\{(\d+)\}/g, (...arg) => {
-    if (arg[1] === '6') {
-      return weekArr[timeArr[arg[1]]];
-    } else {
-      let time = timeArr[arg[1]] || '00';
-      return time.length < 2 ? '0' + time : time;
-    }
-  });
-}
+function formatDate(opt) {
+  let { template = '{0}-{1}-{2} {3}:{4}:{5}', timestamp = Date.now() } = opt;
+  let date = new Date(+timestamp);
+  let year = date.getFullYear(),
+    month = date.getMonth() + 1,
+    day = date.getDate(),
+    week = date.getDay(),
+    hour = date.getHours(),
+    minute = date.getMinutes(),
+    second = date.getSeconds();
+  let weekArr = ["日", "一", "二", "三", "四", "五", "六"],
+    timeArr = [year, month, day, hour, minute, second, week];
+  return template.replace(/\{(\d+)\}/g, function () {
+    let key = arguments[1];
+    if (key == 6) return weekArr[timeArr[key]];
+    let val = timeArr[key] + '';
+    if (val == 'undefined') return '';
+    return val.length < 2 ? '0' + val : val;
+  })
+};
 // 用户名长度限制
 function userlenght(str) {
   let arr = str.split(''),
@@ -537,7 +534,19 @@ function deepClone(obj) {
   // 返回新的对象
   return result;
 }
+async function sliceLog(day) {
+  day = parseInt(day);
+  if (isNaN(day) || day <= 0) return;
+  let ms = day * 24 * 60 * 60 * 1000;
+  let keyWord = '[' + formatDate({ template: '{0}-{1}-{2}', timestamp: Date.now() - ms });
+  let logStr = (await _readFile('./hello.log', 1)).toString();
+  let idx = logStr.indexOf(keyWord);
+  if (idx < 0) return;
+  let str = logStr.slice(idx);
+  return _writeFile('./hello.log', str);
+}
 module.exports = {
+  sliceLog,
   deepClone,
   getMusicObj,
   hdSearch,
@@ -557,7 +566,7 @@ module.exports = {
   _appendFile,
   getClientIp,
   delDir,
-  newDate,
+  formatDate,
   userlenght,
   isUserName,
   extname,

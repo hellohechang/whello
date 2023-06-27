@@ -23,11 +23,13 @@ let {
   _readdir,
   getClientIp,
   delDir,
-  newDate,
+  formatDate,
   _err,
   jwtde,
   _mkdir,
   readMenu,
+  _readFile,
+  sliceLog,
 } = require('./utils');
 
 if (fs.existsSync(filepath)) {
@@ -127,7 +129,7 @@ app.get('*', (req, res) => {
 // 每天零点执行
 let _timer = setInterval(async () => {
   try {
-    if (newDate('{3}{4}{5}') === '000000') {
+    if (formatDate({ template: '{3}{4}{5}' }) === '000000') {
       ipobj = {};
       //删除upload超20天的文件
       let upload = await readMenu(`${filepath}/upload`);
@@ -153,6 +155,9 @@ let _timer = setInterval(async () => {
         `WHERE dailybg=? AND state=?`,
         ['y', '0']
       );
+
+      let { logSaveDay } = await _readFile('./config.json');
+      await sliceLog(logSaveDay);
     }
   } catch (error) {
     clearInterval(_timer)

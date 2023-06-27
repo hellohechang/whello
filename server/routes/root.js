@@ -14,6 +14,7 @@ const {
   _err,
   jwten,
   hdSearch,
+  sliceLog,
 } = require('../utils');
 
 //拦截器
@@ -55,7 +56,11 @@ route.get('/userlist', async (req, res) => {
         online: Date.now() - item.time > 1000 * 30 ? 'n' : 'y',
       };
     });
-    _success(res, 'ok', arr);
+    let { logSaveDay } = await _readFile('./config.json');
+    _success(res, 'ok', {
+      logSaveDay,
+      list: arr
+    });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -240,11 +245,30 @@ route.get('/delmusicfile', async (req, res) => {
 //设置注册状态
 route.post('/isregister', async (req, res) => {
   try {
-    let a = await _readFile('./config.json')
+    let a = await _readFile('./config.json');
     a.registerstate = a.registerstate == 'y' ? 'n' : 'y';
-    await _writeFile('./config.json', a)
-    await writelog(req, `${a.registerstate === 'y' ? '开放' : '关闭'}注册`)
-    _success(res, 'ok', a.registerstate)
+    await _writeFile('./config.json', a);
+    await writelog(req, `${a.registerstate === 'y' ? '开放' : '关闭'}注册`);
+    _success(res, 'ok', a.registerstate);
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+})
+route.post('/logsaveday', async (req, res) => {
+  try {
+    let { day } = req.body;
+    day = parseInt(day);
+    if (isNaN(day) || day < 0) {
+      _err(res);
+      return;
+    };
+    let a = await _readFile('./config.json');
+    a.logSaveDay = day;
+    await _writeFile('./config.json', a);
+    await sliceLog(day);
+    await writelog(req, `更新log保存时间[${day || '无限制'}]`);
+    _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

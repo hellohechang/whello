@@ -18,9 +18,10 @@ let {
   receiveFiles,
   nanoid,
   _appendFile,
-  newDate,
+  formatDate,
   _readFile,
   _readdir,
+  sliceLog,
 } = require('../utils'),
   {
     insertData,
@@ -268,7 +269,7 @@ queryData('user', 'account').then(() => { }).catch(async () => {
       },
     ]);
   } catch (error) {
-    let str = `[${newDate('{0}-{1}-{2} {3}:{4}')}] - ${error}\n`;
+    let str = `[${formatDate({ template: '{0}-{1}-{2} {3}:{4}' })}] - ${error}\n`;
     await _appendFile('./hello.log', str);
   }
 });

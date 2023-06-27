@@ -5,7 +5,7 @@ const express = require('express'),
 
 const { insertData, updateData, queryData } = require('../sqlite');
 const {
-  newDate,
+  formatDate,
   writelog,
   _readdir,
   _mkdir,
@@ -133,7 +133,7 @@ route.get('/getmsg', async (req, res) => {
     let flagStr = '';
     carr = carr.map((item) => {
       delete item.state;
-      let d = item.date || newDate('{0}-{1}-{2}', item.time);
+      let d = item.date || formatDate({ template: '{0}-{1}-{2}', timestamp: item.time });
       if (d === flagStr) {
         item.showTime = 'n';
       } else {
@@ -203,7 +203,7 @@ route.post('/takemsg', async (req, res) => {
     obj.flag = obj._to === 'chang' ? 'chang' : `${account}-${obj._to}`;
     obj.id = nanoid();
     obj.time = Date.now();
-    obj.date = newDate('{0}-{1}-{2}', obj.time);
+    obj.date = formatDate({ template: '{0}-{1}-{2}', timestamp: obj.time });
     obj.state = 0;
     await insertData('chat', [obj]);
     _success(res);

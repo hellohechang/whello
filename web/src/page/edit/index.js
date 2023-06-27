@@ -15,7 +15,7 @@ import {
   _getTarget,
   _postAjax,
   _getAjax,
-  newDate,
+  formatDate,
   copyText,
   encodeHtml,
   _myOpen,
@@ -60,7 +60,7 @@ if (HASH) {
     if (HASH === 'new') {
       //新增笔记
       // 生成标题
-      let name = newDate('{0}-{1}-{2} {3}:{4}');
+      let name = formatDate({ template: '{0}-{1}-{2} {3}:{4}' });
       // 获取未上传保存在本地的笔记
       let text = _getData('newNote');
       $headBtns.find('.note_title input').val(name);
@@ -232,9 +232,8 @@ $headBtns.on('input', '.note_title input', handleSave).on('click', '.preview_sta
       data = encodeHtml(data.slice(0, 500) + '...');
       str += `
               <li cursor title="${data}" data-name="${name}">
-              <span class="note_name">${newDate(
-        '{0}-{1}-{2} {3}:{4}:{5}',
-        name.split('_')[1]
+              <span class="note_name">${formatDate(
+        { template: '{0}-{1}-{2} {3}:{4}:{5}', timestamp: name.split('_')[1] }
       )}</span>
               <span class="delete_note iconfont icon-guanbi"></span>
               </li>

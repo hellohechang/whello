@@ -6,28 +6,34 @@ import {
   myOpen,
   _postAjax,
   _getAjax,
-  newDate,
+  formatDate,
   encodeHtml,
   pageErr,
+  debounce,
+  _getTarget,
 } from '../../utils/utils';
 import '../../js/common';
 import { _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert';
+import { rightMenu } from "../../plugins/rightMenu";
 const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
   $tableBox = $contentWrap.find('.table_box'),
   $list = $tableBox.find('tbody');
+let logSaveDay = 0;
 renderList();
 function renderList() {
   _getAjax('/root/userlist', {}).then((result) => {
     if (parseInt(result.code) === 0) {
-      result.data.sort((a, b) => b.time - a.time);
+      result.data.list.sort((a, b) => b.time - a.time);
       let str = '';
-      result.data.forEach((v) => {
+      logSaveDay = result.data.logSaveDay;
+      $headBtns.find('.log_save_day').text(`${logSaveDay <= 0 ? 'log保存时间: 无限制' : `log保存时间: ${logSaveDay}天`}`);
+      result.data.list.forEach((v) => {
         let { account, username, time, state, online } = v;
         username = encodeHtml(username);
         str += `<tr data-acc="${account}" data-state="${state}" data-name="${username}">
-          <td>${newDate('{0}-{1}-{2} {3}:{4}', time)}</td>
+          <td>${formatDate({ template: '{0}-{1}-{2} {3}:{4}', timestamp: time })}</td>
           <td style="color:${online === 'y' ? 'green' : '#aaa'};">${online === 'y' ? '在线' : '离线'}</td>
           <td>${username}</td>
           <td>${account}</td>
@@ -167,6 +173,23 @@ $headBtns.on('click', '.clear_upload', function () {
       _success(res.data === 'y' ? '开放注册成功' : '已关闭注册');
     }
   }).catch(() => { });
+}).on('click', '.log_save_day', function (e) {
+  let str = `
+        <input autocomplete="off" value="${logSaveDay}" type="number">
+        <button cursor class="mtcbtn">提交</button>`;
+  rightMenu(e, str, debounce(function ({ e, close, inp }) {
+    if (_getTarget(e, '.mtcbtn')) {
+      let val = parseInt(inp[0]);
+      if (isNaN(val) || val < 0) return;
+      _postAjax('/root/logsaveday', { day: val }).then(res => {
+        if (res.code == 0) {
+          close();
+          logSaveDay = val;
+          $headBtns.find('.log_save_day').text(`${logSaveDay <= 0 ? 'log保存时间: 无限制' : `log保存时间: ${logSaveDay}天`}`);
+        }
+      })
+    }
+  }, 1000, true))
 });
 _getAjax('/user/isregister').then(res => {
   if (res.code == 0) {

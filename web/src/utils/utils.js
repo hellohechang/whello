@@ -514,28 +514,26 @@ export function _upFile(url, file, callback) {
   });
 }
 // 格式化当前日期或时间戳日期
-export function newDate(templete, timestamp) {
-  templete ? null : (templete = '{0}年{1}月{2}日 {3}时{4}分{5}秒 星期{6}');
-  let currentDate = timestamp ? new Date(+timestamp) : new Date();
-  let year = currentDate.getFullYear(),
-    month = currentDate.getMonth() + 1,
-    date = currentDate.getDate(),
-    hour = currentDate.getHours(),
-    minute = currentDate.getMinutes(),
-    second = currentDate.getSeconds(),
-    weekArr = ['日', '一', '二', '三', '四', '五', '六'],
-    n_day = currentDate.getDay();
-  let formattedDateString = `${year}-${month}-${date}-${hour}-${minute}-${second}-${n_day}`,
-    timeArr = formattedDateString.match(/\d+/g);
-  return templete.replace(/\{(\d+)\}/g, (...arg) => {
-    if (arg[1] === '6') {
-      return weekArr[timeArr[arg[1]]];
-    } else {
-      let time = timeArr[arg[1]] || '00';
-      return time.length < 2 ? '0' + time : time;
-    }
-  });
-}
+export function formatDate(opt) {
+  let { template = '{0}-{1}-{2} {3}:{4}:{5}', timestamp = Date.now() } = opt;
+  let date = new Date(+timestamp);
+  let year = date.getFullYear(),
+    month = date.getMonth() + 1,
+    day = date.getDate(),
+    week = date.getDay(),
+    hour = date.getHours(),
+    minute = date.getMinutes(),
+    second = date.getSeconds();
+  let weekArr = ["日", "一", "二", "三", "四", "五", "六"],
+    timeArr = [year, month, day, hour, minute, second, week];
+  return template.replace(/\{(\d+)\}/g, function () {
+    let key = arguments[1];
+    if (key == 6) return weekArr[timeArr[key]];
+    let val = timeArr[key] + '';
+    if (val == 'undefined') return '';
+    return val.length < 2 ? '0' + val : val;
+  })
+};
 // 选中文本
 export function selectText(el) {
   if (document.body.createTextRange) {
