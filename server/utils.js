@@ -371,8 +371,8 @@ function mergefile(count, from, to) {
     }
   });
 }
-function nanoid(num = 0) {
-  return (+(Date.now() + num + Math.random().toFixed(5).slice(-5))).toString(16);
+function nanoid() {
+  return Date.now().toString(16) + Math.random().toString(16).slice(2);
 }
 
 // 音乐排序

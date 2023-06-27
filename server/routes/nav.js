@@ -420,10 +420,10 @@ route.get('/saveshare', async (req, res) => {
         num: total + 1,
       },
     ]);
-    arr = arr.map((item, idx) => {
+    arr = arr.map((item) => {
       return {
         ...item,
-        id: nanoid(idx),
+        id: nanoid(),
         listid: pid,
         account,
         logo: '//' + getHost(item.link) + '/favicon.ico',

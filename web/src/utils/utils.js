@@ -658,7 +658,7 @@ export function DownloadJSON(content, filename) {
 }
 // id生成
 export function nanoid() {
-  return (+(Date.now() + Math.random().toFixed(5).slice(-5))).toString(16);
+  return Date.now().toString(16) + Math.random().toString(16).slice(2);
 }
 // 获取图片尺寸
 export function _imgSize(file) {
