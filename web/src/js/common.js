@@ -9,7 +9,9 @@ import {
   _getTarget,
   _postAjax,
   copyText,
-  _myOpen
+  _myOpen,
+  isurl,
+  myOpen
 } from '../utils/utils'
 import { serverURL, LevelObj } from "../config";
 import { _err, _success } from "../plugins/message";
@@ -20,6 +22,7 @@ import { _loadingBar } from '../plugins/loadingBar'
   let box = document.createElement('div'),
     copy = document.createElement('span'),
     edit = document.createElement('span'),
+    open = document.createElement('span'),
     text = '';
   box.style.cssText = `
   display: none;
@@ -33,22 +36,24 @@ import { _loadingBar } from '../plugins/loadingBar'
   `;
   copy.setAttribute('cursor', '');
   edit.setAttribute('cursor', '');
-  copy.setAttribute('title', 'copy');
-  edit.setAttribute('title', 'edit');
+  copy.setAttribute('title', '复制');
+  edit.setAttribute('title', '编辑');
+  open.setAttribute('title', '访问');
   copy.setAttribute('class', 'iconfont icon-fuzhi');
   edit.setAttribute('class', 'iconfont icon-bianji');
-  // copy.innerText='Copy'
-  // edit.innerText='Edit'
-  copy.style.cssText = edit.style.cssText = `
+  open.setAttribute('class', 'iconfont icon-link');
+  copy.style.cssText = edit.style.cssText = open.style.cssText = `
   display: inline-block;
   padding: 5px;
   font-size: 24px;
   margin: 4px;
   color: #6d6d6d;
   `;
+  box.appendChild(open);
   box.appendChild(copy);
   box.appendChild(edit);
   document.body.appendChild(box);
+  open.style.display = 'none';
   copy.addEventListener(
     'click',
     debounce(
@@ -80,6 +85,16 @@ import { _loadingBar } from '../plugins/loadingBar'
       true
     )
   );
+  open.addEventListener(
+    'click',
+    debounce(
+      function () {
+        myOpen(text, '_blank');
+      },
+      1000,
+      true
+    )
+  );
   copy.addEventListener('mouseenter', function () {
     copy.style.color = '#0f6ce6';
   });
@@ -92,6 +107,12 @@ import { _loadingBar } from '../plugins/loadingBar'
   edit.addEventListener('mouseleave', function () {
     edit.style.color = '#6d6d6d';
   });
+  open.addEventListener('mouseenter', function () {
+    open.style.color = '#0f6ce6';
+  });
+  open.addEventListener('mouseleave', function () {
+    open.style.color = '#6d6d6d';
+  });
   function show(e) {
     let t = getSelectText();
     if (t === '') {
@@ -100,6 +121,11 @@ import { _loadingBar } from '../plugins/loadingBar'
     }
     text = t;
     box.style.display = 'block';
+    if (isurl(text)) {
+      open.style.display = 'inline-block';
+    } else {
+      open.style.display = 'none';
+    }
     let x = e.clientX,
       y = e.clientY,
       w = window.innerWidth - box.offsetWidth,

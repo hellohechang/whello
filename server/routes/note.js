@@ -17,9 +17,9 @@ route.get('/getnote', async (req, res) => {
     let ntobj = (
       await queryData('getnote', '*', `WHERE state=? AND id=?`, ['0', id])
     )[0];
-    await writelog(req, `访问笔记[/note/?v=${id}]`);
     if (ntobj) {
       let { username, share, name, data, account: acc } = ntobj;
+      await writelog(req, `访问笔记[${username}-${name}(/note/?v=${id})]`);
       if (share === 'y' || acc === account) {
         let own = 'n';
         if (ntobj.account === account) {
