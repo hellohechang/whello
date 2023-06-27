@@ -326,7 +326,7 @@ function renderAsideListLoading() {
 }
 // 渲染左导航
 $asideBtn.activeId = 'hide'; //记录开启列表
-function renderAsideList() {
+function renderAsideList(p) {
   if ($asideWrap.is(':hidden')) return;
   let id = $asideBtn.activeId;
   _getAjax('/nav/getlist', { id }).then((result) => {
@@ -337,11 +337,11 @@ function renderAsideList() {
           $asideBtn.activeId = _d.bookmark.side[0].id;
         }
       }
-      rAsideList();
+      rAsideList(p);
     }
   }).catch(err => { });
 }
-function rAsideList() {
+function rAsideList(p) {
   if ($asideWrap.is(':hidden')) return;
   $aside.find('.foot_menu').stop().slideUp(_speed).find('div').attr({
     class: 'iconfont icon-xuanzeweixuanze',
@@ -378,12 +378,14 @@ function rAsideList() {
   str += `<div cursor title="新增列表" class="add_list_btn iconfont icon-icon-test"></div>`;
   const $aList = $aside.find('.list');
   $aList.html(str);
-  let curIdx = _d.bookmark.side.findIndex(item => item.id == $asideBtn.activeId)
-  if (curIdx >= 0) {
-    const $listTitle = $aList.find('.list_title').eq(curIdx);
-    $aList.stop().animate({
-      scrollTop: _position($listTitle[0]).top + $aList[0].scrollTop - 5,
-    }, _speed);
+  if (p) {
+    let curIdx = _d.bookmark.side.findIndex(item => item.id == $asideBtn.activeId)
+    if (curIdx >= 0) {
+      const $listTitle = $aList.find('.list_title').eq(curIdx);
+      $aList.stop().animate({
+        scrollTop: _position($listTitle[0]).top + $aList[0].scrollTop - 5,
+      }, _speed);
+    }
   }
   hdAsideListItemLogo();
 }
@@ -1043,7 +1045,7 @@ function showAside() {
   $asideBtn.find('.boxdow').addClass('active');
   $asideBtn.find('.boxcon').css('opacity', '0');
   _setTimeout(() => {
-    renderAsideList();
+    renderAsideList(1);
   }, 500);
 }
 function hideAside() {
