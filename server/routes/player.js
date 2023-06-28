@@ -1,6 +1,5 @@
 const express = require('express'),
   fs = require('fs'),
-  { filepath } = require('../myconfig'),
   route = express.Router();
 const { deepClone } = require('../utils');
 const { insertData, updateData, queryData, deleteData, runSqlite } = require('../sqlite');
@@ -26,12 +25,13 @@ const {
   hdSearch,
   getMusicObj,
 } = require('../utils');
+const _d = require('../data');
 
 //获取歌词
 route.get('/lrc', async (req, res) => {
   try {
     let { artist, name } = req.query,
-      url = `${filepath}/music/${artist}-${name}.lrc`;
+      url = `${_d.filepath}/music/${artist}-${name}.lrc`;
     if (fs.existsSync(url)) {
       let str = (await _readFile(url, true)).toString();
       let lrcs = str.split('\n'),
@@ -182,8 +182,7 @@ route.get('/getlist', async (req, res) => {
       { id } = req.query,
       arr = await queryData('musics', '*'),
       mObj = getMusicObj(arr),
-      uArr = await getMusicList(account),
-      { songList } = await _readFile('./config.json');
+      uArr = await getMusicList(account);
     let flag = false;
     uArr.forEach((item) => {
       for (let i = 0; i < item.item.length; i++) {
@@ -208,8 +207,8 @@ route.get('/getlist', async (req, res) => {
     }
     uArr.splice(2, 0, { id: 'all', item: arr.reverse() });
     for (let i = 0; i < 3; i++) {
-      uArr[i].name = songList[i].name;
-      uArr[i].des = songList[i].des;
+      uArr[i].name = _d.songList[i].name;
+      uArr[i].des = _d.songList[i].des;
     }
     uArr = handleMusicList(uArr); //处理封面
     id ? null : (id = uArr[1].id);
@@ -367,19 +366,16 @@ route.post('/editlist', async (req, res) => {
   try {
     let account = req._userInfo.account;
     let { id, name, des } = req.body,
-      arr = await getMusicList(account),
-      config = await _readFile('./config.json');
+      arr = await getMusicList(account);
     let i = arr.findIndex((item) => item.id === id);
     if (id == 'all' && account == 'root') {
-      config.songList[2].name = name;
-      config.songList[2].des = des;
-      await _writeFile('./config.json', config);
+      _d.songList[2].name = name;
+      _d.songList[2].des = des;
       await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
       _success(res);
     } else if (i < 2 && i >= 0 && account == 'root') {
-      config.songList[i].name = name;
-      config.songList[i].des = des;
-      await _writeFile('./config.json', config);
+      _d.songList[i].name = name;
+      _d.songList[i].des = des;
       await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
       _success(res);
     } else if (i > 1) {
@@ -412,11 +408,11 @@ route.post('/editsong', async (req, res) => {
       return;
     }
     let { id, oldObj, newObj } = req.body;
-    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp3`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp3`).catch(err => { });
-    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.mp4`, `${filepath}/music/${newObj.artist}-${newObj.name}.mp4`).catch(err => { });
-    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/music/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
-    await _rename(`${filepath}/music/${oldObj.artist}-${oldObj.name}.lrc`, `${filepath}/music/${newObj.artist}-${newObj.name}.lrc`).catch(err => { });
-    await _rename(`${filepath}/musicys/${oldObj.artist}-${oldObj.name}.jpg`, `${filepath}/musicys/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
+    await _rename(`${_d.filepath}/music/${oldObj.artist}-${oldObj.name}.mp3`, `${_d.filepath}/music/${newObj.artist}-${newObj.name}.mp3`).catch(err => { });
+    await _rename(`${_d.filepath}/music/${oldObj.artist}-${oldObj.name}.mp4`, `${_d.filepath}/music/${newObj.artist}-${newObj.name}.mp4`).catch(err => { });
+    await _rename(`${_d.filepath}/music/${oldObj.artist}-${oldObj.name}.jpg`, `${_d.filepath}/music/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
+    await _rename(`${_d.filepath}/music/${oldObj.artist}-${oldObj.name}.lrc`, `${_d.filepath}/music/${newObj.artist}-${newObj.name}.lrc`).catch(err => { });
+    await _rename(`${_d.filepath}/musicys/${oldObj.artist}-${oldObj.name}.jpg`, `${_d.filepath}/musicys/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
 
     await updateData('musics', newObj, `WHERE id=?`, [id])
     await writelog(req, `编辑歌曲[${oldObj.artist}-${oldObj.name}=>${newObj.artist}-${newObj.name}]`);
@@ -435,7 +431,7 @@ route.post('/addsong', async (req, res) => {
       return;
     }
     let mArr = await queryData('musics', '*');
-    let musicfilearr = await _readdir(`${filepath}/music`);
+    let musicfilearr = await _readdir(`${_d.filepath}/music`);
     let mp4arr = musicfilearr.filter((v) => {
       return extname(v)[1].toLowerCase() === 'mp4';
     });
@@ -651,7 +647,7 @@ route.post('/delmv', async (req, res) => {
 route.get('/getlrc', async (req, res) => {
   try {
     let { name, artist } = req.query,
-      url = `${filepath}/music/${artist}-${name}.lrc`;
+      url = `${_d.filepath}/music/${artist}-${name}.lrc`;
     if (fs.existsSync(url)) {
       let str = (await _readFile(url, true)).toString();
       await writelog(req, `查看歌词[${artist}-${name}]`);
@@ -673,7 +669,7 @@ route.post('/editlrc', async (req, res) => {
       return;
     }
     let { name, artist, val } = req.body,
-      url = `${filepath}/music/${artist}-${name}.lrc`;
+      url = `${_d.filepath}/music/${artist}-${name}.lrc`;
     _writeFile(url, val);
     await writelog(req, `更新歌词[${artist}-${name}.lrc]`);
     _success(res, '更新成功');
@@ -709,7 +705,7 @@ route.post('/up', async (req, res) => {
       _err(res, '没有权限操作');
       return;
     }
-    let path = `${filepath}/tem/${req.query.HASH}`;
+    let path = `${_d.filepath}/tem/${req.query.HASH}`;
     await _mkdir(path);
     await receiveFiles(req, path, req.query.name);
     _success(res);
@@ -731,13 +727,13 @@ route.post('/mergefile', async (req, res) => {
       _err(res);
       return;
     }
-    await delDir(`${filepath}/music/${name}`);
-    await delDir(`${filepath}/musicys/${name}`);
+    await delDir(`${_d.filepath}/music/${name}`);
+    await delDir(`${_d.filepath}/musicys/${name}`);
     if (isImgFile(name)) {
-      await _rename(`${filepath}/tem/${HASH}/_hello`, `${filepath}/musicys/${name}`);
+      await _rename(`${_d.filepath}/tem/${HASH}/_hello`, `${_d.filepath}/musicys/${name}`);
       --count;
     }
-    await mergefile(count, `${filepath}/tem/${HASH}`, `${filepath}/music/${name}`);
+    await mergefile(count, `${_d.filepath}/tem/${HASH}`, `${_d.filepath}/music/${name}`);
     let [a, b] = extname(name);
     if (b.toLowerCase() == 'mp3') {
       let id = nanoid();
@@ -768,7 +764,7 @@ route.post('/breakpoint', async (req, res) => {
       return;
     }
     let { HASH } = req.body,
-      path = `${filepath}/tem/${HASH}`,
+      path = `${_d.filepath}/tem/${HASH}`,
       arr = await _readdir(path);
     _success(res, 'ok', arr);
   } catch (error) {
@@ -785,7 +781,7 @@ route.post('/repeatfile', async (req, res) => {
       return;
     }
     let { name } = req.body;
-    let u = `${filepath}/music/${name}`;
+    let u = `${_d.filepath}/music/${name}`;
     if (/(\.MP3|\.MP4)$/gi.test(name) && fs.existsSync(u)) {
       _success(res);
       return;

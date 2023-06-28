@@ -20,16 +20,19 @@ const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
   $tableBox = $contentWrap.find('.table_box'),
   $list = $tableBox.find('tbody');
-let logSaveDay = 0;
+let dataObj = {};
 renderList();
 function renderList() {
   _getAjax('/root/userlist', {}).then((result) => {
     if (parseInt(result.code) === 0) {
-      result.data.list.sort((a, b) => b.time - a.time);
-      let str = '';
-      logSaveDay = result.data.logSaveDay;
+      let { logSaveDay,
+        registerstate,
+        list } = dataObj = result.data;
+      $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${registerstate === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`)
       $headBtns.find('.log_save_day').text(`${logSaveDay <= 0 ? 'log保存时间: 无限制' : `log保存时间: ${logSaveDay}天`}`);
-      result.data.list.forEach((v) => {
+      list.sort((a, b) => b.time - a.time);
+      let str = '';
+      list.forEach((v) => {
         let { account, username, time, state, online } = v;
         username = encodeHtml(username);
         str += `<tr data-acc="${account}" data-state="${state}" data-name="${username}">
@@ -175,24 +178,51 @@ $headBtns.on('click', '.clear_upload', function () {
   }).catch(() => { });
 }).on('click', '.log_save_day', function (e) {
   let str = `
-        <input autocomplete="off" value="${logSaveDay}" type="number">
+        <input autocomplete="off" value="${dataObj.logSaveDay}" type="number">
         <button cursor class="mtcbtn">提交</button>`;
   rightMenu(e, str, debounce(function ({ e, close, inp }) {
     if (_getTarget(e, '.mtcbtn')) {
-      let val = parseInt(inp[0]);
-      if (isNaN(val) || val < 0) return;
-      _postAjax('/root/logsaveday', { day: val }).then(res => {
+      let day = parseInt(inp[0]);
+      if (isNaN(day) || day < 0) return;
+      _postAjax('/root/logsaveday', { day }).then(res => {
         if (res.code == 0) {
           close();
-          logSaveDay = val;
-          $headBtns.find('.log_save_day').text(`${logSaveDay <= 0 ? 'log保存时间: 无限制' : `log保存时间: ${logSaveDay}天`}`);
+          dataObj.logSaveDay = day;
+          $headBtns.find('.log_save_day').text(`${dataObj.logSaveDay <= 0 ? 'log保存时间: 无限制' : `log保存时间: ${dataObj.logSaveDay}天`}`);
+        }
+      })
+    }
+  }, 1000, true))
+}).on('click', '.set_token_key', function (e) {
+  let str = `
+        <input autocomplete="off" value="${dataObj.tokenKey}" type="text">
+        <button cursor class="mtcbtn">提交</button>`;
+  rightMenu(e, str, debounce(function ({ e, close, inp }) {
+    if (_getTarget(e, '.mtcbtn')) {
+      let token = inp[0];
+      _postAjax('/root/updatetoken', { token }).then(res => {
+        if (res.code == 0) {
+          close();
+          _success();
+          dataObj.tokenKey = token;
+        }
+      })
+    }
+  }, 1000, true))
+}).on('click', '.file_path', function (e) {
+  let str = `
+        <input autocomplete="off" value="${dataObj.filepath}" type="text">
+        <button cursor class="mtcbtn">提交</button>`;
+  rightMenu(e, str, debounce(function ({ e, close, inp }) {
+    if (_getTarget(e, '.mtcbtn')) {
+      let filepath = inp[0];
+      _postAjax('/root/updatefilepath', { filepath }).then(res => {
+        if (res.code == 0) {
+          close();
+          _success();
+          dataObj.filepath = filepath;
         }
       })
     }
   }, 1000, true))
 });
-_getAjax('/user/isregister').then(res => {
-  if (res.code == 0) {
-    $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`)
-  }
-}).catch(() => { });

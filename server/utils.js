@@ -1,11 +1,9 @@
 const fs = require('fs');
+const _d = require('./data');
 // token加密
 const jwt = require('jsonwebtoken');
 // 接收上传文件
 const formidable = require('formidable');
-
-const myconfig = require('./myconfig');
-
 // 记录日志
 async function writelog(req, str) {
   str = str + '';
@@ -298,13 +296,13 @@ function _setTimeout(callback, time) {
 function jwten(account) {
   return jwt.sign(
     { exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 3, account },
-    myconfig.tokenKey
+    _d.tokenKey
   );
 }
 // 解密token
 function jwtde(token) {
   try {
-    let obj = jwt.verify(token, myconfig.tokenKey);
+    let obj = jwt.verify(token, _d.tokenKey);
     return obj;
   } catch (error) {
     return {};

@@ -1,8 +1,8 @@
 const express = require('express'),
   fs = require('fs'),
-  { filepath } = require('../myconfig'),
   route = express.Router();
 
+const _d = require('../data');
 const { insertData, updateData, queryData } = require('../sqlite');
 const {
   formatDate,
@@ -177,7 +177,7 @@ route.get('/getmsg', async (req, res) => {
 // 文件是否过期
 route.get('/isexpired', (req, res) => {
   let name = req.query.name;
-  if (fs.existsSync(`${filepath}${name}`)) {
+  if (fs.existsSync(`${_d.filepath}${name}`)) {
     _success(res);
     return;
   }
@@ -325,7 +325,7 @@ route.get('/getmember', async (req, res) => {
 route.post('/up', async (req, res) => {
   try {
     let { name, HASH } = req.query,
-      path = `${filepath}/tem/${HASH}`;
+      path = `${_d.filepath}/tem/${HASH}`;
     await _mkdir(path);
     await receiveFiles(req, path, name);
     _success(res);
@@ -337,7 +337,7 @@ route.post('/up', async (req, res) => {
 //接收语音
 route.post('/upp', async (req, res) => {
   try {
-    let path = `${filepath}/upload`;
+    let path = `${_d.filepath}/upload`;
     await receiveFiles(req, path, req.query.name);
     _success(res);
   } catch (error) {
@@ -349,19 +349,19 @@ route.post('/upp', async (req, res) => {
 route.post('/mergefile', async (req, res) => {
   try {
     let { HASH, count, name } = req.body;
-    await delDir(`${filepath}/upload/${name}`);
-    await delDir(`${filepath}/uploadys/${name}`);
+    await delDir(`${_d.filepath}/upload/${name}`);
+    await delDir(`${_d.filepath}/uploadys/${name}`);
     if (isImgFile(name)) {
       await _rename(
-        `${filepath}/tem/${HASH}/_hello`,
-        `${filepath}/uploadys/${name}`
+        `${_d.filepath}/tem/${HASH}/_hello`,
+        `${_d.filepath}/uploadys/${name}`
       );
       --count;
     }
     await mergefile(
       count,
-      `${filepath}/tem/${HASH}`,
-      `${filepath}/upload/${name}`
+      `${_d.filepath}/tem/${HASH}`,
+      `${_d.filepath}/upload/${name}`
     );
     _success(res);
   } catch (error) {
@@ -373,7 +373,7 @@ route.post('/mergefile', async (req, res) => {
 route.post('/breakpoint', async (req, res) => {
   try {
     let { HASH } = req.body,
-      path = `${filepath}/tem/${HASH}`,
+      path = `${_d.filepath}/tem/${HASH}`,
       arr = await _readdir(path);
     _success(res, 'ok', arr);
   } catch (error) {
@@ -385,8 +385,8 @@ route.post('/breakpoint', async (req, res) => {
 route.post('/repeatfile', async (req, res) => {
   try {
     let { name } = req.body;
-    let u = `${filepath}/upload/${name}`;
-    let uys = `${filepath}/uploadys/${name}`;
+    let u = `${_d.filepath}/upload/${name}`;
+    let uys = `${_d.filepath}/uploadys/${name}`;
     if (fs.existsSync(u)) {
       if (isImgFile(name)) {
         if (fs.existsSync(uys)) {

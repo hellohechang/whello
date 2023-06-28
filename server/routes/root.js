@@ -1,7 +1,7 @@
 const express = require('express'),
-  { filepath } = require('../myconfig'),
   route = express.Router();
 
+const _d = require('../data');
 const { updateData, deleteData, queryData } = require('../sqlite');
 const {
   writelog,
@@ -56,9 +56,11 @@ route.get('/userlist', async (req, res) => {
         online: Date.now() - item.time > 1000 * 30 ? 'n' : 'y',
       };
     });
-    let { logSaveDay } = await _readFile('./config.json');
     _success(res, 'ok', {
-      logSaveDay,
+      logSaveDay: _d.logSaveDay,
+      filepath: _d.filepath,
+      registerstate: _d.registerstate,
+      tokenKey: _d.tokenKey,
       list: arr
     });
   } catch (error) {
@@ -103,7 +105,7 @@ route.post('/delaccount', async (req, res) => {
     let { ac } = req.body;
     if (ac !== 'root') {
       await deleteData('user', `WHERE account=?`, [ac]);
-      await delDir(`${filepath}/logo/${ac}`);
+      await delDir(`${_d.filepath}/logo/${ac}`);
       await writelog(req, `销毁账号[${ac}]`);
       _success(res, '成功销毁账号');
     } else {
@@ -132,10 +134,10 @@ route.post('/loginother', async (req, res) => {
 // 清空upload
 route.get('/clearup', async (req, res) => {
   try {
-    let up = await _readdir(`${filepath}/upload`);
+    let up = await _readdir(`${_d.filepath}/upload`);
     up.forEach(async (v) => {
-      let p = `${filepath}/upload/${v}`;
-      let pys = `${filepath}/uploadys/${v}`;
+      let p = `${_d.filepath}/upload/${v}`;
+      let pys = `${_d.filepath}/uploadys/${v}`;
       delDir(p);
       delDir(pys);
     });
@@ -211,10 +213,10 @@ route.get('/delmusicfile', async (req, res) => {
   try {
     let musics = await queryData('musics', '*');
     let delarr = [];
-    (await _readdir(`${filepath}/music`)).forEach((item) => {
+    (await _readdir(`${_d.filepath}/music`)).forEach((item) => {
       let i = item.lastIndexOf('.');
       if (!musics.some((v) => `${v.artist}-${v.name}` === item.slice(0, i))) {
-        _unlink(`${filepath}/music/${item}`);
+        _unlink(`${_d.filepath}/music/${item}`);
         delarr.push(item);
       }
       if (item.slice(i).toLowerCase() === '.mp4') {
@@ -223,15 +225,15 @@ route.get('/delmusicfile', async (req, res) => {
             (v) => `${v.artist}-${v.name}` === item.slice(0, i) && v.mv === ''
           )
         ) {
-          _unlink(`${filepath}/music/${item}`);
+          _unlink(`${_d.filepath}/music/${item}`);
           delarr.push(item);
         }
       }
     });
-    (await _readdir(`${filepath}/musicys`)).forEach((item) => {
+    (await _readdir(`${_d.filepath}/musicys`)).forEach((item) => {
       let i = item.lastIndexOf('.');
       if (!musics.some((v) => `${v.artist}-${v.name}` === item.slice(0, i))) {
-        _unlink(`${filepath}/musicys/${item}`);
+        _unlink(`${_d.filepath}/musicys/${item}`);
         delarr.push(item);
       }
     });
@@ -245,11 +247,31 @@ route.get('/delmusicfile', async (req, res) => {
 //设置注册状态
 route.post('/isregister', async (req, res) => {
   try {
-    let a = await _readFile('./config.json');
-    a.registerstate = a.registerstate == 'y' ? 'n' : 'y';
-    await _writeFile('./config.json', a);
-    await writelog(req, `${a.registerstate === 'y' ? '开放' : '关闭'}注册`);
-    _success(res, 'ok', a.registerstate);
+    _d.registerstate = _d.registerstate == 'y' ? 'n' : 'y';
+    await writelog(req, `${_d.registerstate === 'y' ? '开放' : '关闭'}注册`);
+    _success(res, 'ok', _d.registerstate);
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+})
+route.post('/updatetoken', async (req, res) => {
+  try {
+    let { token } = req.body;
+    _d.tokenKey = token;
+    await writelog(req, `[更新tokenKey]`);
+    _success(res);
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+})
+route.post('/updatefilepath', async (req, res) => {
+  try {
+    let { filepath } = req.body;
+    _d.filepath = filepath;
+    await writelog(req, `[更新filepath]`);
+    _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -263,9 +285,7 @@ route.post('/logsaveday', async (req, res) => {
       _err(res);
       return;
     };
-    let a = await _readFile('./config.json');
-    a.logSaveDay = day;
-    await _writeFile('./config.json', a);
+    _d.logSaveDay = day;
     await sliceLog(day);
     await writelog(req, `更新log保存时间[${day || '无限制'}]`);
     _success(res);

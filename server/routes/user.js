@@ -1,3 +1,5 @@
+const _d = require('../data');
+
 const express = require('express'),
   fs = require('fs'),
   route = express.Router();
@@ -21,7 +23,6 @@ let {
   formatDate,
   _readFile,
   _readdir,
-  sliceLog,
 } = require('../utils'),
   {
     insertData,
@@ -30,7 +31,6 @@ let {
     queryData,
     runSqlite,
   } = require('../sqlite'),
-  { filepath } = require('../myconfig'),
   landingerr = {}, //多次密码错误IP临时存放
   realTimeData = {}; //同步数据存放
 // 前端错误记录
@@ -46,7 +46,7 @@ route.post('/panelerror', async (req, res) => {
 //获取字体
 route.get('/getfont', async (req, res) => {
   try {
-    let arr = await _readdir(`${filepath}/font`);
+    let arr = await _readdir(`${_d.filepath}/font`);
     _success(res, 'ok', arr);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -55,7 +55,7 @@ route.get('/getfont', async (req, res) => {
 });
 route.get('/isregister', async (req, res) => {
   try {
-    _success(res, 'ok', (await _readFile('./config.json')).registerstate)
+    _success(res, 'ok', _d.registerstate)
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -253,10 +253,10 @@ queryData('user', 'account').then(() => { }).catch(async () => {
         password: '90089e402b00',
       }
     ]);
-    await _mkdir(`${filepath}/logo/root`); //创建书签图标目录
+    await _mkdir(`${_d.filepath}/logo/root`); //创建书签图标目录
     fs.copyFileSync(
       `admin.jpg`,
-      `${filepath}/logo/root/root.png`
+      `${_d.filepath}/logo/root/root.png`
     );
     await insertData('note', [
       {
@@ -276,7 +276,7 @@ queryData('user', 'account').then(() => { }).catch(async () => {
 // 注册
 route.post('/register', async (req, res) => {
   try {
-    if ((await _readFile('./config.json')).registerstate === 'n') {
+    if (_d.registerstate === 'n') {
       _err(res)
       return
     }
@@ -301,8 +301,8 @@ route.post('/register', async (req, res) => {
         flag: '0',
       },
     ]);
-    await _mkdir(`${filepath}/logo/${account}`); //创建书签图标目录
-    fs.copyFileSync(`admin.jpg`, `${filepath}/logo/${account}/${account}.png`);
+    await _mkdir(`${_d.filepath}/logo/${account}`); //创建书签图标目录
+    fs.copyFileSync(`admin.jpg`, `${_d.filepath}/logo/${account}/${account}.png`);
     await writelog(req, `注册账号[${username}(${account})]`);
     // 生成token
     let token = jwten(account);
@@ -504,7 +504,7 @@ route.get('/getuserinfo', async (req, res) => {
 route.post('/upuserlogo', async (req, res) => {
   try {
     let account = req._userInfo.account,
-      path = `${filepath}/logo/${account}`;
+      path = `${_d.filepath}/logo/${account}`;
     await _mkdir(path);
     await _unlink(`${path}/${account}.png`);
     receiveFiles(req, path, `${account}.png`)

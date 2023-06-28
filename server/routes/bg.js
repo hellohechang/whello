@@ -1,7 +1,7 @@
 const express = require('express'),
   fs = require('fs'),
-  { filepath } = require('../myconfig'),
   route = express.Router();
+const _d = require('../data');
 const { updateData } = require('../sqlite');
 const {
   writelog,
@@ -32,7 +32,7 @@ route.use((req, res, next) => {
 route.get('/randombg', async (req, res) => {
   try {
     let p = req.query.p,
-      bgarr = await _readdir(`${filepath}/bg/${p}`),
+      bgarr = await _readdir(`${_d.filepath}/bg/${p}`),
       num = Math.round(Math.random() * (bgarr.length - 1 - 0) + 0);
     if (bgarr.length === 0) {
       _err(res, '壁纸库为空，请先上传壁纸');
@@ -69,7 +69,7 @@ route.get('/getbg', async (req, res) => {
   try {
     let { flag, page, showpage = 40 } = req.query;
     showpage > 100 ? showpage = 100 : null;
-    let bgarr = await readMenu(`${filepath}/bg/${flag}`),
+    let bgarr = await readMenu(`${_d.filepath}/bg/${flag}`),
       pagenum = Math.ceil(bgarr.length / showpage);
     // 创建时间排序
     bgarr.sort((a, b) => {
@@ -99,10 +99,10 @@ route.post('/delbg', async (req, res) => {
       return;
     }
     let url = req.body.url;
-    _unlink(`${filepath}/bg/bg/${url}`);
-    _unlink(`${filepath}/bg/bgxs/${url}`);
-    _unlink(`${filepath}/bgys/bg/${url}`);
-    _unlink(`${filepath}/bgys/bgxs/${url}`);
+    _unlink(`${_d.filepath}/bg/bg/${url}`);
+    _unlink(`${_d.filepath}/bg/bgxs/${url}`);
+    _unlink(`${_d.filepath}/bgys/bg/${url}`);
+    _unlink(`${_d.filepath}/bgys/bgxs/${url}`);
     await writelog(req, `删除壁纸[${url}]`);
     _success(res);
   } catch (error) {
@@ -113,7 +113,7 @@ route.post('/delbg', async (req, res) => {
 // 上传壁纸
 route.post('/up', async (req, res) => {
   try {
-    let path = `${filepath}/tem/${req.query.HASH}`;
+    let path = `${_d.filepath}/tem/${req.query.HASH}`;
     await _mkdir(path);
     await receiveFiles(req, path, req.query.name);
     _success(res);
@@ -130,16 +130,16 @@ route.post('/mergefile', async (req, res) => {
       _err(res);
       return;
     }
-    await delDir(`${filepath}/bg/${flag}/${name}`);
-    await delDir(`${filepath}/bgys/${flag}/${name}`);
+    await delDir(`${_d.filepath}/bg/${flag}/${name}`);
+    await delDir(`${_d.filepath}/bgys/${flag}/${name}`);
     await _rename(
-      `${filepath}/tem/${HASH}/_hello`,
-      `${filepath}/bgys/${flag}/${name}`
+      `${_d.filepath}/tem/${HASH}/_hello`,
+      `${_d.filepath}/bgys/${flag}/${name}`
     );
     await mergefile(
       --count,
-      `${filepath}/tem/${HASH}`,
-      `${filepath}/bg/${flag}/${name}`
+      `${_d.filepath}/tem/${HASH}`,
+      `${_d.filepath}/bg/${flag}/${name}`
     );
     await writelog(req, `上传壁纸[${name}]`);
     _success(res);
@@ -152,7 +152,7 @@ route.post('/mergefile', async (req, res) => {
 route.post('/breakpoint', async (req, res) => {
   try {
     let { HASH } = req.body,
-      path = `${filepath}/tem/${HASH}`,
+      path = `${_d.filepath}/tem/${HASH}`,
       arr = await _readdir(path);
     _success(res, 'ok', arr);
   } catch (error) {
@@ -164,8 +164,8 @@ route.post('/breakpoint', async (req, res) => {
 route.post('/repeatfile', async (req, res) => {
   try {
     let { name, flag } = req.body;
-    let u = `${filepath}/bg/${flag}/${name}`;
-    let uys = `${filepath}/bgys/${flag}/${name}`;
+    let u = `${_d.filepath}/bg/${flag}/${name}`;
+    let uys = `${_d.filepath}/bgys/${flag}/${name}`;
     if (fs.existsSync(u) && fs.existsSync(uys)) {
       _success(res);
       return;

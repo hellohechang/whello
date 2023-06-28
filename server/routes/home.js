@@ -1,6 +1,6 @@
 const express = require('express'),
-  { filepath } = require('../myconfig'),
   route = express.Router();
+const _d = require('../data');
 const {
   batchUpdateData,
   insertData,
@@ -243,7 +243,7 @@ route.post('/addbmk', async (req, res) => {
 route.post('/bmklogo', async (req, res) => {
   try {
     let account = req._userInfo.account;
-    let path = `${filepath}/logo/${account}`,
+    let path = `${_d.filepath}/logo/${account}`,
       purl = `/logo/${account}/${req.query.name}`;
     await _mkdir(path);
     await _unlink(`${path}/${req.query.name}`);

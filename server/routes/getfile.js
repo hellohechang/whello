@@ -1,7 +1,7 @@
 const express = require('express'),
   fs = require('fs'),
   route = express.Router();
-let myconfig = require('../myconfig');
+const _d = require('../data');
 const { queryData } = require('../sqlite');
 const { _err, _nologin, writelog } = require('../utils');
 
@@ -34,7 +34,7 @@ route.get('*', async (req, res) => {
       }
     }
     // 合并url
-    let path = decodeURI(myconfig.filepath + url);
+    let path = decodeURI(_d.filepath + url);
     if (!fs.existsSync(path)) {
       _err(res, '文件不存在或已过期');
       return;
