@@ -27,7 +27,9 @@ function renderList() {
     if (parseInt(result.code) === 0) {
       let { logSaveDay,
         registerstate,
+        continueReqLog,
         list } = dataObj = result.data;
+      $headBtns.find('.continue_req_log span').attr('class', `iconfont iconfont ${continueReqLog === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`)
       $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${registerstate === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`)
       $headBtns.find('.log_save_day').text(`${logSaveDay <= 0 ? 'log保存时间: 无限制' : `log保存时间: ${logSaveDay}天`}`);
       list.sort((a, b) => b.time - a.time);
@@ -174,6 +176,13 @@ $headBtns.on('click', '.clear_upload', function () {
     if (res.code == 0) {
       $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`);
       _success(res.data === 'y' ? '开放注册成功' : '已关闭注册');
+    }
+  }).catch(() => { });
+}).on('click', '.continue_req_log', function () {
+  _postAjax('/root/continuereqlog').then(res => {
+    if (res.code == 0) {
+      $headBtns.find('.continue_req_log span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`);
+      _success(res.data === 'y' ? '开启持续请求log' : '已关闭持续请求log');
     }
   }).catch(() => { });
 }).on('click', '.log_save_day', function (e) {

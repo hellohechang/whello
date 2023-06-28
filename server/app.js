@@ -102,6 +102,9 @@ app.use(async (req, res, next) => {
         await writelog(req, `[${req.headers['user-agent']}]`);
       }
     }
+    if (_d.continueReqLog === 'y') {
+      await writelog(req, `[${req.method.toLowerCase()}(${req._pathUrl})]`);
+    }
     next();
   } catch (error) {
     await writelog(req, `[app.use] ${error}`);

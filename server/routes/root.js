@@ -61,6 +61,7 @@ route.get('/userlist', async (req, res) => {
       filepath: _d.filepath,
       registerstate: _d.registerstate,
       tokenKey: _d.tokenKey,
+      continueReqLog: _d.continueReqLog,
       list: arr
     });
   } catch (error) {
@@ -250,6 +251,16 @@ route.post('/isregister', async (req, res) => {
     _d.registerstate = _d.registerstate == 'y' ? 'n' : 'y';
     await writelog(req, `${_d.registerstate === 'y' ? '开放' : '关闭'}注册`);
     _success(res, 'ok', _d.registerstate);
+  } catch (error) {
+    await writelog(req, `[${req._pathUrl}] ${error}`);
+    _err(res);
+  }
+})
+route.post('/continuereqlog', async (req, res) => {
+  try {
+    _d.continueReqLog = _d.continueReqLog == 'y' ? 'n' : 'y';
+    await writelog(req, `${_d.continueReqLog === 'y' ? '开启' : '关闭'}持续请求log`);
+    _success(res, 'ok', _d.continueReqLog);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

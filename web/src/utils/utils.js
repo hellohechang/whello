@@ -383,7 +383,7 @@ export function _postAjax(url, data, y) {
       dataType: 'json',
       contentType: 'application/json;charset=UTF-8',
       data: data,
-      timeout: 10000,
+      timeout: 5000,
       xhrFields: {
         withCredentials: true,
       },
@@ -403,9 +403,9 @@ export function _postAjax(url, data, y) {
       },
       error: (err) => {
         if (!y) {
-          _err(`服务器被吃了!( ╯□╰ )`);
           _loadingBar.end();
         }
+        _err(`请求失败!( ╯□╰ )`);
         reject(err);
       },
       complete: function (XMLHttpRequest, status) {
@@ -413,8 +413,9 @@ export function _postAjax(url, data, y) {
         if (status == 'timeout') {
           //超时,status还有success,error等值的情况
           // ajaxTimeoutTest.abort();
-          _err(`服务器被吃了!( ╯□╰ )`);
+          _err(`请求超时!( ╯□╰ )`);
           _loadingBar.end();
+          reject();
         }
       },
     });
@@ -432,7 +433,7 @@ export function _getAjax(url, data, y, time) {
       dataType: 'json',
       contentType: 'application/json;charset=UTF-8',
       data: data,
-      timeout: time ? 0 : 10000,
+      timeout: time ? 0 : 5000,
       xhrFields: {
         withCredentials: true,
       },
@@ -453,9 +454,9 @@ export function _getAjax(url, data, y, time) {
       },
       error: (err) => {
         if (!y) {
-          _err(`服务器被吃了!( ╯□╰ )`);
           _loadingBar.end();
         }
+        _err(`请求失败!( ╯□╰ )`);
         reject(err);
       },
       complete: function (XMLHttpRequest, status) {
@@ -463,8 +464,9 @@ export function _getAjax(url, data, y, time) {
         if (status == 'timeout') {
           //超时,status还有success,error等值的情况
           // ajaxTimeoutTest.abort();
-          _err(`服务器被吃了!( ╯□╰ )`);
+          _err(`请求超时!( ╯□╰ )`);
           _loadingBar.end();
+          reject();
         }
       },
     });
@@ -507,7 +509,7 @@ export function _upFile(url, file, callback) {
         resolve(data);
       },
       error: () => {
-        _err(`服务器被吃了!( ╯□╰ )`);
+        _err(`请求失败!( ╯□╰ )`);
         reject();
       },
     });

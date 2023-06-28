@@ -7831,7 +7831,7 @@ function handleuser() {
       })
       .catch((err) => {
         //网络错误10秒重新请求一次
-        _setTimeout(realtime, 10000);
+        _setTimeout(realtime, 5000);
       });
   }
   realtime();
