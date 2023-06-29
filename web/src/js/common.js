@@ -167,7 +167,7 @@ window.onload = function () {
     box.style.top = e.clientY - 20 / 2 + 'px';
     box.style.backgroundColor = randomc;
     box.clientHeight;
-    box.style.transition = '.8s';
+    box.style.transition = '.8s ease-out';
     box.style.opacity = 0;
     box.style.transform = 'scale(2)';
     _setTimeout(() => {
@@ -209,7 +209,7 @@ window.onload = function () {
     box2.style.backgroundColor = randomc;
     box3.style.backgroundColor = randomc;
     box1.clientHeight;
-    box1.style.transition = '2s';
+    box1.style.transition = '2s ease-out';
     box1.style.opacity = 0;
     box1.style.transform = 'rotate(-55deg) translateY(-600%) scale(1.5)';
     _setTimeout(() => {

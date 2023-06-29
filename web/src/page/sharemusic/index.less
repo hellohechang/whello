@@ -74,7 +74,7 @@ body {
       filter: blur(10px);
       pointer-events: none;
       z-index: -1;
-      transition: transform 0.3s, filter 1s, opacity 1s;
+      transition: transform 0.3s ease-out, filter 1s ease-out, opacity 1s ease-out;
 
       &.open {
         opacity: 0.8;
@@ -169,7 +169,7 @@ body {
 
         div {
           padding-bottom: 22px;
-          transition: opacity 0.5s ease-out, letter-spacing .1s;
+          transition: opacity 0.5s ease-out, letter-spacing .1s ease-out;
           opacity: 1;
 
           &.open {
@@ -575,7 +575,7 @@ body {
   border-radius: 5px;
   overflow: hidden;
   z-index: 99;
-  transition: max-width .5s, width .5s, max-height .5s, height .5s;
+  transition: max-width .5s ease-out, width .5s ease-out, max-height .5s ease-out, height .5s ease-out;
 
   @media (max-width: 800px) {
     & {

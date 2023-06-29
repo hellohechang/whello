@@ -35,7 +35,7 @@ body:before {
   background-color: #000000e3;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 3s
+  transition: opacity 3s ease-out;
 }
 
 .head_wrap {
@@ -44,7 +44,7 @@ body:before {
   left: 0;
   width: 100%;
   height: 80px;
-  transition: .8s;
+  transition: .8s ease-out;
   background-color: #ffffffad;
   text-align: center;
   z-index: 4;
@@ -65,19 +65,18 @@ body:before {
       margin: 0 10px;
       width: 0;
       text-align: center;
-      max-width: 200px;
+      max-width: 400px;
       flex: auto;
       border: none;
       outline: none;
       background-color: #d9d6d68a;
       height: 40px;
       font-size: 18px;
-      transition: .5s;
+      transition: .5s ease-out;
       border-radius: 4px;
 
       &:focus {
         background-color: #ffffffa8;
-        max-width: 400px;
       }
     }
 

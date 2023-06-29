@@ -47,7 +47,7 @@ class LoadingBar {
       this.el.style.transition = 'none'
       this.el.style.width = '0'
       this.el.clientHeight
-      this.el.style.transition = '2s'
+      this.el.style.transition = '2s ease-out'
       this.el.style.width = '80%'
       this.options.setStart && this.options.setStart();
     }
@@ -56,7 +56,7 @@ class LoadingBar {
     this.num--;
     this.num <= 0 ? (this.num = 0) : null;
     if (this.num === 0) {
-      this.el.style.transition = '.8s'
+      this.el.style.transition = '.8s ease-out'
       this.el.style.width = '100%'
       this.timer = setTimeout(() => {
         this.el.style.transition = 'none'
@@ -120,7 +120,7 @@ const hidelimg = () => {
   num--;
   num <= 0 ? (num = 0) : null;
   if (num === 0) {
-    img.style.transition = '.8s'
+    img.style.transition = '.8s ease-out'
     img.style.opacity = 0;
     timer = setTimeout(() => {
       clearTimeout(timer);

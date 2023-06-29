@@ -10,7 +10,7 @@ upProgressbox.style.cssText = `
   width: 80%;
   max-width: 400px;
   pointer-events: none;
-  transition: 0.5s;
+  transition: 0.5s ease-out;
   z-index: ${LevelObj.upProgressbox};
   `;
 document.body.appendChild(upProgressbox);
@@ -48,7 +48,7 @@ export class UpProgress {
                   text-align: center;
                   color: #fff;
                   width: 0;
-                  transition: 0.5s;
+                  transition: 0.5s ease-out;
                   text-overflow: ellipsis;
                   overflow: hidden;
                   white-space: nowrap; 

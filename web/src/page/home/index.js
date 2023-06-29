@@ -1044,9 +1044,7 @@ function showAside() {
   $asideBtn.find('.boxtop').addClass('active');
   $asideBtn.find('.boxdow').addClass('active');
   $asideBtn.find('.boxcon').css('opacity', '0');
-  _setTimeout(() => {
-    renderAsideList(1);
-  }, 500);
+  renderAsideList(1);
 }
 function hideAside() {
   let menuw = $aside.outerWidth();
@@ -2977,8 +2975,7 @@ function musicPlay(obj) {
           if (!$musicPlayerBox.is(':hidden')) {
             if (
               _d.music &&
-              _d.music.findIndex((item) => item.id === curSongListId) === 0 &&
-              $msuicContentBox.find('.list_items_wrap').css('transform') === 'none'
+              _d.music.findIndex((item) => item.id === $songListWrap.listId) === 0
             ) {
               renderMusicItem();
             }
@@ -3272,6 +3269,7 @@ $musicHeadWrap.on('click', '.back', function (e) {
   } else if ($musicLrcWrap.css('transform') === 'none') {
     $lrcHead.find('.close').click();
   } else if ($msuicContentBox.find('.list_items_wrap').css('transform') === 'none') {
+    $songListWrap.listId = null;
     $songListWrap.removeClass('open');
     $msuicContentBox.find('.list_items_wrap').removeClass('open');
     _setTimeout(() => {
@@ -3971,7 +3969,7 @@ function renderMusicList() {
   if (a.length === 0) {
     rendermusiclistdefault();
   }
-  let id = curSongListId;
+  let id = $songListWrap.listId;
   _getAjax('/player/getmusicinfo').then((result) => {
     if (parseInt(result.code) === 0) {
       if ($musicPlayerBox.is(':hidden')) return;
@@ -4016,7 +4014,6 @@ function rendermusiclistdefault() {
   });
   $songListUl.html(str);
 }
-let curSongListId = null;
 function rendermusiclist() {
   if ($musicPlayerBox.is(':hidden')) return;
   let arr = _d.music,
@@ -4034,22 +4031,17 @@ function rendermusiclist() {
   str += `<li cursor class="add_song_list"><img src="/img/tianjia.png"></li>`;
   $songListUl.html(str);
   lazyImg($songListWrap, '.song_list_item', 'img', true);
-  if (!curSongListId) {
-    curSongListId = arr[0].id;
-  }
-  if ($msuicContentBox.find('.list_items_wrap').css('transform') === 'none') {
-    rendermusicitem();
-  }
+  if (!$songListWrap.listId) return;
+  rendermusicitem();
 }
 let musicPageNum = 1;
 function renderMusicItem() {
-  if ($musicPlayerBox.is(':hidden') || $msuicContentBox.find('.list_items_wrap').css('transform') !== 'none') return;
-  let id = curSongListId;
+  let id = $songListWrap.listId;
+  if (!id) return;
   _getAjax('/player/getlist', { id }).then((result) => {
     if (parseInt(result.code) === 0) {
-      if ($musicPlayerBox.is(':hidden') || $msuicContentBox.find('.list_items_wrap').css('transform') !== 'none')
-        return;
       _d.music = result.data;
+      if (!id) return;
       rendermusicitem();
       return;
     }
@@ -4080,11 +4072,11 @@ function rendermusicitemdefault() {
 }
 
 function rendermusicitem(gao) {
-  if ($musicPlayerBox.is(':hidden') || $msuicContentBox.find('.list_items_wrap').css('transform') !== 'none') return;
-  let id = curSongListId,
+  let id = $songListWrap.listId,
     listpx = curSongListSort;
+  if (!id) return;
   let ind = _d.music.findIndex((item) => item.id === id);
-  ind < 0 ? (ind = 0) : null;
+  if (ind < 0) return;
   let marr = deepClone(_d.music[ind]);
   if (ind > 0) {
     if (listpx === 'artist') {
@@ -4185,11 +4177,10 @@ $songListWrap
     '.song_list_item',
     debounce(function (e) {
       rendermusicitemdefault();
-      curSongListId = $(this).attr('data-id');
-      $songListWrap.addClass('open');
+      $songListWrap.addClass('open').listId = $(this).attr('data-id');
       $msuicContentBox.find('.list_items_wrap').addClass('open').scrollTop(0);
       musicPageNum = 1;
-      _setTimeout(renderMusicItem, 800);
+      renderMusicItem();
     }, 1000, true)
   )
   .on(
@@ -4340,7 +4331,7 @@ let songItemsBoxHide = debounce(function () {
 }, 10000);
 // 歌单列表编辑
 $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', function (e) {
-  let id = curSongListId;
+  let id = $songListWrap.listId;
   let index = _d.music.findIndex((item) => item.id === id);
   let { des, name } = _d.music[index];
   let str = `
@@ -4369,7 +4360,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     }
   }, 1000, true));
 }).on('click', '.share_song_list_btn', debounce(function () {
-  let id = curSongListId;
+  let id = $songListWrap.listId;
   let index = _d.music.findIndex((item) => item.id === id);
   if (index < 0) return;
   let arr = _d.music[index].item.map(item => ({ id: item.id }));
@@ -4620,7 +4611,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
 }).on('click', '.del_songs_btn', function (e) {
   // 移除全选
   let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
-    id = curSongListId,
+    id = $songListWrap.listId,
     $selectarr = $songlist.filter(
       (index, item) => $(item).find('.check_state').attr('check') === 'y'
     );
@@ -4650,7 +4641,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     },
   });
 }).on('click', '.clear_all_song_btn', function () {
-  let id = curSongListId;
+  let id = $songListWrap.listId;
   let idx = _d.music.findIndex((item) => item.id === id);
   if (idx > 1 || id == 'all') return;
   alert(`确认清空？`, {
@@ -4670,7 +4661,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   let text = $(this).text();
   // 全选移动
   let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
-    id = curSongListId,
+    id = $songListWrap.listId,
     $selectarr = $songlist.filter(
       (index, item) => $(item).find('.check_state').attr('check') === 'y'
     );
@@ -4871,7 +4862,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     pcount: $this.attr('data-pcount'),
     ccount: $this.attr('data-ccount')
   };
-  let ii = _d.music.findIndex((item) => item.id === curSongListId);
+  let ii = _d.music.findIndex((item) => item.id === $songListWrap.listId);
   if (ii < 0) return;
   let str = '';
   str += `<div class="mtcitem9" style="justify-content: center;font-size: 14px;color: #5a5a5a;">收藏(${sobj.ccount}) 播放(${sobj.pcount})</div>
@@ -4908,7 +4899,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
-              let id = curSongListId;
+              let id = $songListWrap.listId;
               _postAjax('/player/delsong', {
                 id, ar: [sobj]
               }).then((result) => {
@@ -4923,7 +4914,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           });
         } else if (_getTarget(e, '.mtcitem3')) {
           let str = '',
-            id = curSongListId;
+            id = $songListWrap.listId;
           _d.music.forEach((v, i) => {
             if (i > 2 && v.id !== id) {
               let name = encodeHtml(v.name),
@@ -5174,7 +5165,7 @@ if (isios()) {
   }).on('drop', '.song_item', function (e) {
     let fid = $(fromDom).attr('data-id'),
       tid = $(this).attr('data-id'),
-      id = curSongListId,
+      id = $songListWrap.listId,
       index = _d.music.findIndex((item) => item.id === id);
     if (fromDom) {
       if (curSongListSort === 'default' && index > 0 && id !== 'all') {
@@ -5500,7 +5491,7 @@ function zidonghide(timemax, el, ell, fn, fn2, fel) {
 
 //定位播放歌曲
 function gaoliang(a) {
-  if ($musicPlayerBox.is(':hidden') || $msuicContentBox.find('.list_items_wrap').css('transform') !== 'none') return;
+  if (!$songListWrap.listId) return;
   if (musicarrjl != undefined && musicobj) {
     if (musicarrjl.some(item => item.id === musicobj.id)) {
       $listItemsWarp.find('.get_location').stop().slideDown(_speed);
@@ -5578,8 +5569,7 @@ function musicMv(obj) {
       if (!$musicPlayerBox.is(':hidden')) {
         if (
           _d.music &&
-          _d.music.findIndex((item) => item.id === curSongListId) === 0 &&
-          $msuicContentBox.find('.list_items_wrap').css('transform') === 'none'
+          _d.music.findIndex((item) => item.id === $songListWrap.listId) === 0
         ) {
           renderMusicItem();
         }

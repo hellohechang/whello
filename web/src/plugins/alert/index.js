@@ -45,7 +45,7 @@ export const alert = (function () {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: opacity .6s;`);
+                transition: opacity .6s ease-out;`);
       this._main = this.createEl(`
               transform: translateY(-100px);
               width: 90%;
@@ -53,7 +53,7 @@ export const alert = (function () {
               background: #FFF;
               border-radius: 3px;
               overflow: hidden;
-              transition: transform .5s;`);
+              transition: transform .5s ease-out;`);
       this._header = this.createEl(`
               position: relative;
               box-sizing: bobder-box;

@@ -809,7 +809,7 @@ export function _progressBar(percent, callback) {
     justify-content: center;
     background-color: rgb(0 0 0 / 19%);
     z-index: ${LevelObj._progressBar};
-    transition: .5s;
+    transition: .5s ease-out;
     opacity: 0;
     `;
   let proBox = document.createElement('div');
@@ -825,7 +825,7 @@ export function _progressBar(percent, callback) {
     justify-content: center;
     flex-flow: column;
     color: #868686;
-    transition: .5s;
+    transition: .5s ease-out;
     transform: translateY(-50px);
     `;
   // 显示百分比
@@ -1079,7 +1079,7 @@ export function imgPreview(arr, idx = 0) {
   box.appendChild(pre);
   box.appendChild(next);
   document.body.appendChild(box);
-  box.style.transition = '.2s';
+  box.style.transition = '.2s ease-out';
   box.style.opacity = 1;
   if (arr.length > 1) {
     pre.style.display = 'block';
@@ -1181,7 +1181,7 @@ export function imgPreview(arr, idx = 0) {
       image.removeEventListener('wheel', hdWheel);
       image.removeEventListener('load', hdLoad);
       image.removeEventListener('error', hdError);
-      box.style.transition = '.5s';
+      box.style.transition = '.5s ease-out';
       box.style.opacity = 0;
       _loadingBar.end();
       let timer = setTimeout(() => {
