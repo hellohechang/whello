@@ -4180,7 +4180,9 @@ $songListWrap
       $songListWrap.addClass('open').listId = $(this).attr('data-id');
       $msuicContentBox.find('.list_items_wrap').addClass('open').scrollTop(0);
       musicPageNum = 1;
-      renderMusicItem();
+      _setTimeout(() => {
+        renderMusicItem();
+      }, 500);
     }, 1000, true)
   )
   .on(
