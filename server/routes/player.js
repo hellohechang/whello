@@ -1,7 +1,7 @@
 const express = require('express'),
   fs = require('fs'),
   route = express.Router();
-const { deepClone, getSongInfo } = require('../utils');
+const { deepClone, getSongInfo, formatDate } = require('../utils');
 const { insertData, updateData, queryData, deleteData, runSqlite } = require('../sqlite');
 const {
   handleMusicList,
@@ -760,7 +760,8 @@ route.post('/mergefile', async (req, res) => {
         duration,
         mv: '',
         collect_count: 0,
-        play_count: 0
+        play_count: 0,
+        creat_time: formatDate({ template: '{0}-{1}-{2}' })
       }])
       await writelog(req, `上传歌曲[${a}]`);
     }

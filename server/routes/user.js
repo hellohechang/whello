@@ -151,21 +151,29 @@ queryData('user', 'account').then(() => { }).catch(async () => {
     collect_count TEXT DEFAULT (0) 
                        NOT NULL,
     play_count    TEXT DEFAULT (0) 
-                       NOT NULL
+                       NOT NULL,
+    album         TEXT NOT NULL
+                       DEFAULT (''),
+    year          TEXT NOT NULL
+                       DEFAULT (''),
+    creat_time    TEXT NOT NULL
+                       DEFAULT ('') 
 );
 `);
     await runSqlite(`CREATE TABLE note (
-    state   TEXT DEFAULT (0) 
-                 NOT NULL,
-    id      TEXT NOT NULL
-                 UNIQUE
-                 PRIMARY KEY,
-    account TEXT NOT NULL,
-    name    TEXT NOT NULL,
-    share   TEXT DEFAULT n
-                 NOT NULL,
-    data    TEXT NOT NULL,
-    time    TEXT NOT NULL
+    state       TEXT DEFAULT (0) 
+                     NOT NULL,
+    id          TEXT NOT NULL
+                     UNIQUE
+                     PRIMARY KEY,
+    account     TEXT NOT NULL,
+    name        TEXT NOT NULL,
+    share       TEXT DEFAULT n
+                     NOT NULL,
+    data        TEXT NOT NULL,
+    time        TEXT NOT NULL,
+    visit_count TEXT NOT NULL
+                     DEFAULT (0) 
 );
 `);
     await runSqlite(`CREATE TABLE playing (
@@ -185,23 +193,21 @@ queryData('user', 'account').then(() => { }).catch(async () => {
     data    TEXT NOT NULL
 );
 `);
-    await runSqlite(`CREATE TABLE musics (
-    id            TEXT UNIQUE
-                       NOT NULL
-                       PRIMARY KEY,
-    name          TEXT NOT NULL,
-    artist        TEXT NOT NULL,
-    duration      TEXT NOT NULL,
-    mv            TEXT DEFAULT ('') 
-                       NOT NULL,
-    collect_count TEXT DEFAULT (0) 
-                       NOT NULL,
-    play_count    TEXT DEFAULT (0) 
-                       NOT NULL,
-    year          TEXT NOT NULL
-                       DEFAULT (''),
-    album         TEXT DEFAULT ('') 
-                       NOT NULL
+    await runSqlite(`CREATE TABLE user (
+    state    TEXT DEFAULT (0) 
+                  NOT NULL,
+    account  TEXT NOT NULL
+                  UNIQUE
+                  PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    time     TEXT NOT NULL,
+    bg       TEXT NOT NULL,
+    bgxs     TEXT NOT NULL,
+    dailybg  TEXT DEFAULT n
+                  NOT NULL,
+    flag     TEXT DEFAULT (0) 
+                  NOT NULL
 );
 `);
     await runSqlite(`CREATE VIEW getchat AS
@@ -222,16 +228,17 @@ queryData('user', 'account').then(() => { }).catch(async () => {
 `);
     await runSqlite(`CREATE VIEW getnote AS
     SELECT u.username,
-           n.state,
-           n.id,
-           n.account,
-           n.name,
-           n.time,
-           n.data,
-           n.share
-      FROM note AS n
-           LEFT JOIN
-           user AS u ON u.account = n.account;
+          n.visit_count,
+          n.state,
+          n.id,
+          n.account,
+          n.name,
+          n.time,
+          n.data,
+          n.share
+    FROM note AS n
+          LEFT JOIN
+          user AS u ON u.account = n.account;
 `);
     await runSqlite(`CREATE VIEW getshare AS
     SELECT u.username,

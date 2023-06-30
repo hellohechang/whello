@@ -495,7 +495,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
     }
   }).catch(err => { });
 }, 500, true)).on('click', '.bm_item', function (e) {
-  let link = $(this).attr('data-link');
+  let { link } = getBmItemData($asideBtn.activeId, $(this).attr('data-id'));
   myOpen(link, "_blank");
 }).on('click', '.add_list_btn', (e) => {
   // 新建列表
@@ -3530,7 +3530,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
             u2: `${mediaURL}/musicys/${sobj.artist}-${sobj.name}.jpg`
           }]);
         } else if (_getTarget(e, '.mtcitem10')) {
-          let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = sobj;
+          let { name = '--', artist = '--', duration = '--', album = '--', year = '--', collect_count = '--', play_count = '--', creat_time = '--' } = sobj;
           name = encodeHtml(name);
           artist = encodeHtml(artist);
           year = encodeHtml(year);
@@ -3542,6 +3542,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">添加时间：</em><em style="flex:auto;color:#5a5a5a;">${creat_time}</em></div>
                     `
           rightMenu(e, str);
         };
@@ -4865,7 +4866,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             u2: `${mediaURL}/musicys/${sobj.artist}-${sobj.name}.jpg`
           }]);
         } else if (_getTarget(e, '.mtcitem10')) {
-          let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = sobj;
+          let { name = '--', artist = '--', duration = '--', album = '--', year = '--', collect_count = '--', play_count = '--', creat_time = '--' } = sobj;
           name = encodeHtml(name);
           artist = encodeHtml(artist);
           year = encodeHtml(year);
@@ -4877,6 +4878,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">添加时间：</em><em style="flex:auto;color:#5a5a5a;">${creat_time}</em></div>
                     `
           rightMenu(e, str);
         };
@@ -5265,7 +5267,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
           },
         });
       } else if (_getTarget(e, '.mtcitem10')) {
-        let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = musicobj;
+        let { name = '--', artist = '--', duration = '--', album = '--', year = '--', collect_count = '--', play_count = '--', creat_time = '--' } = musicobj;
         name = encodeHtml(name);
         artist = encodeHtml(artist);
         year = encodeHtml(year);
@@ -5277,6 +5279,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">添加时间：</em><em style="flex:auto;color:#5a5a5a;">${creat_time}</em></div>
                     `
         rightMenu(e, str);
       };

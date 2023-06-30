@@ -1,6 +1,6 @@
 const express = require('express'),
   route = express.Router();
-const { insertData, updateData, queryData } = require('../sqlite');
+const { insertData, updateData, queryData, runSqlite } = require('../sqlite');
 const {
   writelog,
   _success,
@@ -18,8 +18,9 @@ route.get('/getnote', async (req, res) => {
       await queryData('getnote', '*', `WHERE state=? AND id=?`, ['0', id])
     )[0];
     if (ntobj) {
-      let { username, share, name, data, account: acc } = ntobj;
+      let { username, share, name, data, account: acc, visit_count } = ntobj;
       await writelog(req, `访问笔记[${username}-${name}(/note/?v=${id})]`);
+      await runSqlite(`update note set visit_count=visit_count+1 where id=?`, [id]);
       if (share === 'y' || acc === account) {
         let own = 'n';
         if (ntobj.account === account) {
@@ -29,6 +30,7 @@ route.get('/getnote', async (req, res) => {
           username,
           name,
           data,
+          visit_count,
           account: acc,
           own,
         });
@@ -58,7 +60,7 @@ route.get('/allsearchlist', async (req, res) => {
       aa = aa.filter(item => item.share === 'y');
       let arr = [];
       aa.forEach((item) => {
-        let { name, data, id, share } = item;
+        let { name, data, id, share, visit_count } = item;
         let searchArr = hdSearch(a, data);
         let searchNameArr = hdSearch(a, name);
         if (searchNameArr.length > 0 || searchArr.length > 0) {
@@ -66,6 +68,7 @@ route.get('/allsearchlist', async (req, res) => {
             id,
             share,
             name,
+            visit_count,
             con: searchArr,
             tNum: searchNameArr.length,
             sNum: searchArr.length
@@ -150,7 +153,7 @@ route.get('/searchlist', async (req, res) => {
     if (a) {
       let arr = [];
       aa.forEach((item) => {
-        let { name, data, id, share } = item;
+        let { name, data, id, share, visit_count } = item;
         let searchArr = hdSearch(a, data);
         let searchNameArr = hdSearch(a, name);
         if (searchNameArr.length > 0 || searchArr.length > 0) {
@@ -158,6 +161,7 @@ route.get('/searchlist', async (req, res) => {
             id,
             share,
             name,
+            visit_count,
             con: searchArr,
             tNum: searchNameArr.length,
             sNum: searchArr.length
@@ -177,8 +181,6 @@ route.get('/searchlist', async (req, res) => {
 
     aa = aa.map((v) => {
       delete v.data;
-      delete v.time;
-      delete v.state;
       return v;
     });
     showpage > 200 ? showpage = 200 : null;
@@ -265,6 +267,7 @@ route.post('/editnote', async (req, res) => {
           time: Date.now(),
           share: 'n',
           account,
+          visit_count: 0
         },
       ]);
       await writelog(req, `新增笔记[${vn}(${id})]`);
