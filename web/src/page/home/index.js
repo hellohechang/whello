@@ -1206,19 +1206,18 @@ function renderhomebook() {
               <p title="${des}">${name}</p>
               </li>`;
   });
-  str += `<li class="home_bm_item" data-src="/img/tianjia.png">
-                <div cursor x="add" class="home_bm_logo">
+  str += `<li class="home_bm_item">
+                <div cursor x="add" style="background-image:url(/img/tianjia.png)" class="home_bm_logo">
                 </div>
                 <p></p>
               </li>`;
   $homeBmWrap.find('ul').html(str).find('.home_bm_item').each((_, item) => {
     let $item = $(item);
+    let flag = $item.find('.home_bm_logo').attr('x');
+    if (flag == 'add') return;
     let { logo, link } = getHomeBmData($item.attr('data-id'));
     const $homeBmLogo = $item.find('.home_bm_logo');
-    if (
-      !logo.includes('favicon.ico') &&
-      $item.find('.home_bm_logo').attr('x') !== 'add'
-    ) {
+    if (!logo.includes('favicon.ico')) {
       logo = mediaURL + logo;
     }
     imgjz(
@@ -1304,7 +1303,9 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
 ).on('contextmenu', '.home_bm_logo', function (e) {
   e.preventDefault();
   let $this = $(this);
-  homeBmMenu(e, getHomeBmData($this.parent().attr('data-id')));
+  let id = $this.parent().attr('data-id');
+  if (!id) return;
+  homeBmMenu(e, getHomeBmData(id));
 }).on('click', '.home_foot_menu div', function () {
   let che = $(this).attr('check');
   che === 'y' ? (che = 'n') : (che = 'y');
@@ -1429,14 +1430,15 @@ if (isios()) {
   $searchBoxMask[0]._longPress('.home_bm_logo', function (e) {
     let $this = $(this),
       ev = e.changedTouches[0];
-    homeBmMenu(ev, getHomeBmData($this.parent().attr('data-id')));
+    let id = $this.parent().attr('data-id');
+    if (!id) return;
+    homeBmMenu(ev, getHomeBmData(id));
   });
 }
 
 
 // 编辑书签
 function homeBmMenu(e, obj) {
-  if (!obj.id) return;
   let str = `<div cursor class="mtcitem"><i class="iconfont icon-danchuang"></i><span>弹窗打开</span></div>
             <div cursor class="mtcitem1"><i class="iconfont icon-shangchuan1"></i><span>上传图标</span></div>
             ${$homeFootMenu.is(':hidden') ? '<div cursor class="mtcitem2"><i class="iconfont icon-duoxuan"></i><span>选中</span></div>' : ''}
