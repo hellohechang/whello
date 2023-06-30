@@ -1333,9 +1333,9 @@ export function getPageScrollTop() {
 export function qucong(arr) {
   var hash = {};
   arr = arr.reduce((item, next) => {
-    hash.hasOwnProperty(next.name + next.artist)
+    hash.hasOwnProperty(next.id)
       ? ''
-      : ((hash[next.name + next.artist] = true), item.push(next));
+      : ((hash[next.id] = true), item.push(next));
     return item;
   }, []);
   return arr;

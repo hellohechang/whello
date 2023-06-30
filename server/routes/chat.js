@@ -126,7 +126,7 @@ route.get('/getmsg', async (req, res) => {
       val = val.toLowerCase();
       carr = carr.filter((item) => {
         let { name, data, date } = item;
-        let str = name + '|' + data + '|' + date;
+        let str = name + data + date;
         return hdSearch(val, str).length > 0;
       });
     }

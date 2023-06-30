@@ -520,18 +520,14 @@ import { rightMenu } from "../../plugins/rightMenu";
       return;
     }
     $pMusicListBox.find('.left').text(`正在播放(${playingList.length})`);
-    let playarr = playingList.map((item, idx) => {
-      item.idx = idx;
-      return item;
-    });
-    let totalPage = Math.ceil(playarr.length / playingSize);
+    let totalPage = Math.ceil(playingList.length / playingSize);
     playingPageNum < 1 ? playingPageNum = 1 : (playingPageNum > totalPage ? playingPageNum = totalPage : null);
-    let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize);
+    let arr = playingList.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize);
     arr.forEach((v) => {
-      let { name, artist, mv, idx, duration, id } = v;
+      let { name, artist, mv, id } = v;
       name = encodeHtml(name);
       artist = encodeHtml(artist);
-      str += `<li class="song_item" cursor data-id="${id}" data-duration="${duration}" data-name="${name}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}">
+      str += `<li class="song_item" cursor data-id="${id}">
           <div class="logo_wrap">
           <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg/?h=${HASH}`)}>
           <img class="play_gif" src="/img/wave.gif">
@@ -583,15 +579,12 @@ import { rightMenu } from "../../plugins/rightMenu";
       }
     })
   }, 1000, true))
+  function getPlayingListItem(id) {
+    return playingList.find(item => item.id == id);
+  }
   $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
     let $this = $(this).parent();
-    let obj = {
-      name: $this.attr('data-name'),
-      artist: $this.attr('data-artist'),
-      mv: $this.attr('data-mv'),
-      duration: $this.attr('data-duration'),
-      id: $this.attr('data-id')
-    };
+    let obj = getPlayingListItem($this.attr('data-id'));
     if (musicObj.id == obj.id) {
       $lrcFootBtnWrap.find('.play_btn').click();
       return;
@@ -600,13 +593,7 @@ import { rightMenu } from "../../plugins/rightMenu";
   }).on('click', '.play_mv', function (e) {
     e.stopPropagation();
     let $this = $(this).parent();
-    let sobj = {
-      name: $this.attr('data-name'),
-      artist: $this.attr('data-artist'),
-      mv: $this.attr('data-mv'),
-      duration: $this.attr('data-duration'),
-      id: $this.attr('data-id')
-    };
+    let sobj = getPlayingListItem($this.attr('data-id'));
     musicMv(sobj);
   }).on('click', '.prev_page', function () {
     playingPageNum--;
@@ -636,18 +623,12 @@ import { rightMenu } from "../../plugins/rightMenu";
   }).on('click', '.del', function (e) {
     e.stopPropagation();
     let $this = $(this),
-      mobj = {
-        name: $this.parent().attr('data-name'),
-        artist: $this.parent().attr('data-artist'),
-        mv: $this.parent().attr('data-mv'),
-        duration: $this.parent().attr('data-duration'),
-        id: $this.parent().attr('data-id')
-      };
+      id = $this.parent().attr('data-id');
     playingList = playingList.filter(
-      (v) => v.id !== mobj.id
+      (v) => v.id !== id
     );
     musicArr = musicArr.filter(
-      (v) => v.id !== mobj.id
+      (v) => v.id !== id
     );
     dqplaying();
     gaolianging();
@@ -713,7 +694,8 @@ import { rightMenu } from "../../plugins/rightMenu";
             <div cursor class="mtcitem3"><i class="iconfont icon-geci"></i><span>居中</span></div>
             <div cursor class="mtcitem4"><i class="iconfont icon-kaoyou"></i><span>靠右</span></div>
             <div cursor class="mtcitem6"><i class="iconfont icon-tupian"></i><span>封面</span></div>
-            <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>`
+            <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
+            <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制歌曲名</span></div>`
       rightMenu(e, str, function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
           let { size } = lrcstatu;
@@ -785,7 +767,22 @@ import { rightMenu } from "../../plugins/rightMenu";
           }]);
         } else if (_getTarget(e, '.mtcitem7')) {
           close();
-          copyText(`${musicObj.artist}-${musicObj.name}`);
+          copyText(musicObj.name);
+        } else if (_getTarget(e, '.mtcitem10')) {
+          let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = musicObj;
+          name = encodeHtml(name);
+          artist = encodeHtml(artist);
+          year = encodeHtml(year);
+          album = encodeHtml(album);
+          let str = `<div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌曲：</em><em style="flex:auto;color:#5a5a5a;">${name}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌手：</em><em style="flex:auto;color:#5a5a5a;">${artist}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">专辑：</em><em style="flex:auto;color:#5a5a5a;">${album}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">发布年份：</em><em style="flex:auto;color:#5a5a5a;">${year}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+                    `
+          rightMenu(e, str);
         };
       });
     },

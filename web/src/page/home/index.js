@@ -353,23 +353,23 @@ function rAsideList(p) {
   _nav.forEach((item) => {
     let name = encodeHtml(item.name);
     if (item.id === id) {
-      str += `<div class="list_title jzxz" data-id="${item.id}" data-name="${name}" cursor title="${name}" flag="on" draggable="true">
+      str += `<div class="list_title jzxz" data-id="${item.id}" cursor flag="on" draggable="true">
         <i class="iconfont icon-shoucang"></i>
         <em>${name}</em></div>
         <ul style="display:'block'">`;
       item.item.forEach((y) => {
         let name = encodeHtml(y.name);
         let des = y.des ? encodeHtml(y.des) : '';
-        str += `<li class="bm_item jzxz" data-pid="${item.id}" data-name="${name}" data-des="${des}" data-id="${y.id}" cursor data-link="${y.link}" data-src="${y.logo}" draggable="true">
+        str += `<li class="bm_item jzxz" data-id="${y.id}" cursor draggable="true">
           <div cursor check="n" class="check_bm"></div>
           <div class="bm_logo"></div>
-          <div title="${name}(${y.link})" class="bm_name">${name}</div>
+          <div class="bm_name">${name}</div>
           <p title="${des}">${des || '描述'}</p>
           </li>`;
       });
       str += '<div cursor class="pack_up_bm_list iconfont icon-up"></div></ul>';
     } else {
-      str += `<div data-id="${item.id}" data-name="${name}" cursor title="${name}" flag="off" draggable="true" class="list_title jzxz">
+      str += `<div data-id="${item.id}" cursor title="${name}" flag="off" draggable="true" class="list_title jzxz">
       <i class="iconfont icon-shoucang"></i>
       <em>${name}</em></div>
       <ul style="display:'none'"></ul>`;
@@ -393,17 +393,16 @@ function rAsideList(p) {
 function hdAsideListItemLogo() {
   if ($asideBtn.activeId === 'hide') return;
   $aside.find('.bm_item').each((_, item) => {
-    let $item = $(item),
-      url = $item.attr('data-src'),
-      link = $item.attr('data-link');
-    if (!url.includes('favicon.ico')) {
-      url = mediaURL + url;
+    let $item = $(item);
+    let { logo, link } = getBmItemData($asideBtn.activeId, $item.attr('data-id'));
+    if (!logo.includes('favicon.ico')) {
+      logo = mediaURL + logo;
     }
     let $bm_logo = $item.find('.bm_logo');
     imgjz(
-      url,
+      logo,
       () => {
-        $bm_logo.css('background-image', `url(${url})`);
+        $bm_logo.css('background-image', `url(${logo})`);
       },
       () => {
         let u = `https://api.iowen.cn/favicon/${getHost(link)}.png`;
@@ -421,6 +420,23 @@ function hdAsideListItemLogo() {
   });
 }
 //侧边导航缩放
+function getBmListTitleData(id) {
+  return _d.bookmark.side.find((item) => item.id === id);
+}
+function getBmItemData(pid, id) {
+  let p = _d.bookmark.side.find((item) => item.id === pid);
+  return p.item.find(item => item.id == id);
+}
+function getAsideCheckBmItem() {
+  let $bmItem = $aside.find('.bm_item'),
+    $checkArr = $bmItem.filter((_, item) => $(item).find('.check_bm').attr('check') === 'y');
+  let arr = [];
+  $checkArr.each((_, v) => {
+    let $v = $(v);
+    arr.push($v.attr('data-id'));
+  });
+  return arr;
+}
 $asideWrap.on('click', '.list_title', debounce(function () {
   $aside.find('.foot_menu').stop().slideUp(_speed).find('div').attr({
     class: 'iconfont icon-xuanzeweixuanze',
@@ -436,16 +452,16 @@ $asideWrap.on('click', '.list_title', debounce(function () {
     return;
   }
   function fun() {
-    let bmk = _d.bookmark.side.find((item) => item.id === id),
+    let bmk = getBmListTitleData(id),
       str = '';
     if (!bmk) return;
     bmk.item.forEach((y) => {
       let name = encodeHtml(y.name);
       let des = y.des ? encodeHtml(y.des) : '';
-      str += `<li data-pid="${id}" data-name="${name}" data-des="${des}" data-id="${y.id}" data-link="${y.link}" data-src="${y.logo}" cursor class="bm_item jzxz" draggable="true">
+      str += `<li data-id="${y.id}" cursor class="bm_item jzxz" draggable="true">
         <div cursor check="n" class="check_bm"></div>
         <div class="bm_logo"></div>
-          <div title="${name}(${y.link})" class="bm_name">${name}</div>
+          <div class="bm_name">${name}</div>
           <p title="${des}">${des || '描述'}</p>
           </li>`;
     });
@@ -511,23 +527,15 @@ $asideWrap.on('click', '.list_title', debounce(function () {
   //操作列表
   e.preventDefault();
   let $this = $(this);
-  asideBmMenu(e, {
-    id: $this.attr('data-id'),
-    name: $this.attr('data-name'),
-    index: $this.index('.list_title'),
-  });
+  asideBmMenu(e, getBmListTitleData($this.attr('data-id')));
 }).on('contextmenu', '.bm_item', function (e) {
   //操作书签
   e.preventDefault();
   let $this = $(this);
+  let pid = $asideBtn.activeId;
   asideListMenu(e, {
-    pid: $this.attr('data-pid'),
-    cid: $this.attr('data-id'),
-    des: $this.attr('data-des'),
-    index: $this.index(),
-    name: $this.attr('data-name'),
-    link: $this.attr('data-link'),
-    logo: $this.attr('data-src'),
+    pid,
+    ...getBmItemData(pid, $this.attr('data-id'))
   });
 }).on('click', '.foot_menu div', function () {
   let che = $(this).attr('check');
@@ -573,17 +581,9 @@ $asideWrap.on('click', '.list_title', debounce(function () {
 }).on('click', '.pack_up_bm_list', function () {
   $(this).parent().prev().click();
 }).on('click', '.delete_bm', function (e) {
-  let $sidenav = $aside.find('.bm_item'),
-    $checkArr = $sidenav.filter(
-      (_, item) => $(item).find('.check_bm').attr('check') === 'y'
-    );
-  if ($checkArr.length === 0) return;
-  let arr = [],
-    pid = $checkArr.attr('data-pid');
-  $checkArr.each((i, v) => {
-    let $v = $(v);
-    arr.push($v.attr('data-id'));
-  });
+  let arr = getAsideCheckBmItem();
+  let pid = $asideBtn.activeId;
+  if (arr.length === 0) return;
   alert(`确认删除？`, {
     confirm: true,
     handled: (msg) => {
@@ -600,17 +600,9 @@ $asideWrap.on('click', '.list_title', debounce(function () {
     },
   });
 }).on('click', '.move_bm', function (e) {
-  let $sidenav = $aside.find('.bm_item'),
-    $checkArr = $sidenav.filter(
-      (_, item) => $(item).find('.check_bm').attr('check') === 'y'
-    );
-  if ($checkArr.length === 0) return;
-  let arr = [],
-    pid = $checkArr.attr('data-pid');
-  $checkArr.each((i, v) => {
-    let $v = $(v);
-    arr.push($v.attr('data-id'));
-  });
+  let arr = getAsideCheckBmItem();
+  let pid = $asideBtn.activeId;
+  if (arr.length === 0) return;
   let str = ``;
   str += `<div data-name="Home" cursor class="mtcitem" data-id="home"><i class='iconfont icon-shoucang'></i><span style="margin-left:10px;">主页</span></div>`;
   _d.bookmark.side.forEach((item) => {
@@ -669,23 +661,15 @@ if (isios()) {
     ._longPress('.list_title', function (e) {
       let $this = $(this),
         ev = e.changedTouches[0];
-      asideBmMenu(ev, {
-        id: $this.attr('data-id'),
-        name: $this.attr('data-name'),
-        index: $this.index('.list_title'),
-      });
+      asideBmMenu(ev, getBmListTitleData($this.attr('data-id')));
     })
     ._longPress('.bm_item', function (e) {
       let $this = $(this),
         ev = e.changedTouches[0];
+      let pid = $asideBtn.activeId;
       asideListMenu(ev, {
-        pid: $this.attr('data-pid'),
-        cid: $this.attr('data-id'),
-        des: $this.attr('data-des'),
-        index: $this.index(),
-        name: $this.attr('data-name'),
-        link: $this.attr('data-link'),
-        logo: $this.attr('data-src'),
+        pid,
+        ...getBmItemData(pid, $this.attr('data-id'))
       });
     });
 }
@@ -702,9 +686,7 @@ function asideBmMenu(e, obj) {
       function ({ close, e }) {
         // 编辑列表
         if (_getTarget(e, '.mtcitem')) {
-          let str = `<div class="mtcinp">
-          <input autocomplete="off" placeholder="列表名" value="${encodeHtml(obj.name)}" type="text">
-        </div>
+          let str = `<input autocomplete="off" placeholder="列表名" value="${encodeHtml(obj.name)}" type="text">
         <button cursor class="mtcbtn">提交</button>`;
           rightMenu(
             e,
@@ -869,7 +851,7 @@ function asideListMenu(e, obj) {
                     let purl = result.data.purl;
                     _postAjax('/nav/setlogo', {
                       pid: obj.pid,
-                      cid: obj.cid,
+                      cid: obj.id,
                       purl,
                     }).then((result) => {
                       if (parseInt(result.code) === 0) {
@@ -900,7 +882,7 @@ function asideListMenu(e, obj) {
           // 修改书签
           let str = `
         <input autocomplete="off" placeholder="标题" value="${encodeHtml(obj.name)}" type="text">
-        <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
+        <input autocomplete="off" placeholder="https://" value="${encodeHtml(obj.link)}" type="text">
         <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
         <button cursor class="mtcbtn">提交</button>`;
           rightMenu(
@@ -923,7 +905,7 @@ function asideListMenu(e, obj) {
                   if (an === obj.name && al === obj.link && des === obj.des) return;
                   let requestObj = {
                     pid: obj.pid,
-                    cid: obj.cid,
+                    cid: obj.id,
                     des,
                     name: an,
                     logo: obj.logo,
@@ -976,7 +958,7 @@ function asideListMenu(e, obj) {
                       if (m !== 'confirm') return;
                       _postAjax('/nav/bmktolist', {
                         pid: obj.pid,
-                        arr: [obj.cid],
+                        arr: [obj.id],
                         toid,
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
@@ -1003,7 +985,7 @@ function asideListMenu(e, obj) {
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
-              _postAjax('/nav/delbmk', { pid: obj.pid, arr: [obj.cid] }).then(
+              _postAjax('/nav/delbmk', { pid: obj.pid, arr: [obj.id] }).then(
                 (result) => {
                   if (parseInt(result.code) === 0) {
                     close();
@@ -1194,6 +1176,19 @@ function renderhomebookdefault() {
   });
   $homeBmWrap.find('ul').html(str);
 }
+function getHomeBmData(id) {
+  return _d.bookmark.home.find(item => item.id == id);
+}
+function getHomeCheckBmItem() {
+  const $homeBmItem = $homeBmWrap.find('.home_bm_item'),
+    $checkArr = $homeBmItem.filter((_, item) => $(item).find('.check_home_bm').attr('check') === 'y');
+  let arr = [];
+  $checkArr.each((i, v) => {
+    let $v = $(v);
+    arr.push($v.attr('data-id'));
+  });
+  return arr;
+}
 function renderhomebook() {
   if ($searchBoxMask.is(':hidden')) return;
   $homeFootMenu.stop().slideUp(_speed).find('div').attr({
@@ -1202,12 +1197,12 @@ function renderhomebook() {
   });
   let homearr = _d.bookmark.home,
     str = '';
-  homearr.forEach((v, i) => {
+  homearr.forEach((v) => {
     let name = encodeHtml(v.name);
     let des = v.des ? encodeHtml(v.des) : '';
-    str += `<li class="home_bm_item" data-link="${v.link}" data-des="${des}" data-src="${v.logo}" data-id="${v.id}" data-name="${name}" draggable="true">
+    str += `<li class="home_bm_item" data-id="${v.id}" draggable="true">
               <div cursor check="n" class="check_home_bm"></div>
-              <div class="home_bm_logo" cursor title="${name}(${v.link})"></div>
+              <div class="home_bm_logo" cursor></div>
               <p title="${des}">${name}</p>
               </li>`;
   });
@@ -1216,35 +1211,34 @@ function renderhomebook() {
                 </div>
                 <p></p>
               </li>`;
-  $homeBmWrap.find('ul').html(str).find('.home_bm_item').each((index, item) => {
-    let $item = $(item),
-      url = $item.attr('data-src'),
-      $fib = $item.find('.home_bm_logo');
+  $homeBmWrap.find('ul').html(str).find('.home_bm_item').each((_, item) => {
+    let $item = $(item);
+    let { logo, link } = getHomeBmData($item.attr('data-id'));
+    const $homeBmLogo = $item.find('.home_bm_logo');
     if (
-      !url.includes('favicon.ico') &&
+      !logo.includes('favicon.ico') &&
       $item.find('.home_bm_logo').attr('x') !== 'add'
     ) {
-      url = mediaURL + url;
+      logo = mediaURL + logo;
     }
     imgjz(
-      url,
+      logo,
       () => {
-        $fib.css({
-          'background-image': `url(${url})`,
+        $homeBmLogo.css({
+          'background-image': `url(${logo})`,
         });
       },
       () => {
-        let link = $item.attr('data-link');
         let u = `https://api.iowen.cn/favicon/${getHost(link)}.png`;
         imgjz(
           u,
           () => {
-            $fib.css({
+            $homeBmLogo.css({
               'background-image': `url('${u}')`,
             });
           },
           () => {
-            $fib.css({
+            $homeBmLogo.css({
               'background-image': `url('/img/mrlogo.png')`,
             });
           }
@@ -1300,7 +1294,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
       )
     );
   } else {
-    let link = $this.parent().attr('data-link');
+    let { link } = getHomeBmData($this.parent().attr('data-id'));
     myOpen(link, "_blank");
   }
 },
@@ -1310,14 +1304,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
 ).on('contextmenu', '.home_bm_logo', function (e) {
   e.preventDefault();
   let $this = $(this);
-  homeBmMenu(e, {
-    id: $this.parent().attr('data-id'),
-    name: $this.parent().attr('data-name'),
-    link: $this.parent().attr('data-link'),
-    des: $this.parent().attr('data-des'),
-    logo: $this.parent().attr('data-src'),
-    index: $this.parent().index(),
-  });
+  homeBmMenu(e, getHomeBmData($this.parent().attr('data-id')));
 }).on('click', '.home_foot_menu div', function () {
   let che = $(this).attr('check');
   che === 'y' ? (che = 'n') : (che = 'y');
@@ -1361,18 +1348,8 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
     });
   }
 }).on('click', '.delete_bm', function (e) {
-  let $sidenav = $homeBmWrap.find('.home_bm_item'),
-    $checkArr = $sidenav.filter(
-      (_, item) =>
-        $(item).attr('data-id') &&
-        $(item).find('.check_home_bm').attr('check') === 'y'
-    );
-  if ($checkArr.length === 0) return;
-  let arr = [];
-  $checkArr.each((i, v) => {
-    let $v = $(v);
-    arr.push($v.attr('data-id'));
-  });
+  let arr = getHomeCheckBmItem();
+  if (arr.length === 0) return;
   alert(`确认删除？`, {
     confirm: true,
     handled: (msg) => {
@@ -1389,18 +1366,8 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
     },
   });
 }).on('click', '.move_bm', function (e) {
-  let $sidenav = $homeBmWrap.find('.home_bm_item'),
-    $checkArr = $sidenav.filter(
-      (_, item) =>
-        $(item).attr('data-id') &&
-        $(item).find('.check_home_bm').attr('check') === 'y'
-    );
-  if ($checkArr.length === 0) return;
-  let arr = [];
-  $checkArr.each((i, v) => {
-    let $v = $(v);
-    arr.push($v.attr('data-id'));
-  });
+  let arr = getHomeCheckBmItem();
+  if (arr.length === 0) return;
   let str = '';
   if (_d.bookmark.side.length === 0) {
     _err('未找到列表');
@@ -1430,10 +1397,6 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
                   close();
                   sendCommand({ type: 'updatedata', flag: 'bookmark' });
                   renderHomebook();
-                  if ($mainid.css('transform') == 'none') {
-                  } else {
-                    renderAsideList();
-                  }
                   return;
                 }
               }).catch(err => { });
@@ -1466,14 +1429,7 @@ if (isios()) {
   $searchBoxMask[0]._longPress('.home_bm_logo', function (e) {
     let $this = $(this),
       ev = e.changedTouches[0];
-    homeBmMenu(ev, {
-      id: $this.parent().attr('data-id'),
-      name: $this.parent().attr('data-name'),
-      link: $this.parent().attr('data-link'),
-      des: $this.parent().attr('data-des'),
-      logo: $this.parent().attr('data-src'),
-      index: $this.parent().index(),
-    });
+    homeBmMenu(ev, getHomeBmData($this.parent().attr('data-id')));
   });
 }
 
@@ -1566,7 +1522,7 @@ function homeBmMenu(e, obj) {
       //编辑书签
       let str = `
           <input autocomplete="off" placeholder="标题" value="${encodeHtml(obj.name)}" type="text">
-          <input autocomplete="off" placeholder="https://" value="${obj.link}" type="text">
+          <input autocomplete="off" placeholder="https://" value="${encodeHtml(obj.link)}" type="text">
           <textarea autocomplete="off" placeholder="描述">${encodeHtml(obj.des)}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
       rightMenu(
@@ -1861,11 +1817,11 @@ function textinput(val) {
           let { name, link, type, id } = v;
           name = encodeHtml(name);
           if (type === 'ss') {
-            searchstr += `<li title="${name}" x="${type}" cursor xx='${name}' ssid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
+            searchstr += `<li x="${type}" cursor xx='${name}' ssid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
           } else if (type === 'note') {
-            searchstr += `<li title="${name}" x="${type}" cursor xx="${name}" noteid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-bijiben"></div></li>`;
+            searchstr += `<li x="${type}" cursor xx="${name}" noteid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-bijiben"></div></li>`;
           } else if (type === 'bmk') {
-            searchstr += `<li title="${name}(${link})" x="${type}" xxx="${link}" cursor xx="${name}" class="search_item">${name}<div class="type_logo iconfont icon-shuqian1"></div></li>`;
+            searchstr += `<li x="${type}" xxx="${link}" cursor xx="${name}" class="search_item">${name}<div class="type_logo iconfont icon-shuqian1"></div></li>`;
           }
         });
       }
@@ -1886,7 +1842,7 @@ window.showMsg = function (msg) {
   var str = '';
   for (var i = 0; i < msg.s.length; i++) {
     let name = encodeHtml(msg.s[i]);
-    str += `<li title="${name}" x="ss" cursor xx='${name}' class="search_item">${name}<div class="type_logo iconfont icon-tishi"></div></li>`;
+    str += `<li x="ss" cursor xx='${name}' class="search_item">${name}<div class="type_logo iconfont icon-tishi"></div></li>`;
   }
   str = searchstr += str;
   $searchInpWrap.find('.search_list_box ul').html(str);
@@ -1905,7 +1861,7 @@ function sxtsc(arr) {
   let str = '';
   arr.forEach((v) => {
     let data = encodeHtml(v.data);
-    str += `<li title="${data}" x="ss" cursor xx='${data}' ssid="${v.id}" class="search_item">${data}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
+    str += `<li x="ss" cursor xx='${data}' ssid="${v.id}" class="search_item">${data}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
   });
   $searchInpWrap.find('.search_list_box ul').html(str);
   numff = -1;
@@ -3011,6 +2967,9 @@ function defaultdqplaying() {
 //处理播放列表
 let playingPageNum = 1;
 let playingSize = 100;
+function getPlayingItemData(id) {
+  return _d.playingList.find(item => item.id == id);
+}
 function dqplaying() {
   if ($pMusicListBox.is(':hidden')) return;
   let scObj = _d.music[1].item.reduce((total, item) => {
@@ -3024,19 +2983,15 @@ function dqplaying() {
     return;
   }
   $pMusicListBox.find('.left').text(`正在播放(${_d.playingList.length})`);
-  let playarr = _d.playingList.map((item, idx) => {
-    item.idx = idx;
-    return item;
-  });
-  let totalPage = Math.ceil(playarr.length / playingSize);
+  let totalPage = Math.ceil(_d.playingList.length / playingSize);
   playingPageNum < 1 ? playingPageNum = 1 : (playingPageNum > totalPage ? playingPageNum = totalPage : null);
-  let arr = playarr.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize);
+  let arr = _d.playingList.slice((playingPageNum - 1) * playingSize, playingPageNum * playingSize);
   arr.forEach((v) => {
-    let { name, artist, mv, idx, duration, id } = v;
+    let { name, artist, mv, id } = v;
     let issc = scObj.hasOwnProperty(id);
     name = encodeHtml(name);
     artist = encodeHtml(artist);
-    str += `<li class="song_item" cursor data-id="${id}" data-duration="${duration}" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-idx="${idx}" data-mv="${mv}">
+    str += `<li class="song_item" cursor data-id="${id}" data-issc="${issc}">
           <div class="logo_wrap">
           <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
           <img class="play_gif" src="/img/wave.gif">
@@ -3108,13 +3063,7 @@ $pMusicListBox.on('click', '.clear_playing_list', function () {
 //选择播放列表歌曲播放
 $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   let $this = $(this).parent();
-  let obj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let obj = getPlayingItemData($this.attr('data-id'));
   if (musicobj.id == obj.id) {
     $lrcFootBtnWrap.find('.play_btn').click();
     return;
@@ -3127,13 +3076,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
 }).on('click', '.play_mv', function (e) {
   e.stopPropagation();
   let $this = $(this).parent();
-  let sobj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let sobj = getPlayingItemData($this.attr('data-id'));
   setZindex($musicMvWrap);
   musicMv(sobj);
 }).on('click', '.prev_page', function () {
@@ -3163,19 +3106,13 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   }, 1000, true))
 }).on('click', '.del', function (e) {
   e.stopPropagation();
-  let $this = $(this),
-    mobj = {
-      name: $this.parent().attr('data-name'),
-      artist: $this.parent().attr('data-artist'),
-      mv: $this.parent().attr('data-mv'),
-      duration: $this.parent().attr('data-duration'),
-      id: $this.parent().attr('data-id')
-    };
+  let $this = $(this);
+  let id = $this.parent().attr('data-id');
   _d.playingList = _d.playingList.filter(
-    (v) => v.id !== mobj.id
+    (v) => v.id !== id
   );
   musicarr = musicarr.filter(
-    (v) => v.id !== mobj.id
+    (v) => v.id !== id
   );
   dqplaying();
   gaolianging();
@@ -3186,22 +3123,10 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
   $(this).parent().find('.song_info_wrap').click();
 }).on('click', '.like_hear', function () {
   let $this = $(this).parent();
-  let sobj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    issc: $this.attr('data-issc'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
-  if (sobj.issc == 'true') {
-    _postAjax('/player/closecollectsong', {
-      id: sobj.id,
-      name: sobj.name,
-      artist: sobj.artist,
-      mv: sobj.mv,
-      duration: sobj.duration
-    }).then((result) => {
+  let issc = $this.attr('data-issc');
+  let sobj = getPlayingItemData($this.attr('data-id'));
+  if (issc == 'true') {
+    _postAjax('/player/closecollectsong', sobj).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
@@ -3210,13 +3135,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
     }).catch(err => { });
   } else {
     _postAjax('/player/collectsong', {
-      ar: [{
-        id: sobj.id,
-        name: sobj.name,
-        artist: sobj.artist,
-        mv: sobj.mv,
-        duration: sobj.duration
-      }]
+      ar: [sobj]
     }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
@@ -3372,19 +3291,65 @@ $document.on('click', function (e) {
     $searchInpWrap.find('.search_list_box').stop().fadeOut(_speed);
   }
 });
-
 let searchMusicList = [];
+function getSearchSongItemData(id) {
+  return searchMusicList.find(item => item.id == id);
+}
+let _musicsea = debounce(musicsea, 1000);
+function musicsea() {
+  let a = $musicHeadWrap.find('.search_music_inp').val().trim();
+  if (a !== '') {
+    $searchMusicWrap.stop().fadeIn(_speed);
+    _getAjax('/player/search', { a }).then((result) => {
+      if (parseInt(result.code) === 0) {
+        if ($musicPlayerBox.is(':hidden')) return;
+        let scObj = _d.music[1].item.reduce((total, item) => {
+          total[item.id] = 'y';
+          return total;
+        }, {});
+        let str = '';
+        let arr = result.data;
+        searchMusicList = arr;
+        if (arr.length > 0) {
+          arr.forEach((v) => {
+            let { artist, name, mv, id } = v;
+            let issc = scObj.hasOwnProperty(id);
+            artist = encodeHtml(artist);
+            name = encodeHtml(name);
+            str += `<li class="song_item" data-id="${id}" data-issc="${issc}" cursor>
+                    <div class="add_palying_list iconfont icon-icon-test"></div>
+                    <div class="logo_wrap">
+                    <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
+                    </div>
+                    <div class="song_info_wrap">
+                      <span class="song_name">${name}</span>
+                      <span class="artist_name">${artist}</span>
+                    </div>
+                    ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin2"></div>` : ''}
+                    <div style="color:${issc ? '#fd4747' : '#ccc'};" class="like_hear iconfont ${issc ? 'icon-hear-full' : 'icon-hear'}"></div>
+                    <div class="set_menu iconfont icon-icon"></div>
+                  </li>`;
+          });
+          $searchMusicWrap.find('ul').html(str).scrollTop(0);
+          lazyImg($searchMusicWrap.find('ul'), '.song_item', '.logo', 1);
+        } else {
+          $searchMusicWrap.find('ul').html(
+            '<p style="padding: 20px 0;text-align: center;pointer-events: none;">没有找到歌曲</p>'
+          );
+        }
+        return;
+      }
+    }).catch(err => { });
+  }
+}
+function diffPlayingList(arr) {
+  return _d.playingList.length !== arr.length
+    || !arr.every((item, idx) => item.id === _d.playingList[idx].id && item.name === _d.playingList[idx].name && item.artist === _d.playingList[idx].artist)
+}
 $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
   let $this = $(this).parent();
-  let obj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
-  if (_d.playingList.length !== searchMusicList.length
-    || !searchMusicList.every((item, idx) => item.id === _d.playingList[idx].id && item.name === _d.playingList[idx].name && item.artist === _d.playingList[idx].artist)) {
+  let obj = getSearchSongItemData($this.attr('data-id'));
+  if (diffPlayingList(searchMusicList)) {
     _postAjax('/player/updateplaying', { data: searchMusicList }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'playinglist' });
@@ -3406,21 +3371,13 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
   musicPlay(obj);
 }).on('click', '.set_menu', function (e) {
   let $this = $(this).parent();
-  let sobj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id'),
-    pcount: $this.attr('data-pcount'),
-    ccount: $this.attr('data-ccount')
-  };
+  let sobj = getSearchSongItemData($this.attr('data-id'));
   let str = '';
-  str += `<div class="mtcitem9" style="justify-content: center;font-size: 14px;color: #5a5a5a;">收藏(${sobj.ccount}) 播放(${sobj.pcount})</div>
-          <div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
-          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
+  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制歌曲名</span></div>
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
+          <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
           <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>`;
   if (_d.userInfo.account === 'root') {
     str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span>编辑歌曲信息</span></div>
@@ -3512,7 +3469,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
           );
         } else if (_getTarget(e, '.mtcitem5')) {
           close();
-          copyText(`${sobj.artist}-${sobj.name}`);
+          copyText(sobj.name);
         } else if (_getTarget(e, '.mtcitem6')) {
           if (_d.userInfo.account != 'root') return;
           let str = `
@@ -3541,7 +3498,6 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   _musicsea();
                   renderMusicItem();
-
                 }
               }).catch(err => { });
             }
@@ -3573,6 +3529,21 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
             u1: `${mediaURL}/music/${sobj.artist}-${sobj.name}.jpg`,
             u2: `${mediaURL}/musicys/${sobj.artist}-${sobj.name}.jpg`
           }]);
+        } else if (_getTarget(e, '.mtcitem10')) {
+          let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = sobj;
+          name = encodeHtml(name);
+          artist = encodeHtml(artist);
+          year = encodeHtml(year);
+          album = encodeHtml(album);
+          let str = `<div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌曲：</em><em style="flex:auto;color:#5a5a5a;">${name}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌手：</em><em style="flex:auto;color:#5a5a5a;">${artist}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">专辑：</em><em style="flex:auto;color:#5a5a5a;">${album}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">发布年份：</em><em style="flex:auto;color:#5a5a5a;">${year}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+                    `
+          rightMenu(e, str);
         };
       },
       1000,
@@ -3581,13 +3552,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
   );
 }).on('click', '.add_palying_list', function () {
   let $this = $(this).parent();
-  let mobj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let mobj = getSearchSongItemData($this.attr('data-id'));
   _d.playingList.push(mobj);
   musicarr.push(mobj);
   _d.playingList.reverse();
@@ -3601,13 +3566,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
 }).on('click', '.like_hear', function () {
   let $this = $(this).parent();
   let issc = $this.attr('data-issc');
-  let sobj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let sobj = getSearchSongItemData($this.attr('data-id'));
   if (issc == 'true') {
     _postAjax('/player/closecollectsong', sobj).then((result) => {
       if (parseInt(result.code) === 0) {
@@ -3632,16 +3591,9 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
 }).on('click', '.play_mv', function (e) {
   e.stopPropagation();
   let $this = $(this).parent();
-  let sobj = {
-    name: $this.attr('data-name'),
-    artist: $this.attr('data-artist'),
-    mv: $this.attr('data-mv'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let sobj = getSearchSongItemData($this.attr('data-id'));
   setZindex($musicMvWrap);
-  if (_d.playingList.length !== searchMusicList.length
-    || !searchMusicList.every((item, idx) => item.id === _d.playingList[idx].id && item.name === _d.playingList[idx].name && item.artist === _d.playingList[idx].artist)) {
+  if (diffPlayingList(searchMusicList)) {
     _postAjax('/player/updateplaying', { data: searchMusicList }).then(
       (result) => {
         if (parseInt(result.code) === 0) {
@@ -3662,53 +3614,6 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
 }, 100)).on('click', '.logo_wrap', function () {
   $(this).parent().find('.song_info_wrap').click();
 });
-let _musicsea = debounce(musicsea, 1000);
-function musicsea() {
-  let a = $musicHeadWrap.find('.search_music_inp').val().trim();
-  if (a !== '') {
-    $searchMusicWrap.stop().fadeIn(_speed);
-    _getAjax('/player/search', { a }).then((result) => {
-      if (parseInt(result.code) === 0) {
-        if ($musicPlayerBox.is(':hidden')) return;
-        let scObj = _d.music[1].item.reduce((total, item) => {
-          total[item.id] = 'y';
-          return total;
-        }, {});
-        let str = '';
-        let arr = result.data;
-        searchMusicList = arr;
-        if (arr.length > 0) {
-          arr.forEach((v) => {
-            let { artist, name, mv, duration, id, collect_count, play_count } = v;
-            let issc = scObj.hasOwnProperty(id);
-            artist = encodeHtml(artist);
-            name = encodeHtml(name);
-            str += `<li class="song_item" data-pcount="${play_count}" data-ccount="${collect_count}" data-id="${id}" data-duration="${duration}" data-name="${name}" data-issc="${issc}" data-artist="${artist}" data-mv="${mv}" cursor>
-                    <div class="add_palying_list iconfont icon-icon-test"></div>
-                    <div class="logo_wrap">
-                    <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
-                    </div>
-                    <div class="song_info_wrap">
-                      <span class="song_name">${name}</span>
-                      <span class="artist_name">${artist}</span>
-                    </div>
-                    ${mv === 'y' ? `<div class="play_mv iconfont icon-shipin2"></div>` : ''}
-                    <div style="color:${issc ? '#fd4747' : '#ccc'};" class="like_hear iconfont ${issc ? 'icon-hear-full' : 'icon-hear'}"></div>
-                    <div class="set_menu iconfont icon-icon"></div>
-                  </li>`;
-          });
-          $searchMusicWrap.find('ul').html(str).scrollTop(0);
-          lazyImg($searchMusicWrap.find('ul'), '.song_item', '.logo', 1);
-        } else {
-          $searchMusicWrap.find('ul').html(
-            '<p style="padding: 20px 0;text-align: center;pointer-events: none;">没有找到歌曲</p>'
-          );
-        }
-        return;
-      }
-    }).catch(err => { });
-  }
-}
 $searchMusicWrap.on('click', function (e) {
   if (_getTarget(e, '.search_music_wrap', 1)) {
     $searchMusicWrap.stop().fadeOut(_speed, () => {
@@ -4124,11 +4029,11 @@ function rendermusicitem(gao) {
   musicPageNum < 1 ? musicPageNum = 1 : (musicPageNum > pageTotal ? musicPageNum = pageTotal : null);
   let sliceList = marr.item.slice((musicPageNum - 1) * musicPageSize, musicPageNum * musicPageSize);
   sliceList.forEach((item) => {
-    let { name, artist, mv, duration, id, collect_count, play_count } = item;
+    let { name, artist, mv, id } = item;
     let issc = scObj.hasOwnProperty(id);
     name = encodeHtml(name);
     artist = encodeHtml(artist);
-    str += `<div class="song_item" data-pcount="${play_count}" data-ccount="${collect_count}" data-duration="${duration}" data-id="${id}" draggable="true" data-issc="${issc}" m="${mv}" xn="${name}" xa="${artist}" cursor>
+    str += `<div class="song_item" data-id="${id}" draggable="true" data-issc="${issc}" cursor>
         <div cursor check="n" class="check_state"></div>
         <div class="song_logo_box">
           <img class="logo" data-src=${encodeURI(`${mediaURL}/musicys/${artist}-${name}.jpg`)}>
@@ -4310,8 +4215,7 @@ function playList() {
     _err('播放列表为空');
     return;
   }
-  if (_d.playingList.length !== musicarrjl.length
-    || !musicarrjl.every((item, idx) => item.id === _d.playingList[idx].id && item.name === _d.playingList[idx].name && item.artist === _d.playingList[idx].artist)) {
+  if (diffPlayingList(musicarrjl)) {
     _postAjax('/player/updateplaying', { data: musicarrjl }).then(
       (result) => {
         if (parseInt(result.code) === 0) {
@@ -4332,6 +4236,22 @@ let songItemsBoxHide = debounce(function () {
   $listItemsWarp.find('.position_btn').stop().fadeOut(_speed);
 }, 10000);
 // 歌单列表编辑
+function getSongListItemData(id) {
+  let p = _d.music.find(item => item.id == $songListWrap.listId);
+  return p.item.find(item => item.id == id);
+}
+function getCheckSongItem() {
+  let $songItem = $msuicContentBox.find('.list_items_wrap .song_item'),
+    $selectarr = $songItem.filter(
+      (_, item) => $(item).find('.check_state').attr('check') === 'y'
+    );
+  let arr = [];
+  $selectarr.each((i, v) => {
+    let $v = $(v);
+    arr.push(getSongListItemData($v.attr('data-id')));
+  });
+  return arr;
+}
 $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', function (e) {
   let id = $songListWrap.listId;
   let index = _d.music.findIndex((item) => item.id === id);
@@ -4518,13 +4438,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
 ).on('click', '.add_song_playing_btn', function (e) {
   //添加到播放列表
   let $this = $(this);
-  let mobj = {
-    name: $this.parent().attr('xn'),
-    artist: $this.parent().attr('xa'),
-    mv: $this.parent().attr('m'),
-    duration: $this.parent().attr('data-duration'),
-    id: $this.parent().attr('data-id')
-  };
+  let mobj = getSongListItemData($this.parent().attr('data-id'));
   _d.playingList.push(mobj);
   musicarr.push(mobj);
   _d.playingList.reverse();
@@ -4566,18 +4480,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }
   _success(`选中：${num}`, true);
 }).on('click', '.share_all_song_btn', debounce(function () {
-  let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
-    $selectarr = $songlist.filter(
-      (index, item) => $(item).find('.check_state').attr('check') === 'y'
-    );
-  if ($selectarr.length === 0) return;
-  let arr = [];
-  $selectarr.each((i, v) => {
-    let $v = $(v);
-    arr.push({
-      id: $v.attr('data-id')
-    });
-  });
+  let arr = getCheckSongItem().map(item => ({ id: item.id }));
+  if (arr.length === 0) return;
   _postAjax('/player/musicshare', arr).then((result) => {
     if (parseInt(result.code) === 0) {
       $msuicContentBox.find('.list_items_wrap .sheck_song_btn').click();
@@ -4586,23 +4490,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }).catch(err => { });
 }, 1000, true)).on('click', '.collect_songs_btn', function (e) {
   //收藏选中
-  let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
-    $selectarr = $songlist.filter(
-      (index, item) => $(item).find('.check_state').attr('check') === 'y'
-    );
-  if ($selectarr.length === 0) return;
-  let arr = [];
-  $selectarr.each((i, v) => {
-    let $v = $(v);
-    arr.push({
-      name: $v.attr('xn'),
-      artist: $v.attr('xa'),
-      mv: $v.attr('m'),
-      duration: $v.attr('data-duration'),
-      id: $v.attr('data-id')
-    });
-  });
-  _postAjax('/player/collectsong', { ar: arr }).then((result) => {
+  let ar = getCheckSongItem();
+  if (ar.length === 0) return;
+  _postAjax('/player/collectsong', { ar }).then((result) => {
     if (parseInt(result.code) === 0) {
       sendCommand({ type: 'updatedata', flag: 'music' });
       renderMusicList();
@@ -4612,28 +4502,14 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }).catch(err => { });
 }).on('click', '.del_songs_btn', function (e) {
   // 移除全选
-  let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
-    id = $songListWrap.listId,
-    $selectarr = $songlist.filter(
-      (index, item) => $(item).find('.check_state').attr('check') === 'y'
-    );
-  if ($selectarr.length === 0) return;
+  let id = $songListWrap.listId;
+  let ar = getCheckSongItem();
+  if (ar.length === 0) return;
   alert(`确认${this.innerText}？`, {
     confirm: true,
     handled: (m) => {
       if (m !== 'confirm') return;
-      let arr = [];
-      $selectarr.each((i, v) => {
-        let $v = $(v);
-        arr.push({
-          name: $v.attr('xn'),
-          artist: $v.attr('xa'),
-          mv: $v.attr('m'),
-          duration: $v.attr('data-duration'),
-          id: $v.attr('data-id')
-        });
-      });
-      _postAjax('/player/delsong', { id, ar: arr }).then((result) => {
+      _postAjax('/player/delsong', { id, ar }).then((result) => {
         if (parseInt(result.code) === 0) {
           sendCommand({ type: 'updatedata', flag: 'music' });
           renderMusicList();
@@ -4662,12 +4538,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
 }).on('click', '.move_song_btn', function (e) {
   let text = $(this).text();
   // 全选移动
-  let $songlist = $msuicContentBox.find('.list_items_wrap .song_item'),
-    id = $songListWrap.listId,
-    $selectarr = $songlist.filter(
-      (index, item) => $(item).find('.check_state').attr('check') === 'y'
-    );
-  if ($selectarr.length === 0) return;
+  let id = $songListWrap.listId;
+  let ar = getCheckSongItem();
+  if (ar.length === 0) return;
   let str = ``;
   _d.music.forEach((item, i) => {
     if (item.id !== id && i > 2) {
@@ -4689,23 +4562,12 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         if (_this) {
           let $this = $(_this),
             tid = $this.attr('data-id'),
-            listname = $this.attr('data-name'),
-            arr = [];
-          $selectarr.each((i, v) => {
-            let $v = $(v);
-            arr.push({
-              name: $v.attr('xn'),
-              artist: $v.attr('xa'),
-              mv: $v.attr('m'),
-              duration: $v.attr('data-duration'),
-              id: $v.attr('data-id')
-            });
-          });
+            listname = $this.attr('data-name');
           alert(`确认${text} ${listname}?`, {
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
-              _postAjax('/player/songtolist', { id, tid, ar: arr }).then(
+              _postAjax('/player/songtolist', { id, tid, ar }).then(
                 (result) => {
                   if (parseInt(result.code) === 0) {
                     _success();
@@ -4726,22 +4588,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   );
 }).on('click', '.add_all_playing_btn', function (e) {
   // 选中添加到播放列表
-  let $songlist = $msuicContentBox.find('.list_items_wrap .song_item');
-  let $selectarr = $songlist.filter(
-    (index, item) => $(item).find('.check_state').attr('check') === 'y'
-  );
-  if ($selectarr.length === 0) return;
-  let arr = [];
-  $selectarr.each((i, v) => {
-    let $v = $(v);
-    arr.push({
-      name: $v.attr('xn'),
-      artist: $v.attr('xa'),
-      mv: $v.attr('m'),
-      duration: $v.attr('data-duration'),
-      id: $v.attr('data-id')
-    });
-  });
+  let arr = getCheckSongItem();
+  if (arr.length === 0) return;
   _d.playingList = [..._d.playingList, ...arr];
   musicarr = [...musicarr, ...arr];
   _d.playingList.reverse();
@@ -4762,15 +4610,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   ).catch(err => { });
 }).on('click', '.song_info_wrap', function () {
   let $this = $(this).parent();
-  let sobj = {
-    name: $this.attr('xn'),
-    artist: $this.attr('xa'),
-    mv: $this.attr('m'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
-  if (_d.playingList.length !== musicarrjl.length
-    || !musicarrjl.every((item, idx) => item.id === _d.playingList[idx].id && item.name === _d.playingList[idx].name && item.artist === _d.playingList[idx].artist)) {
+  let sobj = getSongListItemData($this.attr('data-id'));
+  if (diffPlayingList(musicarrjl)) {
     _postAjax('/player/updateplaying', { data: musicarrjl }).then(
       (result) => {
         if (parseInt(result.code) === 0) {
@@ -4799,16 +4640,9 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
 }).on('click', '.play_mv', function (e) {
   e.stopPropagation();
   let $this = $(this).parent();
-  let sobj = {
-    name: $this.attr('xn'),
-    artist: $this.attr('xa'),
-    mv: $this.attr('m'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let sobj = getSongListItemData($this.attr('data-id'));
   setZindex($musicMvWrap);
-  if (_d.playingList.length !== musicarrjl.length
-    || !musicarrjl.every((item, idx) => item.id === _d.playingList[idx].id && item.name === _d.playingList[idx].name && item.artist === _d.playingList[idx].artist)) {
+  if (diffPlayingList(musicarrjl)) {
     _postAjax('/player/updateplaying', { data: musicarrjl }).then(
       (result) => {
         if (parseInt(result.code) === 0) {
@@ -4827,13 +4661,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
 }).on('click', '.like_hear', function () {
   let $this = $(this).parent();
   let issc = $this.attr('data-issc');
-  let sobj = {
-    name: $this.attr('xn'),
-    artist: $this.attr('xa'),
-    mv: $this.attr('m'),
-    duration: $this.attr('data-duration'),
-    id: $this.attr('data-id')
-  };
+  let sobj = getSongListItemData($this.attr('data-id'));
   if (issc == 'true') {
     _postAjax('/player/closecollectsong', sobj).then((result) => {
       if (parseInt(result.code) === 0) {
@@ -4855,23 +4683,15 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }
 }).on('click', '.set_song_btn', function (e) {
   let $this = $(this).parent();
-  let sobj = {
-    artist: $this.attr('xa'),
-    name: $this.attr('xn'),
-    id: $this.attr('data-id'),
-    mv: $this.attr('m'),
-    duration: $this.attr('data-duration'),
-    pcount: $this.attr('data-pcount'),
-    ccount: $this.attr('data-ccount')
-  };
+  let sobj = getSongListItemData($this.attr('data-id'));
   let ii = _d.music.findIndex((item) => item.id === $songListWrap.listId);
   if (ii < 0) return;
   let str = '';
-  str += `<div class="mtcitem9" style="justify-content: center;font-size: 14px;color: #5a5a5a;">收藏(${sobj.ccount}) 播放(${sobj.pcount})</div>
-          <div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
-          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
+  str += `<div cursor class="mtcitem"><i class="iconfont icon-fenxiang_2"></i><span>分享歌曲</span></div>
+          <div cursor class="mtcitem5"><i class="iconfont icon-fuzhi"></i><span>复制歌曲名</span></div>
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
+          <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
           <div cursor class="mtcitem3"><i class="iconfont ${ii < 3 ? 'icon-icon-test' : 'icon-moveto'}"></i><span>${ii < 3 ? '添加到' : '移动到'}</span></div>`;
   if (_d.userInfo.account === 'root') {
     str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span>编辑歌曲信息</span></div>`;
@@ -4986,7 +4806,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           });
         } else if (_getTarget(e, '.mtcitem5')) {
           close();
-          copyText(`${sobj.artist}-${sobj.name}`);
+          copyText(sobj.name);
         } else if (_getTarget(e, '.mtcitem6')) {
           if (_d.userInfo.account !== 'root') return;
           let str = `
@@ -5044,6 +4864,21 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             u1: `${mediaURL}/music/${sobj.artist}-${sobj.name}.jpg`,
             u2: `${mediaURL}/musicys/${sobj.artist}-${sobj.name}.jpg`
           }]);
+        } else if (_getTarget(e, '.mtcitem10')) {
+          let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = sobj;
+          name = encodeHtml(name);
+          artist = encodeHtml(artist);
+          year = encodeHtml(year);
+          album = encodeHtml(album);
+          let str = `<div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌曲：</em><em style="flex:auto;color:#5a5a5a;">${name}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌手：</em><em style="flex:auto;color:#5a5a5a;">${artist}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">专辑：</em><em style="flex:auto;color:#5a5a5a;">${album}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">发布年份：</em><em style="flex:auto;color:#5a5a5a;">${year}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+                    `
+          rightMenu(e, str);
         };
       },
       1000,
@@ -5259,7 +5094,8 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
             <div cursor class="mtcitem4"><i class="iconfont icon-kaoyou"></i><span>靠右</span></div>
             <div cursor class="mtcitem5"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
             <div cursor class="mtcitem6"><i class="iconfont icon-tupian"></i><span>封面</span></div>
-            <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制信息</span></div>
+            <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制歌曲名</span></div>
+            <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
             <div cursor class="mtcitem8"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>
             ${_d.userInfo.account == 'root' ? '<div cursor class="mtcitem9"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>' : ''}`;
     rightMenu(e, str, function ({ close, e }) {
@@ -5355,7 +5191,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
         }]);
       } else if (_getTarget(e, '.mtcitem7')) {
         close();
-        copyText(`${musicobj.artist}-${musicobj.name}`);
+        copyText(musicobj.name);
       } else if (_getTarget(e, '.mtcitem8')) {
         let str = '';
         _d.music.forEach((v, i) => {
@@ -5428,6 +5264,21 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
             }).catch(err => { });
           },
         });
+      } else if (_getTarget(e, '.mtcitem10')) {
+        let { name = '', artist = '', duration = '', album = '', year = '', collect_count = '', play_count = '' } = musicobj;
+        name = encodeHtml(name);
+        artist = encodeHtml(artist);
+        year = encodeHtml(year);
+        album = encodeHtml(album);
+        let str = `<div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌曲：</em><em style="flex:auto;color:#5a5a5a;">${name}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">歌手：</em><em style="flex:auto;color:#5a5a5a;">${artist}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">专辑：</em><em style="flex:auto;color:#5a5a5a;">${album}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">发布年份：</em><em style="flex:auto;color:#5a5a5a;">${year}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">时长：</em><em style="flex:auto;color:#5a5a5a;">${tin(duration)}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">播放量：</em><em style="flex:auto;color:#5a5a5a;">${play_count}</em></div>
+              <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">收藏量：</em><em style="flex:auto;color:#5a5a5a;">${collect_count}</em></div>
+                    `
+        rightMenu(e, str);
       };
     });
   },

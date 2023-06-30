@@ -2,6 +2,8 @@ const fs = require('fs');
 const _d = require('./data');
 // token加密
 const jwt = require('jsonwebtoken');
+// 歌曲信息解析
+const jsmediatags = require('jsmediatags');
 // 接收上传文件
 const formidable = require('formidable');
 // 记录日志
@@ -543,7 +545,24 @@ async function sliceLog(day) {
   let str = logStr.slice(idx);
   return _writeFile('./hello.log', str);
 }
+function getSongInfo(url) {
+  return new Promise((resolve, reject) => {
+    jsmediatags.read(url, {
+      onSuccess: function (tag) {
+        let { album, year } = tag.tags;
+        resolve({
+          album,
+          year
+        });
+      },
+      onError: function (error) {
+        reject(error);
+      }
+    });
+  })
+}
 module.exports = {
+  getSongInfo,
   sliceLog,
   deepClone,
   getMusicObj,

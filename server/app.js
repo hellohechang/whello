@@ -88,7 +88,7 @@ app.use(async (req, res, next) => {
     }
     req._userInfo = uobj;
     req._ip = getClientIp(req);
-    req._pathUrl = req.url.split('?')[0];
+    req._pathUrl = req.url.replace(/(\?|\#).*$/, '').replace(/\/$/, '');;
     let _clientConfig = new UAParser(req.headers['user-agent']).getResult(); //获取访问设备信息
     req._os =
       (_clientConfig.os.name || 'other') +

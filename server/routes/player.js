@@ -1,7 +1,7 @@
 const express = require('express'),
   fs = require('fs'),
   route = express.Router();
-const { deepClone } = require('../utils');
+const { deepClone, getSongInfo } = require('../utils');
 const { insertData, updateData, queryData, deleteData, runSqlite } = require('../sqlite');
 const {
   handleMusicList,
@@ -131,8 +131,8 @@ route.get('/search', async (req, res) => {
     if (a) {
       let sArr = [];
       ar.forEach((item) => {
-        let { name, artist } = item;
-        let str = `${name}|${artist}`;
+        let { name, artist, album, year } = item;
+        let str = `${name}${artist}${album == '--' ? '' : album}${year == '--' ? '' : year}`;
         let searchArr = hdSearch(a, str);
         if (searchArr.length > 0) {
           sArr.push({
@@ -447,6 +447,21 @@ route.post('/addsong', async (req, res) => {
     })
     await updateData('musics', { mv: 'y' }, `WHERE id IN (${new Array(hasArr.length).fill('?').join(',')})`, [...hasArr]);
     await updateData('musics', { mv: '' }, `WHERE id IN (${new Array(noArr.length).fill('?').join(',')})`, [...noArr]);
+
+    for (let i = 0; i < mArr.length; i++) {
+      let { id, name, artist } = mArr[i];
+      if (mArr[i].year && mArr[i].album) {
+        continue;
+      };
+      let obj = { year: '--', album: '--' };
+      try {
+        let { year = '--', album = '--' } = await getSongInfo(`${_d.filepath}/music/${artist}-${name}.mp3`);
+        obj = { year, album };
+      } catch (error) {
+        await writelog(req, `[${req._pathUrl}] ${error}`);
+      }
+      await updateData('musics', obj, `WHERE id =?`, [id]);
+    }
     _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);

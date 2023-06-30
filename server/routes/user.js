@@ -185,21 +185,23 @@ queryData('user', 'account').then(() => { }).catch(async () => {
     data    TEXT NOT NULL
 );
 `);
-    await runSqlite(`CREATE TABLE user (
-    state    TEXT DEFAULT (0) 
-                  NOT NULL,
-    account  TEXT NOT NULL
-                  UNIQUE
-                  PRIMARY KEY,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL,
-    time     TEXT NOT NULL,
-    bg       TEXT NOT NULL,
-    bgxs     TEXT NOT NULL,
-    dailybg  TEXT DEFAULT n
-                  NOT NULL,
-    flag     TEXT DEFAULT (0) 
-                  NOT NULL
+    await runSqlite(`CREATE TABLE musics (
+    id            TEXT UNIQUE
+                       NOT NULL
+                       PRIMARY KEY,
+    name          TEXT NOT NULL,
+    artist        TEXT NOT NULL,
+    duration      TEXT NOT NULL,
+    mv            TEXT DEFAULT ('') 
+                       NOT NULL,
+    collect_count TEXT DEFAULT (0) 
+                       NOT NULL,
+    play_count    TEXT DEFAULT (0) 
+                       NOT NULL,
+    year          TEXT NOT NULL
+                       DEFAULT (''),
+    album         TEXT DEFAULT ('') 
+                       NOT NULL
 );
 `);
     await runSqlite(`CREATE VIEW getchat AS
