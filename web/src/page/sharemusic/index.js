@@ -23,12 +23,12 @@ import {
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
-import { _err, _success } from "../../plugins/message";
 import { rightMenu } from "../../plugins/rightMenu";
+import _msg from "../../plugins/message";
 ~async function () {
   const urlparmes = queryURLParams(myOpen()),
     HASH = urlparmes.HASH,
-    $myAudio = $('.my_audio'),
+    $myAudio = $(new Audio()),
     $musicPlayerWrap = $('.music_player_wrap'),
     $userInfo = $musicPlayerWrap.find('.user_info'),
     $lrcBg = $musicPlayerWrap.find('.lrc_bg'),
@@ -42,7 +42,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     $pMusicListBox = $playingListWrap.find('.p_music_list_wrap'),
     $musicMvWrap = $('.music_mv_wrap'),
     $myVideo = $musicMvWrap.find('.my_video');
-
+  $myAudio[0].preload = 'none';
   let resObj = await _getAjax('/player/musicshare', { id: HASH }),
     playingList = null,
     musicArr = null,
@@ -138,7 +138,7 @@ import { rightMenu } from "../../plugins/rightMenu";
         }
         break;
     }
-    _success(a);
+    _msg.info(a);
   }).on('click', '.playing_list_btn', function (e) {
     defaultdqplaying();
     $playingListWrap.stop().fadeIn(100, () => {
@@ -156,7 +156,7 @@ import { rightMenu } from "../../plugins/rightMenu";
   }).on('click', '.prev_play_btn', function (e) {
     let index;
     if (musicArr.length == 0) {
-      _err('播放列表为空')
+      _msg.error('播放列表为空')
       audioPause();
       return;
     }
@@ -170,7 +170,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     $lrcProgressBar.find('.pro2').width('0');
     let index;
     if (musicArr.length == 0) {
-      _err('播放列表为空')
+      _msg.error('播放列表为空')
       audioPause();
       return;
     }
@@ -197,7 +197,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     initSongInfo(obj); //初始化音乐数据
     let a = `♪♪ ${musicObj.artist} - ${musicObj.name}`;
     $lrcProgressBar.find('.total_time').text(tin(musicObj.duration));
-    _success(a);
+    _msg.info(a);
     gaolianging(false);
     $lrcBg.addClass('lrcbgss'); //背景透明
     renderSongInfo();
@@ -219,7 +219,7 @@ import { rightMenu } from "../../plugins/rightMenu";
     gaolianging(false);
   }
   $myVideo[0].onerror = function (e) {
-    _err(`MV加载失败`);
+    _msg.error(`MV加载失败`);
   };
   function videoPause() {
     $myVideo[0].pause();
@@ -367,7 +367,7 @@ import { rightMenu } from "../../plugins/rightMenu";
       }, 500)
     )
     .on('error', function () {
-      _err('歌曲加载失败')
+      _msg.error('歌曲加载失败')
       audioPause();
     })
     .on('ended', function () {
@@ -575,7 +575,7 @@ import { rightMenu } from "../../plugins/rightMenu";
   $pMusicListBox.on('click', '.save_playing_list', debounce(function () {
     _getAjax('/player/savesharesongs', { id: HASH }).then(res => {
       if (res.code == 0) {
-        _success();
+        _msg.success(res.codeText);
       }
     })
   }, 1000, true))
@@ -808,7 +808,7 @@ import { rightMenu } from "../../plugins/rightMenu";
         $myAudio[0].playbackRate = b;
         curPlaySpeed = [a, b];
         _setData('lastplaysd', curPlaySpeed);
-        _success(b + 'X');
+        _msg.info(b + 'X');
       }
     });
   }).find('.play_speed_btn').text(curPlaySpeed[0]);

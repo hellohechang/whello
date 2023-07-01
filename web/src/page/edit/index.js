@@ -22,7 +22,7 @@ import {
   imgPreview,
 } from '../../utils/utils';
 import '../../js/common';
-import { _err, _success } from "../../plugins/message";
+import _msg from "../../plugins/message";
 const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
   $editWrap = $contentWrap.find('.edit_wrap'),
@@ -273,7 +273,7 @@ function saveNote() {
   let vn = $headBtns.find('.note_title input').val().trim(),
     vt = $editBox.val();
   if (vn === '') {
-    _err('请输入标题');
+    _msg.error('请输入标题');
     return;
   }
   if (vn === orginData.name && vt === orginData.data) return;
@@ -285,10 +285,10 @@ function saveNote() {
       if (result.data) {
         HASH = result.data.id;
         myOpen(`/edit/#${HASH}`);
-        _success(result.codeText);
+        _msg.success(result.codeText);
         return;
       }
-      _success(result.codeText);
+      _msg.success(result.codeText);
     }
   }).catch(err => { });
 }

@@ -53,12 +53,12 @@ import {
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
-import { _err, _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert';
 import { _loadingBar } from '../../plugins/loadingBar';
 import { pagination } from '../../plugins/pagination';
 import { rightMenu } from '../../plugins/rightMenu';
 import { UpProgress } from '../../plugins/UpProgress';
+import _msg from "../../plugins/message";
 const $pageBg = $('.page_bg'),
   $minimizeBox = $('.minimize_box'),
   $asideBtn = $('.aside_btn'),
@@ -69,7 +69,7 @@ const $pageBg = $('.page_bg'),
   $searchInpWrap = $searchBoxMask.find('.search_inp_wrap'),
   $homeBmWrap = $searchBoxMask.find('.home_bm_wrap'),
   $homeFootMenu = $searchBoxMask.find('.home_foot_menu'),
-  $myAudio = $('.my_audio'),
+  $myAudio = $(new Audio()),
   $miniPlayer = $('.mini_player'),
   $miniLrcWrap = $('.mini_lrc_wrap'),
   $musicPlayerBox = $('.music_palyer_box'),
@@ -117,7 +117,7 @@ const $pageBg = $('.page_bg'),
   $searchBoxBtn = $('.search_box_btn'),
   $mainid = $('#main'),
   $clock = $('.clock');
-
+$myAudio[0].preload = "none";
 let $document = $(document),
   dmwidth = $document.width(),
   curSearchEngine = _getData('searchengine'),
@@ -500,18 +500,19 @@ $asideWrap.on('click', '.list_title', debounce(function () {
 }).on('click', '.add_list_btn', (e) => {
   // 新建列表
   let str = `
-          <input autocomplete="off" placeholder="列表名" type="text">
-          <button cursor class="mtcbtn">新增列表</button>`;
+          <input autocomplete="off" placeholder="标题" type="text">
+          <button cursor class="mtcbtn">提交</button>`;
   rightMenu(e, str, debounce(function ({ close, e, inp }) {
     if (_getTarget(e, '.mtcbtn')) {
       let va = inp[0];
       if (va === '') {
-        _err('请输入列表名');
+        _msg.error('请输入标题');
         return;
       }
       _postAjax('/nav/addlist', { name: va }).then((result) => {
         if (parseInt(result.code) === 0) {
           close();
+          _msg.success(result.codeText);
           sendCommand({ type: 'updatedata', flag: 'bookmark' });
           renderAsideList();
           return;
@@ -552,7 +553,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
     .find('.check_bm')
     .attr('check', che)
     .css('background-color', che === 'y' ? _d.checkColor : 'transparent');
-  _success(`选中：${che === 'y' ? $sidenav.length : 0}`, true);
+  _msg.info(`选中：${che === 'y' ? $sidenav.length : 0}项`);
 }).on('click', '.check_bm', function (e) {
   e.stopPropagation();
   let $this = $(this),
@@ -566,7 +567,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
     $checkArr = $sidenav.filter(
       (_, item) => $(item).find('.check_bm').attr('check') === 'y'
     );
-  _success(`选中：${$checkArr.length}`, true);
+  _msg.info(`选中：${$checkArr.length}项`);
   if ($checkArr.length === $sidenav.length) {
     $aside.find('.foot_menu div').attr({
       class: 'iconfont icon-xuanzeyixuanze',
@@ -591,6 +592,7 @@ $asideWrap.on('click', '.list_title', debounce(function () {
         _postAjax('/nav/delbmk', { pid, arr }).then((result) => {
           if (parseInt(result.code) === 0) {
             sendCommand({ type: 'updatedata', flag: 'bookmark' });
+            _msg.success(result.codeText);
             renderAsideList();
             return;
           }
@@ -629,8 +631,10 @@ $asideWrap.on('click', '.list_title', debounce(function () {
                 (result) => {
                   if (parseInt(result.code) === 0) {
                     close();
+                    _msg.success(result.codeText);
                     sendCommand({ type: 'updatedata', flag: 'bookmark' });
                     renderAsideList();
+                    renderHomebook();
                   }
                 }
               ).catch(err => { });
@@ -686,7 +690,7 @@ function asideBmMenu(e, obj) {
       function ({ close, e }) {
         // 编辑列表
         if (_getTarget(e, '.mtcitem')) {
-          let str = `<input autocomplete="off" placeholder="列表名" value="${encodeHtml(obj.name)}" type="text">
+          let str = `<input autocomplete="off" placeholder="标题" value="${encodeHtml(obj.name)}" type="text">
         <button cursor class="mtcbtn">提交</button>`;
           rightMenu(
             e,
@@ -696,7 +700,7 @@ function asideBmMenu(e, obj) {
                 if (_getTarget(e, '.mtcbtn')) {
                   let ni = inp[0];
                   if (ni === '') {
-                    _err('请输入列表名');
+                    _msg.error('请输入标题');
                     return;
                   }
                   if (ni === obj.name) return;
@@ -705,6 +709,7 @@ function asideBmMenu(e, obj) {
                       if (parseInt(result.code) === 0) {
                         obj.name = ni;
                         close();
+                        _msg.success(result.codeText);
                         sendCommand({ type: 'updatedata', flag: 'bookmark' });
                         renderAsideList();
                         return;
@@ -734,11 +739,11 @@ function asideBmMenu(e, obj) {
                     al = inp[1],
                     des = inp[2];
                   if (!isurl(al)) {
-                    _err('请输入正确的网址');
+                    _msg.error('请输入正确的网址');
                     return;
                   }
                   if (an === '') {
-                    _err('请输入书签标题');
+                    _msg.error('请输入书签标题');
                     return;
                   }
                   let logo = '//' + getHost(al) + '/favicon.ico';
@@ -748,6 +753,7 @@ function asideBmMenu(e, obj) {
                   }).then((result) => {
                     if (parseInt(result.code) === 0) {
                       close();
+                      _msg.success(result.codeText);
                       sendCommand({ type: 'updatedata', flag: 'bookmark' });
                       $asideBtn.activeId = obj.id;
                       renderAsideList();
@@ -770,13 +776,14 @@ function asideBmMenu(e, obj) {
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem3')) {
           //删除列表
-          alert(`确认删除列表：${obj.name}？`, {
+          alert(`确认删除：${obj.name}？`, {
             confirm: true,
             handled: (m) => {
               if (m !== 'confirm') return;
               _postAjax('/nav/dellist', { id: obj.id }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
+                  _msg.success(result.codeText);
                   sendCommand({ type: 'updatedata', flag: 'bookmark' });
                   renderAsideList();
                 }
@@ -824,14 +831,14 @@ function asideListMenu(e, obj) {
             var file = e.target.files[0];
             $input.remove();
             if (!isImgFile(file.name)) {
-              _err('上传文件格式错误');
+              _msg.error(`${file.name}文件格式错误`);
               return;
             }
             let blob;
             try {
               blob = await compressionImg(file); //压缩图片
             } catch (error) {
-              _err('上传失败');
+              _msg.error('上传失败');
               return;
             }
             let fileReader = new FileReader();
@@ -856,6 +863,7 @@ function asideListMenu(e, obj) {
                     }).then((result) => {
                       if (parseInt(result.code) === 0) {
                         sendCommand({ type: 'updatedata', flag: 'bookmark' });
+                        _msg.success(result.codeText);
                         renderAsideList();
                         return;
                       }
@@ -895,11 +903,11 @@ function asideListMenu(e, obj) {
                     al = inp[1],
                     des = inp[2];
                   if (!isurl(al)) {
-                    _err('请输入正确的网址');
+                    _msg.error('请输入正确的网址');
                     return;
                   }
                   if (an === '') {
-                    _err('请输入书签标题');
+                    _msg.error('请输入书签标题');
                     return;
                   }
                   if (an === obj.name && al === obj.link && des === obj.des) return;
@@ -921,6 +929,7 @@ function asideListMenu(e, obj) {
                       obj.des = des;
                       close();
                       sendCommand({ type: 'updatedata', flag: 'bookmark' });
+                      _msg.success(result.codeText);
                       renderAsideList();
                       return;
                     }
@@ -964,11 +973,13 @@ function asideListMenu(e, obj) {
                         if (parseInt(result.code) === 0) {
                           flagClose();
                           close();
+                          _msg.success(result.codeText);
                           sendCommand({
                             type: 'updatedata',
                             flag: 'bookmark',
                           });
                           renderAsideList();
+                          renderHomebook();
                         }
                       }).catch(err => { });
                     },
@@ -989,6 +1000,7 @@ function asideListMenu(e, obj) {
                 (result) => {
                   if (parseInt(result.code) === 0) {
                     close();
+                    _msg.success(result.codeText);
                     sendCommand({ type: 'updatedata', flag: 'bookmark' });
                     renderAsideList();
                     return;
@@ -1070,7 +1082,9 @@ _getAjax('/user/getuserinfo').then((result) => {
       .attr('title', _d.userInfo.username)
       .stop()
       .fadeIn(_speed);
-    _success(`Welcome ${_d.userInfo.username}`);
+    _setTimeout(() => {
+      _msg.info(`Welcome ${_d.userInfo.username}`);
+    }, 3000);
     $userLogoBtn.css(
       'background-image',
       `url(${mediaURL}/logo/${_d.userInfo.account}/${_d.userInfo.account
@@ -1265,11 +1279,11 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
               sqlink = inp[1],
               des = inp[2];
             if (!isurl(sqlink)) {
-              _err('请输入正确的网址');
+              _msg.error('请输入正确的网址');
               return;
             }
             if (sqname === '') {
-              _err('请输入书签标题');
+              _msg.error('请输入书签标题');
               return;
             }
             let logo = '//' + getHost(sqlink) + '/favicon.ico';
@@ -1281,6 +1295,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
             }).then((result) => {
               if (parseInt(result.code) === 0) {
                 close();
+                _msg.success(result.codeText);
                 sendCommand({ type: 'updatedata', flag: 'bookmark' });
                 renderHomebook();
                 return;
@@ -1320,7 +1335,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
   $folder
     .attr('check', che)
     .css('background-color', che === 'y' ? _d.checkColor : 'transparent');
-  _success(`选中：${che === 'y' ? $folder.length : 0}`, true);
+  _msg.info(`选中：${che === 'y' ? $folder.length : 0}项`);
 }).on('click', '.check_home_bm', function (e) {
   e.stopPropagation();
   let $this = $(this),
@@ -1336,7 +1351,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
         $(item).attr('data-id') &&
         $(item).find('.check_home_bm').attr('check') === 'y'
     );
-  _success(`选中：${$checkArr.length}`, true);
+  _msg.info(`选中：${$checkArr.length}项`);
   if ($checkArr.length === $sidenav.length - 1) {
     $homeFootMenu.find('div').attr({
       class: 'iconfont icon-xuanzeyixuanze',
@@ -1358,6 +1373,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
         _postAjax('/home/delbmk', { arr }).then((result) => {
           if (parseInt(result.code) === 0) {
             sendCommand({ type: 'updatedata', flag: 'bookmark' });
+            _msg.success(result.codeText);
             renderHomebook();
             return;
           }
@@ -1371,7 +1387,7 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
   if (arr.length === 0) return;
   let str = '';
   if (_d.bookmark.side.length === 0) {
-    _err('未找到列表');
+    _msg.error('没有可移动的分组');
     return;
   }
   str += ``;
@@ -1396,8 +1412,10 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
               _postAjax('/home/bmktolist', { arr, nid }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
+                  _msg.success(result.codeText);
                   sendCommand({ type: 'updatedata', flag: 'bookmark' });
                   renderHomebook();
+                  renderAsideList();
                   return;
                 }
               }).catch(err => { });
@@ -1465,14 +1483,14 @@ function homeBmMenu(e, obj) {
         var file = e.target.files[0];
         $input.remove();
         if (!isImgFile(file.name)) {
-          _err('上传文件格式错误');
+          _msg.error(`${file.name}文件格式错误`);
           return;
         }
         let blob;
         try {
           blob = await compressionImg(file); //压缩图片
         } catch (error) {
-          _err('上传失败');
+          _msg.error('上传失败');
           return;
         }
         let fileReader = new FileReader();
@@ -1497,6 +1515,7 @@ function homeBmMenu(e, obj) {
                         type: 'updatedata',
                         flag: 'bookmark',
                       });
+                      _msg.success(result.codeText);
                       renderHomebook();
                       return;
                     }
@@ -1537,11 +1556,11 @@ function homeBmMenu(e, obj) {
                 c = inp[1],
                 des = inp[2];
               if (!isurl(c)) {
-                _err('请输入正确的网址');
+                _msg.error('请输入正确的网址');
                 return;
               }
               if (b === '') {
-                _err('请输入书签标题');
+                _msg.error('请输入书签标题');
                 return;
               }
               let requestObj = {
@@ -1561,6 +1580,7 @@ function homeBmMenu(e, obj) {
                   obj.link = c;
                   obj.des = des;
                   close();
+                  _msg.success(result.codeText);
                   sendCommand({ type: 'updatedata', flag: 'bookmark' });
                   renderHomebook();
                   return;
@@ -1576,7 +1596,7 @@ function homeBmMenu(e, obj) {
       // 移动书签
       let str = '';
       if (_d.bookmark.side.length === 0) {
-        _err('没有可移动的列表');
+        _msg.error('没有可移动的分组');
         return;
       }
       _d.bookmark.side.forEach((v, i) => {
@@ -1605,15 +1625,13 @@ function homeBmMenu(e, obj) {
                     if (parseInt(result.code) === 0) {
                       flagClose();
                       close();
+                      _msg.success(result.codeText);
                       sendCommand({
                         type: 'updatedata',
                         flag: 'bookmark',
                       });
                       renderHomebook();
-                      if ($mainid.css('transform') == 'none') {
-                      } else {
-                        renderAsideList();
-                      }
+                      renderAsideList();
                       return;
                     }
                   }).catch(err => { });
@@ -1636,6 +1654,7 @@ function homeBmMenu(e, obj) {
           }).then((result) => {
             if (parseInt(result.code) === 0) {
               close();
+              _msg.success(result.codeText);
               sendCommand({ type: 'updatedata', flag: 'bookmark' });
               renderHomebook();
               return;
@@ -1793,6 +1812,7 @@ $searchInpWrap.on('click', '.search_submit', tosearch).on('click', '.translate_b
     let x = $(this).parent().attr('ssid');
     _postAjax('/search/del', { arr: [x] }).then((result) => {
       if (parseInt(result.code) === 0) {
+        _msg.success(result.codeText);
         $(this).parent().stop().slideUp(_speed);
         return;
       }
@@ -1886,10 +1906,12 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
         _this.attr('data-callword', 'n');
         _this.html(`<i class="iconfont icon-tishi"></i><span>百度提示词</span><i class="iconfont icon-kaiguan-guan"></i>`);
         _setData('callword', 'n');
+        _msg.success('关闭提示词');
       } else {
         _this.attr('data-callword', 'y');
         _this.html(`<i class="iconfont icon-tishi"></i><span>百度提示词</span><i class="iconfont icon-kaiguan-kai1"></i>`);
         _setData('callword', 'y');
+        _msg.success('开启提示词');
       }
     } else if (_getTarget(e, '.mtcitem1')) {
       close();
@@ -1927,9 +1949,10 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
                   });
                   curSearchEngine = _d.searchEngineData[xi];
                   _setData('searchengine', curSearchEngine);
+                  _msg.success('切换成功')
                 },
                 () => {
-                  _err();
+                  _msg.error();
                   _loadingBar.end();
                 }
               );
@@ -1967,19 +1990,20 @@ function bgInterval() {
             true
           ).then((result) => {
             if (parseInt(result.code) === 0) {
+              _msg.success('切换壁纸成功');
               sendCommand({ type: 'updatedata', flag: 'userinfo' });
               return;
             }
           }).catch(err => { });
         },
         () => {
-          _err('加载失败');
+          _msg.error('加载失败');
           $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
         }
       );
     }
   }).catch(err => {
-    _err('加载错误');
+    _msg.error('加载错误');
     $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
   });
 }
@@ -1996,14 +2020,14 @@ function hdUpBg(files) {
     let pro = new UpProgress(name);
     if (!isImgFile(name)) {
       pro.fail();
-      _err(`${name} 格式错误`);
+      _msg.error(`${name} 格式错误`);
       num++;
       fn(num);
       return;
     }
     if (size == 0) {
       pro.fail();
-      _err(`${name} 为空文件`);
+      _msg.error(`${name} 为空文件`);
       num++;
       fn(num);
       return;
@@ -2155,7 +2179,7 @@ function bgitemmenu(e, url) {
               $pageBg.css('background-image', `url(${xx})`).attr('data-bg', url);
             },
             () => {
-              _err('加载失败');
+              _msg.error('加载失败');
               $randomChangeBgBtn.removeClass('open').find('img').removeClass('open');
             }
           );
@@ -2163,6 +2187,7 @@ function bgitemmenu(e, url) {
           _postAjax('/bg/updatabg', { flag: bgflag, bg: url }, true).then(
             (result) => {
               if (parseInt(result.code) === 0) {
+                _msg.success(result.codeText);
                 sendCommand({ type: 'updatedata', flag: 'userinfo' });
                 return;
               }
@@ -2177,6 +2202,7 @@ function bgitemmenu(e, url) {
                 _postAjax('/bg/delbg', { url: url }).then((result) => {
                   if (parseInt(result.code) === 0) {
                     close();
+                    _msg.success(result.codeText);
                     bgxuanran();
                     return;
                   }
@@ -2366,19 +2392,12 @@ $randomChangeBgBtn.on('click', throttle(function () {
 
 
 // 时间日期
-//{0}年{1}月{2}日 {3}时{4}分{5}秒 星期{6}
 let musicflagnum = 0;
 function showTime(time = Date.now()) {
   let arr = formatDate({ template: '{0}-{1}-{2}-{3}-{4}-{5}-{6}', timestamp: +time }).split('-'),
     [year, month, date, hour, minute, second, strDate] = arr;
-  // 报时
-  if (
-    (minute == 59 && second >= 30) ||
-    (minute == 29 && second >= 30) ||
-    (minute == 0 && second == 0) ||
-    (minute == 30 && second == 0)
-  ) {
-    _success(`${hour}:${minute}:${second}`, true);
+  if (minute == 0 && second == 0 || minute == 30 && second == 0) {
+    _msg.msg({ message: `整点报时：${hour}:${minute}:${second}`, duration: 10000 });
   }
   if (!$myAudio[0].paused) {
     //标题跑马灯
@@ -2394,13 +2413,7 @@ function showTime(time = Date.now()) {
     if (!$myAudio[0].paused && musicobj) {
       _postAjax('/player/updatemusicinfo', {
         history: 'n',
-        lastplay: {
-          id: musicobj.id,
-          name: musicobj.name,
-          artist: musicobj.artist,
-          duration: musicobj.duration,
-          mv: musicobj.mv
-        },
+        lastplay: musicobj,
         currentTime: $myAudio[0].currentTime,
         duration: musicobj.duration,
       },
@@ -2463,7 +2476,7 @@ $lrcFootBtnWrap.on('click', '.random_play_btn', function () {
       }
       break;
   }
-  _success(a);
+  _msg.info(a);
 }).on('click', '.playing_list_btn', function (e) {
   defaultdqplaying();
   $playingListWrap.stop().fadeIn(100, () => {
@@ -2482,7 +2495,7 @@ $lrcFootBtnWrap.on('click', '.random_play_btn', function () {
   let index;
   if (!_d.music) return;
   if (musicarr.length == 0) {
-    _err('播放列表为空')
+    _msg.error('播放列表为空')
     audioPause();
     return;
   }
@@ -2500,7 +2513,7 @@ $lrcFootBtnWrap.on('click', '.random_play_btn', function () {
   let index;
   if (!_d.music) return;
   if (musicarr.length == 0) {
-    _err('播放列表为空')
+    _msg.error('播放列表为空')
     audioPause();
     return;
   }
@@ -2705,7 +2718,7 @@ $myAudio
     }, 500)
   )
   .on('error', function () {
-    _err('歌曲加载失败')
+    _msg.error('歌曲加载失败')
     audioPause();
   })
   .on('ended', function () {
@@ -2783,7 +2796,7 @@ $editLrcWrap.on('click', '.close', function () {
   }).then((result) => {
     if (parseInt(result.code) === 0) {
       $editLrcWrap._val = val;
-      _success(result.codeText);
+      _msg.success(result.codeText);
       return;
     }
   }).catch(err => { });
@@ -2825,7 +2838,7 @@ function tin(time) {
 $lrcHead.on('click', '.remote_play', function (e) {
   if (_d.remoteState) {
     _d.remoteState = !_d.remoteState;
-    _success('远程播放已关闭');
+    _msg.success('关闭远程播放');
     $lrcListWrap.find('.lrc_items').html(``);
     $lrcHead.find('.remote_play').removeClass('red');
     sendCommand({
@@ -2839,7 +2852,7 @@ $lrcHead.on('click', '.remote_play', function (e) {
   } else {
     if (!musicobj) return;
     _d.remoteState = !_d.remoteState;
-    _success('远程播放已开启');
+    _msg.success('开启远程播放');
     $myAudio[0]._rod = [];
     $lrcListWrap.find('.lrc_items').html(
       `<div style="width:100%;font-size:18px;position: fixed;text-align: center;top: 45%;left:50%;transform: translateX(-50%);">远程播放中...</div>`
@@ -2895,7 +2908,7 @@ function musicPlay(obj) {
   musicobjInit(obj); //初始化音乐数据
   let a = `♪♪ ${musicobj.artist} - ${musicobj.name}`;
   $lrcProgressBar.find('.total_time').text(tin(musicobj.duration));
-  _success(a);
+  _msg.info(a);
   gaoliang(false); //列表定位
   gaolianging(false);
   $musicFootProgress.css({
@@ -2916,13 +2929,7 @@ function musicPlay(obj) {
       _postAjax('/player/updatemusicinfo', {
         //更新当前播放音乐
         history: 'y',
-        lastplay: {
-          id: musicobj.id,
-          name: musicobj.name,
-          artist: musicobj.artist,
-          duration: musicobj.duration,
-          mv: musicobj.mv
-        },
+        lastplay: musicobj,
         currentTime: $myAudio[0].currentTime,
         duration: obj.duration,
       },
@@ -3131,6 +3138,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
     _postAjax('/player/closecollectsong', sobj).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
+        _msg.success(result.codeText);
         renderMusicList();
         return;
       }
@@ -3142,6 +3150,7 @@ $pMusicListBox.find('.p_foot').on('click', '.song_info_wrap', function () {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
+        _msg.success(result.codeText);
         return;
       }
     }).catch(err => { });
@@ -3408,7 +3417,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                 id: 'all', ar: [sobj]
               }).then((result) => {
                 if (parseInt(result.code) === 0) {
-                  _success();
+                  _msg.success(result.codeText);
                   close();
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   _musicsea();
@@ -3428,7 +3437,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
             }
           });
           if (str == '') {
-            _err('没有可选歌单')
+            _msg.error('没有可选歌单')
             return;
           }
           rightMenu(
@@ -3452,7 +3461,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
                           close();
-                          _success();
+                          _msg.success(result.codeText);
                           sendCommand({
                             type: 'updatedata',
                             flag: 'music',
@@ -3497,6 +3506,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                   sobj.name = newName;
                   sobj.artist = newArtist;
                   close();
+                  _msg.success(res.codeText);
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   _musicsea();
                   renderMusicItem();
@@ -3564,7 +3574,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
   musicarr = qucong(musicarr);
   _d.playingList.reverse();
   musicarr.reverse();
-  _success('添加成功');
+  _msg.success('添加成功');
   updatePlayingList();
 }).on('click', '.like_hear', function () {
   let $this = $(this).parent();
@@ -3576,6 +3586,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         _musicsea();
         renderMusicList();
+        _msg.success(result.codeText);
         return;
       }
     }).catch(err => { });
@@ -3587,6 +3598,7 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         _musicsea();
         renderMusicList();
+        _msg.success(result.codeText);
         return;
       }
     }).catch(err => { });
@@ -3728,7 +3740,7 @@ document.onkeydown = function (e) {
       if (_d.remoteState) {
         remoteVol()
       }
-      _success(parseInt(curPlayVol * 100) + '%', true);
+      _msg.info(parseInt(curPlayVol * 100) + '%');
     }
     //音量-
     if (ctrl && key === 'ArrowDown') {
@@ -3741,7 +3753,7 @@ document.onkeydown = function (e) {
       if (_d.remoteState) {
         remoteVol();
       }
-      _success(parseInt(curPlayVol * 100) + '%', true);
+      _msg.info(parseInt(curPlayVol * 100) + '%');
     }
     //暂停/播放
     if (key === ' ') {
@@ -4102,9 +4114,9 @@ $songListWrap
   .on('click', '.add_song_list', function (e) {
     // 添加歌单
     let str = `
-    <input autocomplete="off" placeholder="歌单标题" type="text">
+    <input autocomplete="off" placeholder="标题" type="text">
     <textarea autocomplete="off" placeholder="描述"></textarea>
-    <button cursor class="mtcbtn">新增歌单</button>`;
+    <button cursor class="mtcbtn">提交</button>`;
     rightMenu(
       e,
       str,
@@ -4114,12 +4126,13 @@ $songListWrap
             let val = inp[0];
             let des = inp[1];
             if (val === '') {
-              _err('请输入歌单名');
+              _msg.error('请输入标题');
               return;
             }
             _postAjax('/player/addlist', { name: val, des }).then((result) => {
               if (parseInt(result.code) === 0) {
                 close();
+                _msg.success(result.codeText);
                 sendCommand({ type: 'updatedata', flag: 'music' });
                 renderMusicList();
                 return;
@@ -4171,6 +4184,7 @@ function gedanmenu(e, id) {
               _postAjax('/player/dellist', { id }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
+                  _msg.success(result.codeText);
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   renderMusicList();
                   return;
@@ -4180,7 +4194,7 @@ function gedanmenu(e, id) {
           });
         } else if (_getTarget(e, '.mtcitem1')) {
           let str = `
-          <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
+          <input autocomplete="off" placeholder="标题" type="text" value="${encodeHtml(name)}">
           <textarea autocomplete="off" placeholder="描述">${encodeHtml(des || '')}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
           rightMenu(e, str, debounce(function ({ e, close, inp }) {
@@ -4188,7 +4202,7 @@ function gedanmenu(e, id) {
               let nname = inp[0],
                 ndes = inp[1];
               if (nname === '') {
-                _err('请输入歌单名');
+                _msg.error('请输入标题');
                 return;
               }
               if (nname + ndes == name + (des || '')) return;
@@ -4198,6 +4212,7 @@ function gedanmenu(e, id) {
                     close();
                     name = nname;
                     des = ndes;
+                    _msg.success(result.codeText);
                     sendCommand({ type: 'updatedata', flag: 'music' });
                     renderMusicList();
                     return;
@@ -4215,7 +4230,7 @@ function gedanmenu(e, id) {
 }
 function playList() {
   if (musicarrjl.length === 0) {
-    _err('播放列表为空');
+    _msg.error('播放列表为空');
     return;
   }
   if (diffPlayingList(musicarrjl)) {
@@ -4260,7 +4275,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   let index = _d.music.findIndex((item) => item.id === id);
   let { des, name } = _d.music[index];
   let str = `
-  <input autocomplete="off" placeholder="歌单标题" type="text" value="${encodeHtml(name)}">
+  <input autocomplete="off" placeholder="标题" type="text" value="${encodeHtml(name)}">
   <textarea autocomplete="off" placeholder="描述">${encodeHtml(des || '')}</textarea>
           <button cursor class="mtcbtn">提交</button>`;
   rightMenu(e, str, debounce(function ({ e, close, inp }) {
@@ -4268,7 +4283,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       let nname = inp[0],
         ndes = inp[1];
       if (nname === '') {
-        _err('请输入歌单名');
+        _msg.error('请输入标题');
         return;
       }
       if (nname + ndes == name + (des || '')) return;
@@ -4276,6 +4291,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         (result) => {
           if (parseInt(result.code) === 0) {
             close();
+            _msg.success(result.codeText);
             sendCommand({ type: 'updatedata', flag: 'music' });
             renderMusicList();
             return;
@@ -4324,7 +4340,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       let pro = new UpProgress(name);
       if (size === 0) {
         pro.fail();
-        _err(`${name} 为空文件`);
+        _msg.error(`${name} 为空文件`);
         num++;
         fn(num);
         return;
@@ -4333,7 +4349,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         !/^[^\-]*[^\s\-]\-[^\s\-][^\-]*\.(jpg|mp3|lrc|mp4)$/i.test(name)
       ) {
         pro.fail();
-        _err(`${name} 格式错误`);
+        _msg.error(`${name} 格式错误`);
         num++;
         fn(num);
         return;
@@ -4450,7 +4466,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   musicarr = qucong(musicarr);
   _d.playingList.reverse();
   musicarr.reverse();
-  _success('添加成功');
+  _msg.success('添加成功');
   updatePlayingList();
 }).on('click', '.sheck_song_btn', () => {
   //多选操作
@@ -4481,7 +4497,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     $this.attr('x', '1');
     num = 0;
   }
-  _success(`选中：${num}`, true);
+  _msg.info(`选中：${num}项`);
 }).on('click', '.share_all_song_btn', debounce(function () {
   let arr = getCheckSongItem().map(item => ({ id: item.id }));
   if (arr.length === 0) return;
@@ -4499,7 +4515,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     if (parseInt(result.code) === 0) {
       sendCommand({ type: 'updatedata', flag: 'music' });
       renderMusicList();
-      _success();
+      _msg.success(result.codeText);
       return;
     }
   }).catch(err => { });
@@ -4516,6 +4532,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         if (parseInt(result.code) === 0) {
           sendCommand({ type: 'updatedata', flag: 'music' });
           renderMusicList();
+          _msg.success(result.codeText);
           return;
         }
       }).catch(err => { });
@@ -4533,6 +4550,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         if (parseInt(result.code) === 0) {
           sendCommand({ type: 'updatedata', flag: 'music' });
           renderMusicList();
+          _msg.success(result.codeText);
           return;
         }
       }).catch(err => { });
@@ -4553,7 +4571,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     }
   });
   if (str == '') {
-    _err('没有可选歌单')
+    _msg.error('没有可选歌单')
     return;
   }
   rightMenu(
@@ -4573,7 +4591,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               _postAjax('/player/songtolist', { id, tid, ar }).then(
                 (result) => {
                   if (parseInt(result.code) === 0) {
-                    _success();
+                    _msg.success(result.codeText);
                     close();
                     sendCommand({ type: 'updatedata', flag: 'music' });
                     renderMusicList();
@@ -4601,7 +4619,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   musicarr = qucong(musicarr);
   _d.playingList.reverse();
   musicarr.reverse();
-  _success('添加成功');
+  _msg.success('添加成功');
   $msuicContentBox.find('.sheck_song_btn').click();
   _postAjax('/player/updateplaying', { data: _d.playingList }).then(
     (result) => {
@@ -4669,6 +4687,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
     _postAjax('/player/closecollectsong', sobj).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
+        _msg.success(result.codeText);
         renderMusicList();
         return;
       }
@@ -4680,6 +4699,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
+        _msg.success(result.codeText);
         return;
       }
     }).catch(err => { });
@@ -4730,6 +4750,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
+                  _msg.success(result.codeText);
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   renderMusicList();
                   return;
@@ -4748,7 +4769,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             }
           });
           if (str == '') {
-            _err('没有可选歌单')
+            _msg.error('没有可选歌单')
             return;
           }
           let flagClose = close;
@@ -4772,7 +4793,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                         ar: [sobj],
                       }).then((result) => {
                         if (parseInt(result.code) === 0) {
-                          _success();
+                          _msg.success(result.codeText);
                           flagClose();
                           close();
                           sendCommand({
@@ -4800,6 +4821,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               _postAjax('/player/delmv', { sobj }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
+                  _msg.success(result.codeText);
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   renderMusicItem();
                   return;
@@ -4834,6 +4856,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   sobj.name = newName;
                   sobj.artist = newArtist;
                   close();
+                  _msg.success(res.codeText);
                   sendCommand({ type: 'updatedata', flag: 'music' });
                   renderMusicItem();
                 }
@@ -4969,7 +4992,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   }
   let $duoxuan = $msuicContentBox.find('.list_items_wrap .check_state'),
     $checkArr = $duoxuan.filter((_, item) => $(item).attr('check') === 'y');
-  _success(`选中：${$checkArr.length}`, true);
+  _msg.info(`选中：${$checkArr.length}项`);
 }).on('click', '.prev_page', function () {
   musicPageNum--;
   $msuicContentBox.find('.list_items_wrap')[0].scrollTop = 0;
@@ -5030,32 +5053,22 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
   const $this = $(this);
   if (!$this.hasClass('active')) {
     _postAjax('/player/collectsong', {
-      ar: [{
-        id: musicobj.id,
-        name: musicobj.name,
-        artist: musicobj.artist,
-        duration: musicobj.duration,
-        mv: musicobj.mv
-      }]
+      ar: [musicobj]
     }).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
+        _msg.success(result.codeText);
         $this.attr('class', 'collect_song_btn iconfont icon-hear-full active');
         return;
       }
     }).catch(err => { });
   } else {
-    _postAjax('/player/closecollectsong', {
-      id: musicobj.id,
-      name: musicobj.name,
-      artist: musicobj.artist,
-      duration: musicobj.duration,
-      mv: musicobj.mv
-    }).then((result) => {
+    _postAjax('/player/closecollectsong', musicobj).then((result) => {
       if (parseInt(result.code) === 0) {
         sendCommand({ type: 'updatedata', flag: 'music' });
         renderMusicList();
+        _msg.success(result.codeText);
         $this.attr('class', 'collect_song_btn iconfont icon-hear');
         return;
       }
@@ -5206,7 +5219,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
           }
         });
         if (str == '') {
-          _err('没有可选歌单')
+          _msg.error('没有可选歌单')
           return;
         }
         rightMenu(
@@ -5230,7 +5243,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
                       ar: [sobj],
                     }).then((result) => {
                       if (parseInt(result.code) === 0) {
-                        _success();
+                        _msg.success(result.codeText);
                         close();
                         sendCommand({
                           type: 'updatedata',
@@ -5259,7 +5272,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
               id: 'all', ar: [sobj]
             }).then((result) => {
               if (parseInt(result.code) === 0) {
-                _success();
+                _msg.success(result.codeText);
                 close();
                 sendCommand({ type: 'updatedata', flag: 'music' });
                 renderMusicList();
@@ -5309,7 +5322,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       $myAudio[0].playbackRate = b;
       curPlaySpeed = [a, b];
       _setData('lastplaysd', curPlaySpeed);
-      _success(b + 'X');
+      _msg.info(b + 'X');
     }
   });
 }).find('.play_speed_btn').text(curPlaySpeed[0]);
@@ -5410,13 +5423,7 @@ function musicMv(obj) {
   toggleLrcMenuWrapBtnsState();
   _postAjax('/player/updatemusicinfo', {
     history: 'y',
-    lastplay: {
-      id: musicobj.id,
-      name: musicobj.name,
-      artist: musicobj.artist,
-      duration: musicobj.duration,
-      mv: musicobj.mv
-    },
+    lastplay: musicobj,
     currentTime: $myAudio[0].currentTime,
     duration: musicobj.duration,
   },
@@ -5436,7 +5443,7 @@ function musicMv(obj) {
   }).catch(err => { });
 }
 $myVideo[0].onerror = function (e) {
-  _err(`MV加载失败`);
+  _msg.error(`MV加载失败`);
 };
 //拖动
 var mmlist = $musicPlayerBox[0],
@@ -5509,7 +5516,7 @@ function drag(obj, oobj, lastweizi) {
 //       wscript.SendKeys("{F11}");
 //     }
 //   } else {
-//     _err("Browser does not support full screen");
+//     _msg.error("Browser does not support full screen");
 //   }
 // };
 //退出全屏
@@ -5528,7 +5535,7 @@ function drag(obj, oobj, lastweizi) {
 //       wscript.SendKeys("{F11}");
 //     }
 //   } else {
-//     _err("Failed to switch, try ESC to exit");
+//     _msg.error("Failed to switch, try ESC to exit");
 //   }
 // };
 
@@ -5737,11 +5744,11 @@ $userInfoWrap
             let uname = inp[0];
             if (uname === _d.userInfo.username) return;
             if (!isUserName(uname)) {
-              _err('昵称格式错误');
+              _msg.error('昵称格式错误');
               return;
             }
             if (userlenght(uname)) {
-              _err('昵称过长');
+              _msg.error('昵称过长');
               return;
             }
             _postAjax('/user/changeusername', {
@@ -5749,6 +5756,7 @@ $userInfoWrap
             }).then((result) => {
               if (parseInt(result.code) === 0) {
                 close();
+                _msg.success(result.codeText);
                 sendCommand({ type: 'updatedata', flag: 'userinfo' });
                 handleuser();
                 return;
@@ -5770,7 +5778,7 @@ $userInfoWrap
           if (parseInt(result.code) === 0) {
             handleuser();
             sendCommand({ type: 'updatedata', flag: 'userinfo' });
-            _success(result.codeText);
+            _msg.success(result.codeText);
             return;
           }
         }).catch(err => { });
@@ -5800,7 +5808,7 @@ $userInfoWrap
               var file = e.target.files[0];
               $input.remove();
               if (!isImgFile(file.name)) {
-                _err('上传文件格式错误');
+                _msg.error(`${file.name} 文件格式错误`);
                 return;
               }
               let blob;
@@ -5824,7 +5832,7 @@ $userInfoWrap
                     pro.fail();
                   });
               } catch (error) {
-                _err('上传失败');
+                _msg.error('上传失败');
                 return;
               }
             });
@@ -5921,7 +5929,7 @@ $rightBox.on('click', '.user_name', function () {
                           newpassword = inp[1],
                           newpassword1 = inp[2];
                         if (newpassword !== newpassword1) {
-                          _err('密码不一致');
+                          _msg.error('密码不一致');
                           return;
                         };
                         _postAjax('/user/changepass', {
@@ -5930,7 +5938,7 @@ $rightBox.on('click', '.user_name', function () {
                         }).then((result) => {
                           if (parseInt(result.code) === 0) {
                             close();
-                            _success(result.codeText);
+                            _msg.success(result.codeText);
                             return;
                           }
                         }).catch((_) => { });
@@ -5944,11 +5952,11 @@ $rightBox.on('click', '.user_name', function () {
                           _postAjax('/user/delaccount', {}).then(
                             (result) => {
                               if (parseInt(result.code) === 0) {
-                                alert(result.codeText, {
-                                  handled: (_) => {
-                                    _delData();
+                                _delData();
+                                _msg.success(result.codeText, (type) => {
+                                  if (type == 'close') {
                                     myOpen('/login/');
-                                  },
+                                  }
                                 });
                                 return;
                               }
@@ -6050,10 +6058,12 @@ $rightBox.on('click', '.user_name', function () {
                     if (flag === 'y') {
                       _this.attr('data-dian', 'n');
                       _this.html(`<i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont icon-kaiguan-guan"></i>`);
+                      _msg.success('开启成功')
                       _setData('dian', 'n');
                     } else {
                       _this.attr('data-dian', 'y');
                       _this.html(`<i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont icon-kaiguan-kai1"></i>`);
+                      _msg.success('关闭成功')
                       _setData('dian', 'y');
                     }
                   } else if (_getTarget(e, '.mtcitem7')) {
@@ -6073,7 +6083,7 @@ $rightBox.on('click', '.user_name', function () {
                         let flag = _this.getAttribute('data-flag');
                         _setData('loading', flag);
                         changeLoadImg();
-                        _success();
+                        _msg.success('切换成功');
                       }
                     });
                   }
@@ -6286,6 +6296,7 @@ $logHeadBtns.on('click', '.l_close_btn', () => {
         _postAjax('/root/logclear', {}).then((result) => {
           if (parseInt(result.code) === 0) {
             $logContent.html('');
+            _msg.success(result.codeText);
             $logHeadBtns.find('.l_search_inp').val('');
             logpage = 1;
             return;
@@ -6311,7 +6322,7 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
 }).on('click', '.clear_msg_btn', function () {
   let ac = chatobj.account;
   if (ac === 'chang' && _d.userInfo.account !== 'root') {
-    _err('没有权限操作');
+    _msg.error('没有权限操作');
     return;
   }
   alert(`确认清空当前聊天记录？`, {
@@ -6321,6 +6332,7 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
         _postAjax('/chat/clearmsg', { ac }).then((result) => {
           if (parseInt(result.code) === 0) {
             $chatListBox.find('.chat_list').html('');
+            _msg.success(result.codeText);
             sendCommand({
               type: 'chat',
               flag: 'clear',
@@ -6517,7 +6529,11 @@ function chatimgLoad() {
 // 浏览器通知
 function tongzhi(name, data) {
   playSound(`/img/notice.mp3`);
-  _success(`${name}: ${data}`);
+  _msg.warning(`${name}: ${data}`, (type) => {
+    if (type == 'click') {
+      $showChatRoomBtn.click();
+    }
+  });
   // try {
   //   if (window.Notification.permission == "granted") {
   //     new Notification(name, {
@@ -6655,7 +6671,7 @@ $chatListBox
         }
         return;
       }
-      _err('文件已过期');
+      _msg.error('文件已过期');
     }).catch(err => { });
   })
   .on('contextmenu', '.c_content_box', function (e) {
@@ -6690,7 +6706,7 @@ $chatListBox
         imgPreview([{ u1: mediaURL + a, u2: mediaURL + b }]);
         return;
       }
-      _err('图片已过期');
+      _msg.error('图片已过期');
     }).catch(err => { });
   })
   .on(
@@ -6798,6 +6814,7 @@ function backmsg(e, tt, y, z, f, n, s) {
                 tt,
               });
               let $msg = $chatListBox.find(`#${tt}`);
+              _msg.success(result.codeText);
               $msg.stop().slideUp(_speed, () => {
                 $msg.remove();
               });
@@ -6833,7 +6850,7 @@ function backmsg(e, tt, y, z, f, n, s) {
               downloadFile(`/getfile${y}`, n);
               return;
             }
-            _err(`${type}已过期`);
+            _msg.error(`${type}已过期`);
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem4')) {
           myOpen(z, '_blank');
@@ -6869,7 +6886,7 @@ $chatAudio
     $chatListBox.find('.c_voice_msg_box i').css('animation', 'none');
   })
   .on('error', function () {
-    _err('语音已过期');
+    _msg.error('语音已过期');
     $chatAudio.playflag = '';
     $chatListBox.find('.c_voice_msg_box i').css('animation', 'none');
   });
@@ -6919,7 +6936,6 @@ function getNewMsg(y) {
     (result) => {
       if (parseInt(result.code) === 0) {
         if ($chatRoomWrap.is(':hidden')) return;
-        playSound(`/img/blop.mp3`);
         let str = sxliuyan(result.data);
         $chatListBox.find('.chat_list').append(str);
         if (y) {
@@ -7029,7 +7045,7 @@ function sendfile(files, pchatId) {
     let pro = new UpProgress(name);
     if (size == 0) {
       pro.fail('发送失败');
-      _err(`${name} 为空文件`);
+      _msg.error(`${name} 为空文件`);
       num++;
       fn(num);
       return;
@@ -7083,7 +7099,7 @@ function sendfile(files, pchatId) {
             sendmasg(obj, pchatId);
           } else {
             pro.fail('发送失败');
-            _err(`${files[num].name} 发送失败`);
+            _msg.error(`${files[num].name} 发送失败`);
           }
           num++;
           fn(num);
@@ -7125,7 +7141,7 @@ function sendfile(files, pchatId) {
         if (!rec) return;
         rec.close();
         rec = null;
-        _err('没有打开权限或浏览器不支持语音输入');
+        _msg.error('没有打开权限或浏览器不支持语音输入');
       }
     );
   }
@@ -7197,7 +7213,7 @@ function uploadRec(blob, duration) {
       },
       error: () => {
         pro.fail('发送失败');
-        _err('发送失败');
+        _msg.error('发送失败');
       },
     });
   };
@@ -7227,7 +7243,7 @@ function uploadRec(blob, duration) {
           uploadRec(blob, duration);
         },
         () => {
-          _err('发送失败');
+          _msg.error('发送失败');
         }
       );
     })
@@ -7243,7 +7259,7 @@ function uploadRec(blob, duration) {
           uploadRec(blob, duration);
         },
         () => {
-          _err('发送失败');
+          _msg.error('发送失败');
         }
       );
     } else {
@@ -7663,7 +7679,7 @@ function handleuser() {
             } else if (hd.type === 'vol') {
               curPlayVol = hd.data;
               vobellm();
-              _success(`${parseInt(curPlayVol * 100)}%`);
+              _msg.info(`${parseInt(curPlayVol * 100)}%`);
             } else if (hd.type === 'progress') {
               $myAudio[0].currentTime = musicobj.duration * hd.data;
             } else if (hd.type === 'playmode') {

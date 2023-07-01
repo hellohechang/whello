@@ -12,6 +12,7 @@ import {
 } from '../../utils/utils';
 import '../../js/common';
 import { alert } from '../../plugins/alert';
+import _msg from "../../plugins/message";
 const $contentWrap = $('.content_wrap'), $headBtns = $contentWrap.find('.head_btns'), $shareList = $contentWrap.find('.share_list'),
   $pageBg = $('.page_bg');
 _setTimeout(() => {
@@ -52,6 +53,7 @@ $shareList.on('click', '.delete', function () {
       if (m !== 'confirm') return;
       _postAjax('/user/deleteshare', { id }).then(res => {
         if (res.code == 0) {
+          _msg.success(res.codeText);
           renderList();
         }
       }).catch(err => { });
@@ -71,6 +73,7 @@ $headBtns.on('click', '.clear_share_list_btn', function () {
       if (m !== 'confirm') return;
       _postAjax('/user/deleteshare').then(res => {
         if (res.code == 0) {
+          _msg.success(res.codeText);
           renderList();
         }
       }).catch(err => { });

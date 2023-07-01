@@ -15,7 +15,7 @@ import {
 } from '../../utils/utils';
 import { mediaURL } from "../../config";
 import '../../js/common';
-import { _success } from "../../plugins/message";
+import _msg from "../../plugins/message";
 ~function () {
   let urlparmes = queryURLParams(myOpen()),
     HASH = urlparmes.HASH;
@@ -90,7 +90,7 @@ import { _success } from "../../plugins/message";
       function () {
         _getAjax('/nav/saveshare', { id: HASH }).then((res) => {
           if (res.code == 0) {
-            _success();
+            _msg.success(res.codeText);
           }
         }).catch(err => { });
       },

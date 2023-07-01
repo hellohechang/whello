@@ -1,66 +1,148 @@
 import { LevelObj } from "../../config";
 import { playSound } from "../../utils/utils";
 
-// 操作提示弹窗
-let timer = null;
-let box = document.createElement('div'),
-  textbox = document.createElement('div');
-box.style.cssText = `
-    width: 100%;
-    min-height: 100px;
-    position: fixed;
-    top: 30px;
-    transform: translateY(-100%);
-    font-size: 18px;
-    opacity: 0;
-    text-align: center;
-    z-index: ${LevelObj.mstc};
-    pointer-events: none;`;
-textbox.style.cssText = `
-    display: inline-block;
-    max-height: 100%;
-    max-width: 80%;
-    line-height: 30px;
-    overflow: hidden;
-    font-weight: bold;
-    box-sizing: border-box;
-    padding: 5px 10px;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.6);`;
-box.appendChild(textbox);
-document.body.appendChild(box);
-function mstc(flag, str, again) {
-  if (timer !== null) {
-    clearTimeout(timer);
-    timer = null;
+let msgArr = [];
+let zIndex = LevelObj.msg;
+class Msg {
+  constructor(opt, callback) {
+    this.message = opt.message;
+    this.type = opt.type || 'info';
+    this.callback = callback;
+    this.duration = opt.duration || 3000;
+    this.timer = null;
+    this.init();
   }
-  str = str || (flag ? '操作成功' : '操作失败');
-  let color = flag ? 'white' : 'rgba(245,27,112,1)';
-  if (!again) {
-    box.style.transition = '0s';
-    box.style.transform = 'translateY(-100%)';
-    box.style.opacity = '0';
-    box.clientWidth;
+  init() {
+    this.el = document.createElement('div');
+    let t = '';
+    switch (this.type) {
+      case 'info':
+        t = `color: #0c5460;background-color: #d1ecf1;border-color: #bee5eb;`;
+        break;
+      case 'success':
+        t = `background-color: #d1e7dd;color: #146c43;border-color: #c3e6cb;`;
+        break;
+      case 'danger':
+        t = `color: #721c24;background-color: #f8d7da;border-color: #f5c6cb;`;
+        break;
+      case 'warning':
+        t = `color: #856404;background-color: #fff3cd;border-color: #ffeeba;`;
+      default:
+        break;
+    }
+    this.el.style.cssText = `
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 500px;
+        opacity: 0;
+        padding: 14px;
+        border-radius: 5px;
+        line-height: 20px;
+        font-size: 16px;
+        border: solid 1px;
+        z-index: ${zIndex};
+        ${t}`;
+    this.el.innerText = this.message;
+    this.show();
+    this.bind();
   }
-
-  textbox.innerText = str;
-  textbox.style.color = color;
-  box.style.transition = '0.5s ease-out';
-  box.style.transform = 'none';
-  box.style.opacity = '1';
-
-  timer = setTimeout(() => {
-    clearTimeout(timer);
-    timer = null;
-    box.style.transition = '1s ease-out';
-    box.style.transform = 'translateY(-100%)';
-    box.style.opacity = '0';
-  }, 5000);
+  bind() {
+    this._hdEnter = this.hdEnter.bind(this);
+    this._hdLeave = this.hdLeave.bind(this);
+    this._hdClick = this.hdClick.bind(this);
+    this.el.addEventListener('mouseenter', this._hdEnter);
+    this.el.addEventListener('mouseleave', this._hdLeave);
+    this.el.addEventListener('click', this._hdClick);
+  }
+  unbind() {
+    this.el.removeEventListener('mouseenter', this._hdEnter);
+    this.el.removeEventListener('mouseleave', this._hdLeave);
+    this.el.removeEventListener('click', this._hdClick);
+  }
+  hdClick() {
+    this.callback && this.callback('click');
+    this.close();
+  }
+  hdEnter() {
+    this.el.isCheck = true;
+    this.el.style.zIndex = zIndex + 1;
+    this.el.style.opacity = 1;
+    clearTimeout(this.timer);
+    this.timer = null;
+  }
+  hdLeave() {
+    this.el.style.zIndex = zIndex;
+    this.el.style.opacity = .9;
+    this.el.isCheck = false;
+    this.hide();
+  }
+  show() {
+    let top = 0;
+    msgArr.forEach(item => {
+      top += item.offsetHeight + 20;
+    })
+    document.body.appendChild(this.el);
+    msgArr.push(this.el);
+    this.el.style.top = top + 'px';
+    this.el.clientHeight;
+    this.el.style.transition = '0.5s ease-out';
+    this.el.style.marginTop = '20px';
+    this.el.style.opacity = .9;
+    this.hide();
+  }
+  hide() {
+    this.timer = setTimeout(() => {
+      clearTimeout(this.timer);
+      this.timer = null;
+      this.close();
+    }, this.duration);
+  }
+  close() {
+    this.unbind();
+    let idx = msgArr.findIndex(item => item === this.el);
+    msgArr.splice(idx, 1);
+    let h = this.el.offsetHeight + 20;
+    this.el.style.transition = '.5s ease-out';
+    this.el.style.marginTop = `-${h}px`;
+    this.el.style.opacity = 0;
+    setTimeout(() => {
+      this.el.remove();
+      this.callback && this.callback('close');
+    }, 500)
+    msgArr.forEach((item, i) => {
+      if (item.isCheck || i < idx) return;
+      let t = parseInt(item.style.top);
+      item.style.transition = '0.5s ease-out';
+      item.style.top = t - h + 'px'
+    })
+  }
 }
-export function _success(str, again) {
-  mstc(true, str, again);
+function success(message = '操作成功', callback) {
+  playSound(`/img/blop.mp3`);
+  new Msg({ message, type: 'success' }, callback);
 }
-export function _err(str, again) {
+function error(message = '操作失败', callback) {
   playSound(`/img/error.mp3`);
-  mstc(false, str, again);
+  new Msg({ message, type: 'danger', duration: 5000 }, callback)
 }
+function warning(message, callback) {
+  playSound(`/img/notice.mp3`);
+  new Msg({ message, type: 'warning', duration: 8000 }, callback)
+}
+function info(message, callback) {
+  new Msg({ message }, callback)
+}
+function msg(opt, callback) {
+  new Msg(opt, callback)
+}
+let _msg = {
+  success,
+  error,
+  warning,
+  info,
+  msg
+}
+
+export default _msg;

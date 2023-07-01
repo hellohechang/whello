@@ -57,7 +57,7 @@ route.post('/delpic', async (req, res) => {
     let url = req.body.url;
     _unlink(`${_d.filepath}/pic/${url}`);
     _unlink(`${_d.filepath}/picys/${url}`);
-    _success(res);
+    _success(res, '删除图片成功');
     await writelog(req, `删除图片[${url}]`);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);

@@ -57,8 +57,8 @@ route.post('/updatabg', async (req, res) => {
       account,
       '0',
     ]);
-    _success(res);
     await writelog(req, `更换壁纸->[${bg}]`);
+    _success(res, '设置壁纸成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -104,7 +104,7 @@ route.post('/delbg', async (req, res) => {
     _unlink(`${_d.filepath}/bgys/bg/${url}`);
     _unlink(`${_d.filepath}/bgys/bgxs/${url}`);
     await writelog(req, `删除壁纸[${url}]`);
-    _success(res);
+    _success(res, '删除壁纸成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

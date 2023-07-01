@@ -14,7 +14,7 @@ import {
   myOpen
 } from '../utils/utils'
 import { serverURL, LevelObj } from "../config";
-import { _err, _success } from "../plugins/message";
+import _msg from "../plugins/message";
 import { _loadingBar } from '../plugins/loadingBar'
 
 //复制编辑选中文本
@@ -254,10 +254,10 @@ EventTarget.prototype._longPress = function (str, callback) {
   return this;
 };
 window.addEventListener('online', function () {
-  _success('网络连接成功');
+  _msg.success('网络连接成功');
 });
 window.addEventListener('offline', function () {
-  _err('断网了，少年');
+  _msg.error('断网了，少年');
 });
 ~(function () {
   let img = document.createElement('img');
@@ -282,7 +282,7 @@ window.onerror = function (message, url, line, column, error) {
   _postAjax('/user/panelerror', {
     err: `[Panel error] ${error} at ${url}:${line}:${column}`,
   });
-  _err(`出现未知错误~~，站长会尽快处理~`);
+  _msg.error(`出现未知错误~~，站长会尽快处理~`);
 };
 
 // 字体处理
@@ -308,7 +308,7 @@ window.onerror = function (message, url, line, column, error) {
         flag = ff;
       })
       .catch(() => {
-        _err('字体加载失败');
+        _msg.error('字体加载失败');
         _loadingBar.end();
       });
   }

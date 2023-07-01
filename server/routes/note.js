@@ -134,7 +134,7 @@ route.post('/locking', async (req, res) => {
     } else {
       await writelog(req, `公开笔记[${arr.join(',')}]`);
     }
-    _success(res);
+    _success(res, `${noteflag == 'n' ? '锁定' : '公开'}笔记成功`);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -213,7 +213,7 @@ route.post('/delnote', async (req, res) => {
       [...arr, account, '0']
     );
     await writelog(req, `删除笔记[${arr.join(',')}]`);
-    _success(res);
+    _success(res, '删除笔记成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

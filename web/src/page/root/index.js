@@ -13,9 +13,9 @@ import {
   _getTarget,
 } from '../../utils/utils';
 import '../../js/common';
-import { _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert';
 import { rightMenu } from "../../plugins/rightMenu";
+import _msg from "../../plugins/message";
 const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
   $tableBox = $contentWrap.find('.table_box'),
@@ -70,6 +70,7 @@ $list
         if (msg === 'confirm') {
           _postAjax('/root/deluser', { ac: x, flag }).then((result) => {
             if (parseInt(result.code) === 0) {
+              _msg.success(result.codeText);
               renderList();
             }
           }).catch(err => { });
@@ -88,6 +89,7 @@ $list
         if (msg === 'confirm') {
           _postAjax('/root/delaccount', { ac: x }).then((result) => {
             if (parseInt(result.code) === 0) {
+              _msg.success(result.codeText);
               renderList();
             }
           }).catch(err => { });
@@ -106,7 +108,7 @@ $list
         if (msg === 'confirm') {
           _getAjax('/root/resetpass', { a: x }).then((result) => {
             if (parseInt(result.code) === 0) {
-              _success(result.codeText);
+              _msg.success(result.codeText);
             }
           }).catch(err => { });
         }
@@ -138,7 +140,7 @@ $headBtns.on('click', '.clear_upload', function () {
       if (msg === 'confirm') {
         _getAjax('/root/clearup', {}).then((result) => {
           if (parseInt(result.code) === 0) {
-            _success(result.codeText);
+            _msg.success(result.codeText);
           }
         }).catch(err => { });
         return;
@@ -152,7 +154,7 @@ $headBtns.on('click', '.clear_upload', function () {
       if (m !== 'confirm') return;
       _getAjax('/root/delmusicfile').then((result) => {
         if (parseInt(result.code) === 0) {
-          _success(result.data);
+          _msg.success(result.codeText);
           return;
         }
       }).catch(err => { });
@@ -165,7 +167,7 @@ $headBtns.on('click', '.clear_upload', function () {
       if (m !== 'confirm') return;
       _getAjax('/root/clearchatdata').then((result) => {
         if (parseInt(result.code) === 0) {
-          _success(result.codeText);
+          _msg.success(result.codeText);
           return;
         }
       }).catch(err => { });
@@ -175,14 +177,14 @@ $headBtns.on('click', '.clear_upload', function () {
   _postAjax('/root/isregister').then(res => {
     if (res.code == 0) {
       $headBtns.find('.register_state span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`);
-      _success(res.data === 'y' ? '开放注册成功' : '已关闭注册');
+      _msg.success(res.data === 'y' ? '开放注册成功' : '已关闭注册');
     }
   }).catch(() => { });
 }).on('click', '.continue_req_log', function () {
   _postAjax('/root/continuereqlog').then(res => {
     if (res.code == 0) {
       $headBtns.find('.continue_req_log span').attr('class', `iconfont iconfont ${res.data === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}`);
-      _success(res.data === 'y' ? '开启持续请求log' : '已关闭持续请求log');
+      _msg.success(res.data === 'y' ? '开启持续请求log' : '已关闭持续请求log');
     }
   }).catch(() => { });
 }).on('click', '.log_save_day', function (e) {
@@ -212,7 +214,7 @@ $headBtns.on('click', '.clear_upload', function () {
       _postAjax('/root/updatetoken', { token }).then(res => {
         if (res.code == 0) {
           close();
-          _success();
+          _msg.success(res.codeText);
           dataObj.tokenKey = token;
         }
       })
@@ -228,7 +230,7 @@ $headBtns.on('click', '.clear_upload', function () {
       _postAjax('/root/updatefilepath', { filepath }).then(res => {
         if (res.code == 0) {
           close();
-          _success();
+          _msg.success(res.codeText);
           dataObj.filepath = filepath;
         }
       })

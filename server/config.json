@@ -1,1 +1,1 @@
-{"registerstate":"y","continueReqLog":"n","port":4000,"filepath":"D:/data/backup/static","tokenKey":"456789","logSaveDay":0,"songList":[{"name":"播放历史","des":"音乐足迹👣"},{"name":"收藏❤️","des":"当前喜欢的"},{"name":"New✨","des":"最新上传的歌曲"}]}
+{"registerstate":"y","continueReqLog":"y","port":4000,"filepath":"D:/data/backup/static","tokenKey":"456789","logSaveDay":0,"songList":[{"name":"播放历史","des":"音乐足迹👣"},{"name":"收藏❤️","des":"当前喜欢的"},{"name":"New✨","des":"最新上传的歌曲"}]}

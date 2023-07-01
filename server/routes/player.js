@@ -352,7 +352,7 @@ route.post('/dellist', async (req, res) => {
         [account]
       );
       await writelog(req, `删除歌单[${r.name}(${id})]`);
-      _success(res);
+      _success(res, '删除歌单成功');
       return;
     }
     _err(res);
@@ -389,8 +389,8 @@ route.post('/editlist', async (req, res) => {
         `WHERE account=?`,
         [account]
       );
-      await writelog(req, `修改歌单信息[=>${name}(${des})-(${id})]`);
-      _success(res);
+      await writelog(req, `更新歌单信息[=>${name}(${des})-(${id})]`);
+      _success(res, '更新歌单信息成功');
     } else {
       _err(res);
     }
@@ -415,8 +415,8 @@ route.post('/editsong', async (req, res) => {
     await _rename(`${_d.filepath}/musicys/${oldObj.artist}-${oldObj.name}.jpg`, `${_d.filepath}/musicys/${newObj.artist}-${newObj.name}.jpg`).catch(err => { });
 
     await updateData('musics', newObj, `WHERE id=?`, [id])
-    await writelog(req, `编辑歌曲[${oldObj.artist}-${oldObj.name}=>${newObj.artist}-${newObj.name}]`);
-    _success(res);
+    await writelog(req, `更新歌曲信息[${oldObj.artist}-${oldObj.name}=>${newObj.artist}-${newObj.name}]`);
+    _success(res, '更新歌曲信息成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -490,8 +490,8 @@ route.post('/addlist', async (req, res) => {
       `WHERE account=?`,
       [account]
     );
-    await writelog(req, `新增歌单[${name}(${id})]`);
-    _success(res);
+    await writelog(req, `添加歌单[${name}(${id})]`);
+    _success(res, '添加歌单成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -558,7 +558,7 @@ route.post('/closecollectsong', async (req, res) => {
       data: JSON.stringify(arr),
     }, `WHERE account=?`, [account]);
     await writelog(req, `移除收藏歌曲[${obj.artist}-${obj.name}]`);
-    _success(res, '移除歌曲成功');
+    _success(res, '移除收藏歌曲成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -593,7 +593,7 @@ route.post('/delsong', async (req, res) => {
         await writelog(req, `移除(${arr[i].name})歌曲[${strarr.join(',')}]`);
       }
     }
-    _success(res);
+    _success(res, `${id == 'all' ? '删除' : '移除'}歌曲成功`);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -620,7 +620,7 @@ route.post('/songtolist', async (req, res) => {
       }, `WHERE account=?`, [account]);
       let stext = id == 'all' ? `all=>${arr[ii].name}` : `${arr[i].name}=>${arr[ii].name}`;
       await writelog(req, `(${stext})[${strarr.join(',')}]`);
-      _success(res);
+      _success(res, '添加歌曲成功');
       return;
     }
     if (i > 1 && ii > 1, id !== tid) {
@@ -632,7 +632,7 @@ route.post('/songtolist', async (req, res) => {
       }, `WHERE account=?`, [account]);
       let stext = `${arr[i].name}=>${arr[ii].name}`;
       await writelog(req, `(${stext})[${strarr.join(',')}]`);
-      _success(res);
+      _success(res, '移动歌曲成功');
       return;
     }
     _err(res);
@@ -652,7 +652,7 @@ route.post('/delmv', async (req, res) => {
     let { sobj } = req.body;
     await updateData('musics', { mv: '' }, `WHERE id=?`, [sobj.id])
     await writelog(req, `删除 MV [${sobj.artist}-${sobj.name}]`);
-    _success(res);
+    _success(res, '删除MV成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -687,7 +687,7 @@ route.post('/editlrc', async (req, res) => {
       url = `${_d.filepath}/music/${artist}-${name}.lrc`;
     _writeFile(url, val);
     await writelog(req, `更新歌词[${artist}-${name}.lrc]`);
-    _success(res, '更新成功');
+    _success(res, '更新歌词成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -706,7 +706,7 @@ route.post('/musicshare', async (req, res) => {
     };
     await insertData('share', [obj]);
     await writelog(req, `分享歌曲[/sharemusic/#${id}]`);
-    _success(res, 'ok', { id });
+    _success(res, '分享歌曲成功', { id });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -826,8 +826,8 @@ route.get('/savesharesongs', async function (req, res) {
       des: ''
     })
     await updateData('musicinfo', { data: JSON.stringify(uArr) }, `WHERE account=?`, [account]);
-    await writelog(req, `转存歌单[/sharemusic/#${id}]`)
-    _success(res);
+    await writelog(req, `保存歌单[/sharemusic/#${id}]`)
+    _success(res, '保存歌单成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _success(res, 'ok', []);

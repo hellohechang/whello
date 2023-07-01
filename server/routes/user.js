@@ -434,7 +434,7 @@ route.get('/signout', async (req, res) => {
       );
     }
     res.clearCookie('token');
-    _success(res);
+    _success(res, '退出成功');
     writelog(req, `退出登录`);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -489,7 +489,7 @@ route.post('/delaccount', async (req, res) => {
       ]);
       await writelog(req, `关闭账号`);
       res.clearCookie('token');
-      _success(res);
+      _success(res, '注销账号成功');
     }
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -518,12 +518,12 @@ route.post('/upuserlogo', async (req, res) => {
     await _unlink(`${path}/${account}.png`);
     receiveFiles(req, path, `${account}.png`)
       .then(async () => {
-        _success(res);
-        await writelog(req, '更换头像');
+        _success(res, '更新头像成功');
+        await writelog(req, '更新头像');
       })
       .catch(async () => {
         _err(res);
-        await writelog(req, '更换头像失败');
+        await writelog(req, '更新头像失败');
       });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -696,11 +696,12 @@ route.post('/deleteshare', async (req, res) => {
     if (id) {
       await deleteData('share', `WHERE id=? AND account=?`, [id, account]);
       await writelog(req, `删除分享[${id}]`);
+      _success(res, '删除分享成功');
     } else {
       await deleteData('share', `WHERE account=?`, [account]);
       await writelog(req, `清空分享列表`);
+      _success(res, '清空分享列表成功');
     }
-    _success(res);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -760,7 +761,7 @@ route.post('/deleterecycle', async (req, res) => {
         .join(',')}) AND account=?`, [...arr, account])
     }
     await writelog(req, `删除回收站(${type})[${arr.join(',')}]`);
-    _success(res);
+    _success(res, '删除成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -780,7 +781,7 @@ route.post('/recoverrecycle', async (req, res) => {
       [...arr, account, '1']
     );
     await writelog(req, `恢复回收站(${type})[${arr.join(',')}]`);
-    _success(res);
+    _success(res, '恢复成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

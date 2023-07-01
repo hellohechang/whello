@@ -17,8 +17,7 @@ import {
 import { _speed } from '../../config';
 import validateImg from './validate';
 import '../../js/common';
-import { _err } from "../../plugins/message";
-import { alert } from '../../plugins/alert';
+import _msg from '../../plugins/message';
 ~function () {
   const $box = $('.box'),
     $register = $box.find('.register'),
@@ -92,11 +91,7 @@ import { alert } from '../../plugins/alert';
               if (parseInt(result.code) === 0) {
                 _setData('account', npd.account);
                 _setData('state', 'y');
-                alert(result.codeText, {
-                  handled: () => {
-                    myOpen(_getData('originurl'));
-                  },
-                });
+                myOpen(_getData('originurl'));
               }
             })
             .catch((_) => {
@@ -104,7 +99,7 @@ import { alert } from '../../plugins/alert';
             });
         },
         function () {
-          _err('验证失败');
+          _msg.error('验证失败');
         }
       );
     } else {
@@ -123,18 +118,14 @@ import { alert } from '../../plugins/alert';
             if (parseInt(result.code) === 0) {
               _setData('account', npd.username);
               _setData('state', 'y');
-              alert(result.codeText, {
-                handled: () => {
-                  myOpen(_getData('originurl'));
-                },
-              });
+              myOpen(_getData('originurl'));
             }
           })
           .catch((_) => {
             $loading.stop().fadeOut();
           });
       }, function () {
-        _err('验证失败');
+        _msg.error('验证失败');
       });
     }
   }, 500, true));

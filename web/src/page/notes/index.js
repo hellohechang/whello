@@ -19,12 +19,12 @@ import {
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
-import { _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert';
 import { pagination } from '../../plugins/pagination';
 import { rightMenu } from '../../plugins/rightMenu';
 import icon1logo from '../../img/icon1.png';
 import iconlogo from '../../img/icon.png';
+import _msg from "../../plugins/message";
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),
@@ -149,6 +149,7 @@ $contentWrap
                   _postAjax('/note/delnote', { arr: [id] }).then((result) => {
                     if (parseInt(result.code) === 0) {
                       close();
+                      _msg.success(result.codeText);
                       renderList();
                     }
                   }).catch(err => { });
@@ -189,6 +190,7 @@ $contentWrap
       noteflag = noteflag === 'n' ? 'y' : 'n';
       _postAjax('/note/locking', { arr: [id], noteflag }).then((result) => {
         if (parseInt(result.code) === 0) {
+          _msg.success(result.codeText);
           renderList();
         }
       }).catch(err => { });
@@ -206,7 +208,7 @@ $contentWrap
       $checkArr = $itemBox.filter(
         (_, item) => $(item).find('.check_state').attr('check') === 'y'
       );
-    _success(`选中：${$checkArr.length}`, true);
+    _msg.info(`选中：${$checkArr.length}项`);
     if ($checkArr.length === $itemBox.length) {
       $footer.find('span').attr({
         class: 'iconfont icon-xuanzeyixuanze',
@@ -310,6 +312,7 @@ $footer
         if (msg === 'confirm') {
           _postAjax('/note/delnote', { arr }).then((result) => {
             if (parseInt(result.code) === 0) {
+              _msg.success(result.codeText);
               renderList();
               return;
             }
@@ -335,6 +338,7 @@ $footer
       noteflag: 'n',
     }).then((result) => {
       if (parseInt(result.code) === 0) {
+        _msg.success(result.codeText);
         renderList();
         return;
       }
@@ -356,6 +360,7 @@ $footer
       noteflag: 'y',
     }).then((result) => {
       if (parseInt(result.code) === 0) {
+        _msg.success(result.codeText);
         renderList();
         return;
       }
@@ -385,7 +390,7 @@ $footer
       .find('.check_state')
       .attr('check', che)
       .css('background-color', che === 'y' ? checkColor : 'transparent');
-    _success(`选中：${che === 'y' ? $itemBox.length : 0}`, true);
+    _msg.info(`选中：${che === 'y' ? $itemBox.length : 0}项`);
   });
 ~(function () {
   let p = 0,

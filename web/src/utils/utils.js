@@ -1,9 +1,8 @@
 import $ from "jquery";
 import SparkMD5 from "spark-md5";
 import { serverURL, LevelObj, _d } from "../config";
-
-import { _err, _success } from "../plugins/message";
 import { _loadingBar } from '../plugins/loadingBar';
+import _msg from "../plugins/message";
 // 解析url
 export function queryURLParams(url) {
   let obj = {};
@@ -392,7 +391,7 @@ export function _postAjax(url, data, y) {
           _loadingBar.end();
         }
         if (data.code == 1) {
-          _err(data.codeText);
+          _msg.error(data.codeText);
         } else if (data.code == 2) {
           _delData('state');
           _setData('originurl', myOpen());
@@ -405,7 +404,7 @@ export function _postAjax(url, data, y) {
         if (!y) {
           _loadingBar.end();
         }
-        _err(`请求失败!( ╯□╰ )`);
+        _msg.error(`请求失败!( ╯□╰ )`);
         reject(err);
       },
       complete: function (XMLHttpRequest, status) {
@@ -413,7 +412,7 @@ export function _postAjax(url, data, y) {
         if (status == 'timeout') {
           //超时,status还有success,error等值的情况
           // ajaxTimeoutTest.abort();
-          _err(`请求超时!( ╯□╰ )`);
+          _msg.error(`请求超时!( ╯□╰ )`);
           _loadingBar.end();
           reject();
         }
@@ -443,7 +442,7 @@ export function _getAjax(url, data, y, time) {
           _loadingBar.end();
         }
         if (data.code == 1) {
-          _err(data.codeText);
+          _msg.error(data.codeText);
         } else if (data.code == 2) {
           _delData('state');
           _setData('originurl', myOpen());
@@ -456,7 +455,7 @@ export function _getAjax(url, data, y, time) {
         if (!y) {
           _loadingBar.end();
         }
-        _err(`请求失败!( ╯□╰ )`);
+        _msg.error(`请求失败!( ╯□╰ )`);
         reject(err);
       },
       complete: function (XMLHttpRequest, status) {
@@ -464,7 +463,7 @@ export function _getAjax(url, data, y, time) {
         if (status == 'timeout') {
           //超时,status还有success,error等值的情况
           // ajaxTimeoutTest.abort();
-          _err(`请求超时!( ╯□╰ )`);
+          _msg.error(`请求超时!( ╯□╰ )`);
           _loadingBar.end();
           reject();
         }
@@ -499,7 +498,7 @@ export function _upFile(url, file, callback) {
       },
       success: (data) => {
         if (data.code == 1) {
-          _err(data.codeText);
+          _msg.error(data.codeText);
         } else if (data.code == 2) {
           _delData('state');
           _setData('originurl', myOpen());
@@ -509,7 +508,7 @@ export function _upFile(url, file, callback) {
         resolve(data);
       },
       error: () => {
-        _err(`请求失败!( ╯□╰ )`);
+        _msg.error(`请求失败!( ╯□╰ )`);
         reject();
       },
     });
@@ -559,10 +558,10 @@ export async function copyText(content, obj = {}) {
       throw new Error();
     }
     await navigator.clipboard.writeText(content);
-    _success(success || '复制成功');
+    _msg.success(success || '复制成功');
   } catch (err) {
     if (typeof document.execCommand !== 'function') {
-      _err(error || '复制失败');
+      _msg.error(error || '复制失败');
       return;
     }
     window.getSelection().removeAllRanges();
@@ -578,7 +577,7 @@ export async function copyText(content, obj = {}) {
     window.getSelection().addRange(range);
     document.execCommand('copy');
     div.remove();
-    _success(success || '复制成功');
+    _msg.success(success || '复制成功');
   }
 }
 // 文件大小计算
@@ -1114,7 +1113,7 @@ export function imgPreview(arr, idx = 0) {
   function hdError() {
     _loadingBar.end();
     image.style.opacity = 0;
-    _err('图片加载失败');
+    _msg.error('图片加载失败');
   }
   function hdMove(e) {
     if (e.target !== image) return;

@@ -18,9 +18,9 @@ import {
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
-import { _success } from "../../plugins/message";
 import { alert } from '../../plugins/alert';
 import { pagination } from '../../plugins/pagination';
+import _msg from "../../plugins/message";
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),
@@ -111,7 +111,7 @@ $contentWrap.on('click', '.check_state', function (e) {
   }
   let $itemBox = $contentWrap.find('.item_box'),
     $checkArr = $itemBox.filter((_, item) => $(item).find('.check_state').attr('check') === 'y');
-  _success(`选中：${$checkArr.length}`, true);
+  _msg.info(`选中：${$checkArr.length}项`);
   if ($checkArr.length > 0) {
     $footer.stop().slideDown(_speed);
   } else {
@@ -176,6 +176,7 @@ $footer.on('click', '.f_delete', function () {
           arr, type
         }).then(result => {
           if (parseInt(result.code) === 0) {
+            _msg.success(result.codeText);
             renderList();
             return;
           }
@@ -202,6 +203,7 @@ $footer.on('click', '.f_delete', function () {
           arr, type
         }).then(result => {
           if (parseInt(result.code) === 0) {
+            _msg.success(result.codeText);
             renderList();
             return;
           }
@@ -223,7 +225,7 @@ $footer.on('click', '.f_delete', function () {
   });
   let $itemBox = $contentWrap.find('.item_box');
   $itemBox.find('.check_state').attr('check', che).css('background-color', che === 'y' ? checkColor : 'transparent');
-  _success(`选中：${che === 'y' ? $itemBox.length : 0}`, true);
+  _msg.info(`选中：${che === 'y' ? $itemBox.length : 0}项`);
 });
 ~function () {
   let p = 0, t = 0;

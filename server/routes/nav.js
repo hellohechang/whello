@@ -173,8 +173,8 @@ route.post('/addlist', async (req, res) => {
         num: total + 1,
       },
     ]);
-    await writelog(req, `新增书签列表[${name}(${id})]`);
-    _success(res);
+    await writelog(req, `添加书签分组[${name}(${id})]`);
+    _success(res, '添加分组成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -191,8 +191,8 @@ route.post('/dellist', async (req, res) => {
       `WHERE account=? AND id=? AND state=?`,
       [account, id, '0']
     );
-    await writelog(req, `删除书签列表[${id}]`);
-    _success(res);
+    await writelog(req, `删除书签分组[${id}]`);
+    _success(res, '删除书签分组成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -209,8 +209,8 @@ route.post('/setlogo', async (req, res) => {
       `WHERE account=? AND id=? AND state=? AND listid=?`,
       [account, cid, '0', pid]
     );
-    await writelog(req, `更换书签logo[${cid}(${purl})]`);
-    _success(res);
+    await writelog(req, `上传书签图标[${cid}(${purl})]`);
+    _success(res, '上传书签图标成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -227,8 +227,8 @@ route.post('/editlist', async (req, res) => {
       `WHERE account=? AND state=? AND id=?`,
       [account, '0', id]
     );
-    await writelog(req, `修改列表名[${name}(${id})]`);
-    _success(res);
+    await writelog(req, `更新书签分组标题[${name}(${id})]`);
+    _success(res, '更新书签分组标题成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -261,8 +261,8 @@ route.post('/addbmk', async (req, res) => {
         listid: id,
       },
     ]);
-    await writelog(req, `新增书签[${obj.name}(${obj.link})]`);
-    _success(res);
+    await writelog(req, `添加书签[${obj.name}(${obj.link})]`);
+    _success(res, '添加书签成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -283,8 +283,8 @@ route.post('/editbmk', async (req, res) => {
       `WHERE account=? AND state=? AND id=? AND listid=?`,
       [account, '0', cid, pid]
     );
-    await writelog(req, `编辑书签[${cid}-${name}(${link})]`);
-    _success(res);
+    await writelog(req, `更新书签信息[${cid}-${name}(${link})]`);
+    _success(res, '更新书签信息成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -332,7 +332,7 @@ route.post('/bmktolist', async (req, res) => {
       ob,
       `account="${account}" AND state="0" AND listid="${pid}"`
     );
-    _success(res);
+    _success(res, '书签移动分组成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -352,7 +352,7 @@ route.post('/delbmk', async (req, res) => {
       [...arr, '0', pid, account]
     );
     await writelog(req, `删除书签[${arr.join(',')}]`);
-    _success(res);
+    _success(res, '删除书签成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -373,7 +373,7 @@ route.post('/share', async (req, res) => {
       )
     );
     if (arr.length === 0) {
-      _err(res, '当前列表为空');
+      _err(res, '当前组为空');
       return;
     }
     let obj = {
@@ -383,7 +383,7 @@ route.post('/share', async (req, res) => {
       type: 'bookmk',
     };
     await insertData('share', [obj]);
-    await writelog(req, `分享书签列表[/sharebm/#${r}]`);
+    await writelog(req, `分享书签分组[/sharebm/#${r}]`);
     _success(res, 'ok', { id: r });
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
@@ -415,7 +415,7 @@ route.get('/saveshare', async (req, res) => {
     await insertData('booklist', [
       {
         id: pid,
-        name: '新列表',
+        name: '新分组',
         account,
         num: total + 1,
       },
@@ -430,8 +430,8 @@ route.get('/saveshare', async (req, res) => {
       };
     });
     await insertData('bookmk', arr);
-    await writelog(req, `收藏书签分享[/sharebm/#${id}]`);
-    _success(res);
+    await writelog(req, `保存书签分享[/sharebm/#${id}]`);
+    _success(res, '保存书签成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

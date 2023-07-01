@@ -196,7 +196,7 @@ route.post('/del', async (req, res) => {
       [...arr, account, '0']
     );
     await writelog(req, `删除搜索历史[${arr.join(',')}]`);
-    _success(res);
+    _success(res, '删除搜索历史成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

@@ -253,7 +253,7 @@ route.post('/delmsg', async (req, res) => {
       [tt, '0', account]
     );
     await writelog(req, `撤回消息[${tt}]`);
-    _success(res);
+    _success(res, '撤回消息成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -281,7 +281,7 @@ route.post('/clearmsg', async (req, res) => {
         `WHERE flag in(?,?) AND state = ?`,
         [`${account}-${ac}`, `${ac}-${account}`, '0']
       );
-      _success(res);
+      _success(res, '清空消息成功');
     }
     await writelog(req, `清空消息[${ac}]`);
   } catch (error) {

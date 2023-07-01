@@ -22,11 +22,11 @@ import {
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
-import { _err } from "../../plugins/message";
 import { alert } from '../../plugins/alert';
 import { pagination } from '../../plugins/pagination';
 import { rightMenu } from '../../plugins/rightMenu';
 import { UpProgress } from '../../plugins/UpProgress';
+import _msg from "../../plugins/message";
 const $contentWrap = $('.content_wrap'),
   $imgList = $contentWrap.find('.img_list'),
   $pageBg = $('.page_bg'),
@@ -49,14 +49,14 @@ function hdUpFile(files) {
     let pro = new UpProgress(name);
     if (!isImgFile(name)) {
       pro.fail();
-      _err(`${name} 格式错误`);
+      _msg.error(`${name} 格式错误`);
       num++;
       fn(num);
       return;
     }
     if (size == 0) {
       pro.fail();
-      _err(`${name} 为空文件`);
+      _msg.error(`${name} 为空文件`);
       num++;
       fn(num);
       return;
@@ -233,6 +233,7 @@ function bgitemmenu(e, url) {
               _postAjax('/pic/delpic', { url }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
+                  _msg.success(result.codeText);
                   renderImgList();
                   return;
                 }

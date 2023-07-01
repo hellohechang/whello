@@ -192,7 +192,7 @@ route.post('/logclear', async (req, res) => {
   try {
     await _writeFile('./hello.log', '');
     await writelog(req, '清空日志');
-    _success(res);
+    _success(res, '清空日志成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -203,7 +203,7 @@ route.get('/clearchatdata', async (req, res) => {
   try {
     await deleteData('chat', `WHERE state=?`, ['1']);
     await writelog(req, '清理已删除的聊天记录');
-    _success(res);
+    _success(res, '清除聊天记录成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -239,7 +239,7 @@ route.get('/delmusicfile', async (req, res) => {
       }
     });
     await writelog(req, `删除歌曲文件 [${delarr.join(',')}]`);
-    _success(res);
+    _success(res, '删除歌曲文件成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -271,7 +271,7 @@ route.post('/updatetoken', async (req, res) => {
     let { token } = req.body;
     _d.tokenKey = token;
     await writelog(req, `[更新tokenKey]`);
-    _success(res);
+    _success(res, '更新tokenKey成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -282,7 +282,7 @@ route.post('/updatefilepath', async (req, res) => {
     let { filepath } = req.body;
     _d.filepath = filepath;
     await writelog(req, `[更新filepath]`);
-    _success(res);
+    _success(res, '更新文件路径成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

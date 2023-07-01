@@ -139,7 +139,7 @@ route.post('/bmktolist', async (req, res) => {
       ob,
       `account="${account}" AND state="0" AND listid="home"`
     );
-    _success(res);
+    _success(res, '书签移动分组成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -156,8 +156,8 @@ route.post('/setlogo', async (req, res) => {
       `WHERE account=? AND state=? AND id=? AND listid=?`,
       [account, '0', id, 'home']
     );
-    await writelog(req, `更换书签logo[${id}(${purl})]`);
-    _success(res);
+    await writelog(req, `上传书签图标[${id}(${purl})]`);
+    _success(res, '上传书签图标成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -178,8 +178,8 @@ route.post('/editbmk', async (req, res) => {
       `WHERE account=? AND state=? AND id=? AND listid=?`,
       [account, '0', id, 'home']
     );
-    await writelog(req, `编辑书签[${id}-${name}(${link})]`);
-    _success(res);
+    await writelog(req, `更新书签信息成功[${id}-${name}(${link})]`);
+    _success(res, '更新书签信息成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -199,7 +199,7 @@ route.post('/delbmk', async (req, res) => {
       [...arr, '0', account, 'home']
     );
     await writelog(req, `删除书签[${arr.join(',')}]`);
-    _success(res);
+    _success(res, '删除书签成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -232,8 +232,8 @@ route.post('/addbmk', async (req, res) => {
         listid: 'home',
       },
     ]);
-    await writelog(req, `新增书签[${obj.name}(${obj.link})]`);
-    _success(res);
+    await writelog(req, `添加书签[${obj.name}(${obj.link})]`);
+    _success(res, '添加书签成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
