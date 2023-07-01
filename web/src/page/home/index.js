@@ -5973,11 +5973,13 @@ $rightBox.on('click', '.user_name', function () {
             );
           } else if (_getTarget(e, '.mtcitem1')) {
             let dian = _getData('dian');
+            let sound = _getData('sound');
             let str = `<div cursor class="mtcitem"><i class="iconfont icon-bizhishezhi"></i><span>壁纸库</span></div>
                 <div cursor class="mtcitem1"><i class="iconfont icon-mohu"></i><span>背景模糊</span></div>
               <div cursor class="mtcitem2"><i class="iconfont icon-heibai"></i><span>背景黑白</span></div>
               <div cursor class="mtcitem3"><i class="iconfont icon-font-size"></i><span>更换字体</span></div>
               <div cursor data-dian="${dian}" class="mtcitem6"><i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont ${dian === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}"></i></div>
+              <div cursor data-sound="${sound}" class="mtcitem8"><i class="iconfont icon-tongzhi"></i><span>提示音</span><i class="iconfont ${sound === 'y' ? 'icon-kaiguan-kai1' : 'icon-kaiguan-guan'}"></i></div>
               <div cursor class="mtcitem7"><i class="iconfont icon-jiazai"></i><span>加载动画</span></div>`;
             let flagClose = close;
             rightMenu(
@@ -5986,6 +5988,7 @@ $rightBox.on('click', '.user_name', function () {
               debounce(
                 function ({ close, e }) {
                   let item6 = _getTarget(e, '.mtcitem6');
+                  let item8 = _getTarget(e, '.mtcitem8');
                   if (_getTarget(e, '.mtcitem')) {
                     flagClose();
                     close();
@@ -6058,13 +6061,27 @@ $rightBox.on('click', '.user_name', function () {
                     if (flag === 'y') {
                       _this.attr('data-dian', 'n');
                       _this.html(`<i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont icon-kaiguan-guan"></i>`);
-                      _msg.success('开启成功')
+                      _msg.success('关闭成功')
                       _setData('dian', 'n');
                     } else {
                       _this.attr('data-dian', 'y');
                       _this.html(`<i class="iconfont icon-dianji"></i><span>点击爱心</span><i class="iconfont icon-kaiguan-kai1"></i>`);
-                      _msg.success('关闭成功')
+                      _msg.success('开启成功')
                       _setData('dian', 'y');
+                    }
+                  } else if (item8) {
+                    let _this = $(item8);
+                    let flag = _this.attr('data-sound');
+                    if (flag === 'y') {
+                      _this.attr('data-sound', 'n');
+                      _this.html(`<i class="iconfont icon-tongzhi"></i><span>提示音</span><i class="iconfont icon-kaiguan-guan"></i>`);
+                      _msg.success('关闭成功')
+                      _setData('sound', 'n');
+                    } else {
+                      _this.attr('data-sound', 'y');
+                      _this.html(`<i class="iconfont icon-tongzhi"></i><span>提示音</span><i class="iconfont icon-kaiguan-kai1"></i>`);
+                      _msg.success('开启成功')
+                      _setData('sound', 'y');
                     }
                   } else if (_getTarget(e, '.mtcitem7')) {
                     let cur = _getData('loading');

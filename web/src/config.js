@@ -97,6 +97,7 @@ export const _d = {
   localStorageDefaultData: {
     md: [],
     dian: 'y',
+    sound: 'y',
     pagecolor: 0,
     lastvol: 0.7,
     fonttype: 'consolas.ttf',

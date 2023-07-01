@@ -102,13 +102,15 @@ export function debounce(callback, wait, immedia) {
 }
 // 提示音
 export function playSound(src) {
-  let sound = document.createElement('audio');
-  sound.src = src;
-  sound.play();
-  sound.onended = function () {
-    sound.onended = null;
-    sound = null;
-  };
+  if (_getData('sound') === 'y') {
+    let sound = document.createElement('audio');
+    sound.src = src;
+    sound.play();
+    sound.onended = function () {
+      sound.onended = null;
+      sound = null;
+    };
+  }
 }
 // 随机数
 export function randomNum(x, y) {
