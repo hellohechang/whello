@@ -22,11 +22,11 @@ import {
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
-import { alert } from '../../plugins/alert';
 import { pagination } from '../../plugins/pagination';
 import { rightMenu } from '../../plugins/rightMenu';
 import { UpProgress } from '../../plugins/UpProgress';
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 const $contentWrap = $('.content_wrap'),
   $imgList = $contentWrap.find('.img_list'),
   $pageBg = $('.page_bg'),
@@ -226,10 +226,8 @@ function bgitemmenu(e, url) {
           close();
           copyText(`${mediaURL}/pic/${url}`);
         } else if (_getTarget(e, '.mtcitem1')) {
-          alert('确认删除？', {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: '确认删除？', confirm: { type: 'danger', text: '删除' } }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/pic/delpic', { url }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
@@ -238,8 +236,8 @@ function bgitemmenu(e, url) {
                   return;
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         }
       },
       1000,

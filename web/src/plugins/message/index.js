@@ -8,7 +8,7 @@ class Msg {
     this.message = opt.message;
     this.type = opt.type || 'info';
     this.callback = callback;
-    this.duration = opt.duration || 3000;
+    this.duration = opt.duration || 4500;
     this.timer = null;
     this.init();
   }
@@ -42,6 +42,7 @@ class Msg {
         line-height: 20px;
         font-size: 16px;
         border: solid 1px;
+        word-break: break-all;
         z-index: ${zIndex};
         ${t}`;
     this.el.innerText = this.message;
@@ -125,11 +126,11 @@ function success(message = '操作成功', callback) {
 }
 function error(message = '操作失败', callback) {
   playSound(`/img/error.mp3`);
-  new Msg({ message, type: 'danger', duration: 5000 }, callback)
+  new Msg({ message, type: 'danger', duration: 6000 }, callback)
 }
 function warning(message, callback) {
   playSound(`/img/notice.mp3`);
-  new Msg({ message, type: 'warning', duration: 8000 }, callback)
+  new Msg({ message, type: 'warning', duration: 10000 }, callback)
 }
 function info(message, callback) {
   new Msg({ message }, callback)

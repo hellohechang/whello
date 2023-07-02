@@ -53,12 +53,12 @@ import {
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
-import { alert } from '../../plugins/alert';
 import { _loadingBar } from '../../plugins/loadingBar';
 import { pagination } from '../../plugins/pagination';
 import { rightMenu } from '../../plugins/rightMenu';
 import { UpProgress } from '../../plugins/UpProgress';
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 const $pageBg = $('.page_bg'),
   $minimizeBox = $('.minimize_box'),
   $asideBtn = $('.aside_btn'),
@@ -585,22 +585,18 @@ $asideWrap.on('click', '.list_title', debounce(function () {
   let arr = getAsideCheckBmItem();
   let pid = $asideBtn.activeId;
   if (arr.length === 0) return;
-  alert(`确认删除？`, {
-    confirm: true,
-    handled: (msg) => {
-      if (msg === 'confirm') {
-        _postAjax('/nav/delbmk', { pid, arr }).then((result) => {
-          if (parseInt(result.code) === 0) {
-            sendCommand({ type: 'updatedata', flag: 'bookmark' });
-            _msg.success(result.codeText);
-            renderAsideList();
-            return;
-          }
-        }).catch(err => { });
-        return;
-      }
-    },
-  });
+  _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+    if (type == 'confirm') {
+      _postAjax('/nav/delbmk', { pid, arr }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'bookmark' });
+          _msg.success(result.codeText);
+          renderAsideList();
+          return;
+        }
+      }).catch(err => { });
+    }
+  })
 }).on('click', '.move_bm', function (e) {
   let arr = getAsideCheckBmItem();
   let pid = $asideBtn.activeId;
@@ -623,10 +619,8 @@ $asideWrap.on('click', '.list_title', debounce(function () {
           let $this = $(_this),
             toid = $this.attr('data-id'),
             listname = $this.attr('data-name');
-          alert(`确认移动到 ${listname}?`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认移动到 ${listname}?` }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/nav/bmktolist', { pid, arr, toid }).then(
                 (result) => {
                   if (parseInt(result.code) === 0) {
@@ -638,8 +632,8 @@ $asideWrap.on('click', '.list_title', debounce(function () {
                   }
                 }
               ).catch(err => { });
-            },
-          });
+            }
+          })
         }
       },
       1000,
@@ -776,10 +770,8 @@ function asideBmMenu(e, obj) {
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem3')) {
           //删除列表
-          alert(`确认删除：${obj.name}？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认删除：${obj.name}？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/nav/dellist', { id: obj.id }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
@@ -788,8 +780,8 @@ function asideBmMenu(e, obj) {
                   renderAsideList();
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         }
       },
       1000,
@@ -961,10 +953,8 @@ function asideListMenu(e, obj) {
                   let $this = $(_this),
                     toid = $this.attr('data-id'),
                     listname = $this.attr('data-name');
-                  alert(`确认移动到 ${listname}?`, {
-                    confirm: true,
-                    handled: (m) => {
-                      if (m !== 'confirm') return;
+                  _pop({ e, text: `确认移动到 ${listname}?` }, (type) => {
+                    if (type == 'confirm') {
                       _postAjax('/nav/bmktolist', {
                         pid: obj.pid,
                         arr: [obj.id],
@@ -982,8 +972,8 @@ function asideListMenu(e, obj) {
                           renderHomebook();
                         }
                       }).catch(err => { });
-                    },
-                  });
+                    }
+                  })
                 }
               },
               1000,
@@ -992,10 +982,8 @@ function asideListMenu(e, obj) {
           );
         } else if (_getTarget(e, '.mtcitem5')) {
           // 删除书签
-          alert(`确认删除？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/nav/delbmk', { pid: obj.pid, arr: [obj.id] }).then(
                 (result) => {
                   if (parseInt(result.code) === 0) {
@@ -1007,8 +995,8 @@ function asideListMenu(e, obj) {
                   }
                 }
               ).catch(err => { });
-            },
-          });
+            }
+          })
         }
       },
       1000,
@@ -1366,22 +1354,18 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
 }).on('click', '.delete_bm', function (e) {
   let arr = getHomeCheckBmItem();
   if (arr.length === 0) return;
-  alert(`确认删除？`, {
-    confirm: true,
-    handled: (msg) => {
-      if (msg === 'confirm') {
-        _postAjax('/home/delbmk', { arr }).then((result) => {
-          if (parseInt(result.code) === 0) {
-            sendCommand({ type: 'updatedata', flag: 'bookmark' });
-            _msg.success(result.codeText);
-            renderHomebook();
-            return;
-          }
-        }).catch(err => { });
-        return;
-      }
-    },
-  });
+  _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+    if (type == 'confirm') {
+      _postAjax('/home/delbmk', { arr }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          sendCommand({ type: 'updatedata', flag: 'bookmark' });
+          _msg.success(result.codeText);
+          renderHomebook();
+          return;
+        }
+      }).catch(err => { });
+    }
+  })
 }).on('click', '.move_bm', function (e) {
   let arr = getHomeCheckBmItem();
   if (arr.length === 0) return;
@@ -1405,10 +1389,8 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
           let $this = $(_this),
             nid = $this.attr('data-id'),
             listname = $this.attr('data-name');
-          alert(`确认移动到 ${listname}?`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认移动到 ${listname}?` }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/home/bmktolist', { arr, nid }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
@@ -1419,8 +1401,8 @@ $searchBoxMask.on('click', '.home_bm_logo', debounce(function (e) {
                   return;
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         }
       },
       1000,
@@ -1614,10 +1596,8 @@ function homeBmMenu(e, obj) {
               let $this = $(_this),
                 nid = $this.attr('data-id'),
                 listname = $this.attr('data-name');
-              alert(`确认移动到 ${listname}?`, {
-                confirm: true,
-                handled: (m) => {
-                  if (m !== 'confirm') return;
+              _pop({ e, text: `确认移动到 ${listname}?` }, (type) => {
+                if (type == 'confirm') {
                   _postAjax('/home/bmktolist', {
                     arr: [obj.id],
                     nid,
@@ -1635,8 +1615,8 @@ function homeBmMenu(e, obj) {
                       return;
                     }
                   }).catch(err => { });
-                },
-              });
+                }
+              })
             }
           },
           1000,
@@ -1645,10 +1625,8 @@ function homeBmMenu(e, obj) {
       );
     } else if (_getTarget(e, '.mtcitem5')) {
       // 删除书签
-      alert(`确认删除？`, {
-        confirm: true,
-        handled: (m) => {
-          if (m !== 'confirm') return;
+      _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+        if (type == 'confirm') {
           _postAjax('/home/delbmk', {
             arr: [obj.id],
           }).then((result) => {
@@ -1660,8 +1638,8 @@ function homeBmMenu(e, obj) {
               return;
             }
           }).catch(err => { });
-        },
-      });
+        }
+      })
     }
   },
     1000,
@@ -2195,10 +2173,8 @@ function bgitemmenu(e, url) {
           ).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
           if (_d.userInfo.account === 'root') {
-            alert('确认删除？', {
-              confirm: true,
-              handled: (m) => {
-                if (m !== 'confirm') return;
+            _pop({ e, text: '确认删除？', confirm: { type: 'danger', text: '删除' } }, (type) => {
+              if (type == 'confirm') {
                 _postAjax('/bg/delbg', { url: url }).then((result) => {
                   if (parseInt(result.code) === 0) {
                     close();
@@ -2207,8 +2183,8 @@ function bgitemmenu(e, url) {
                     return;
                   }
                 }).catch(err => { });
-              },
-            });
+              }
+            })
           }
         }
       },
@@ -2373,10 +2349,8 @@ $randomChangeBgBtn.on('click', throttle(function () {
   let str = `<div cursor class="mtcitem"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除壁纸</span></div>`;
   rightMenu(e, str, debounce(function ({ e, close }) {
     if (_getTarget(e, '.mtcitem')) {
-      alert('确认删除？', {
-        confirm: true,
-        handled: (m) => {
-          if (m !== 'confirm') return;
+      _pop({ e, text: '确认删除？', confirm: { type: 'danger', text: '删除' } }, (type) => {
+        if (type == 'confirm') {
           _postAjax('/bg/delbg', { url }).then((result) => {
             if (parseInt(result.code) === 0) {
               close();
@@ -2384,8 +2358,8 @@ $randomChangeBgBtn.on('click', throttle(function () {
               return;
             }
           }).catch(err => { });
-        },
-      });
+        }
+      })
     }
   }, 1000, true));
 });
@@ -2908,7 +2882,11 @@ function musicPlay(obj) {
   musicobjInit(obj); //初始化音乐数据
   let a = `♪♪ ${musicobj.artist} - ${musicobj.name}`;
   $lrcProgressBar.find('.total_time').text(tin(musicobj.duration));
-  _msg.info(a);
+  _msg.info(a, (type) => {
+    if (type == 'click') {
+      $rightBox.find('.show_music_player').click();
+    }
+  });
   gaoliang(false); //列表定位
   gaolianging(false);
   $musicFootProgress.css({
@@ -3409,10 +3387,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
-          alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认删除：${sobj.artist}-${sobj.name}？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/player/delsong', {
                 id: 'all', ar: [sobj]
               }).then((result) => {
@@ -3425,8 +3401,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                   return;
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         } else if (_getTarget(e, '.mtcitem3')) {
           let str = '';
           _d.music.forEach((v, i) => {
@@ -3450,10 +3426,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                   let $this = $(_this),
                     tid = $this.attr('data-id'),
                     listname = $this.attr('data-name');
-                  alert(`确认添加到 ${listname}?`, {
-                    confirm: true,
-                    handled: (m) => {
-                      if (m !== 'confirm') return;
+                  _pop({ e, text: `确认添加到 ${listname}?` }, (type) => {
+                    if (type == 'confirm') {
                       _postAjax('/player/songtolist', {
                         id: 'all',
                         tid,
@@ -3470,8 +3444,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
                           return;
                         }
                       }).catch(err => { });
-                    },
-                  });
+                    }
+                  })
                 }
               },
               1000,
@@ -4177,10 +4151,8 @@ function gedanmenu(e, id) {
     debounce(
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
-          alert(`确认删除歌单：${name}？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认删除歌单：${name}？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/player/dellist', { id }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
@@ -4190,8 +4162,8 @@ function gedanmenu(e, id) {
                   return;
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         } else if (_getTarget(e, '.mtcitem1')) {
           let str = `
           <input autocomplete="off" placeholder="标题" type="text" value="${encodeHtml(name)}">
@@ -4524,10 +4496,16 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
   let id = $songListWrap.listId;
   let ar = getCheckSongItem();
   if (ar.length === 0) return;
-  alert(`确认${this.innerText}？`, {
-    confirm: true,
-    handled: (m) => {
-      if (m !== 'confirm') return;
+  let text = `确认${this.innerText}？`;
+  let opt = {
+    e,
+    text
+  }
+  if (text.includes('删除')) {
+    opt.confirm = { type: 'danger', text: '删除' }
+  }
+  _pop(opt, (type) => {
+    if (type == 'confirm') {
       _postAjax('/player/delsong', { id, ar }).then((result) => {
         if (parseInt(result.code) === 0) {
           sendCommand({ type: 'updatedata', flag: 'music' });
@@ -4536,16 +4514,14 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           return;
         }
       }).catch(err => { });
-    },
-  });
-}).on('click', '.clear_all_song_btn', function () {
+    }
+  })
+}).on('click', '.clear_all_song_btn', function (e) {
   let id = $songListWrap.listId;
   let idx = _d.music.findIndex((item) => item.id === id);
   if (idx > 1 || id == 'all') return;
-  alert(`确认清空？`, {
-    confirm: true,
-    handled: (m) => {
-      if (m !== 'confirm') return;
+  _pop({ e, text: `确认清空？` }, (type) => {
+    if (type == 'confirm') {
       _postAjax('/player/delsong', { id, ar: _d.music[idx].item }).then((result) => {
         if (parseInt(result.code) === 0) {
           sendCommand({ type: 'updatedata', flag: 'music' });
@@ -4554,8 +4530,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           return;
         }
       }).catch(err => { });
-    },
-  });
+    }
+  })
 }).on('click', '.move_song_btn', function (e) {
   let text = $(this).text();
   // 全选移动
@@ -4584,10 +4560,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           let $this = $(_this),
             tid = $this.attr('data-id'),
             listname = $this.attr('data-name');
-          alert(`确认${text} ${listname}?`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认${text} ${listname}?` }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/player/songtolist', { id, tid, ar }).then(
                 (result) => {
                   if (parseInt(result.code) === 0) {
@@ -4599,8 +4573,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   }
                 }
               ).catch(err => { });
-            },
-          });
+            }
+          })
         }
       },
       1000,
@@ -4740,10 +4714,13 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             }
           }).catch(err => { });
         } else if (_getTarget(e, '.mtcitem1')) {
-          alert(`确认${ii == 2 ? '删除' : '移除'}：${sobj.artist}-${sobj.name}？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          let text = `确认${ii == 2 ? '删除' : '移除'}：${sobj.artist}-${sobj.name}？`;
+          let opt = { e, text };
+          if (ii == 2) {
+            opt.confirm = { type: 'danger', text: '删除' }
+          }
+          _pop(opt, (type) => {
+            if (type == 'confirm') {
               let id = $songListWrap.listId;
               _postAjax('/player/delsong', {
                 id, ar: [sobj]
@@ -4756,8 +4733,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   return;
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         } else if (_getTarget(e, '.mtcitem3')) {
           let str = '',
             id = $songListWrap.listId;
@@ -4783,10 +4760,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   let $this = $(_this),
                     tid = $this.attr('data-id'),
                     listname = $this.attr('data-name');
-                  alert(`确认${ii < 3 ? '添加' : '移动'}到 ${listname}?`, {
-                    confirm: true,
-                    handled: (m) => {
-                      if (m !== 'confirm') return;
+                  _pop({ e, text: `确认${ii < 3 ? '添加' : '移动'}到 ${listname}?` }, (type) => {
+                    if (type == 'confirm') {
                       _postAjax('/player/songtolist', {
                         id,
                         tid,
@@ -4804,8 +4779,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                           return;
                         }
                       }).catch(err => { });
-                    },
-                  });
+                    }
+                  })
                 }
               },
               1000,
@@ -4814,10 +4789,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           );
         } else if (_getTarget(e, '.mtcitem4')) {
           if (_d.userInfo.account !== 'root') return;
-          alert(`确认删除MV？`, {
-            confirm: true,
-            handled: (m) => {
-              if (m !== 'confirm') return;
+          _pop({ e, text: `确认删除MV？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+            if (type == 'confirm') {
               _postAjax('/player/delmv', { sobj }).then((result) => {
                 if (parseInt(result.code) === 0) {
                   close();
@@ -4827,8 +4800,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
                   return;
                 }
               }).catch(err => { });
-            },
-          });
+            }
+          })
         } else if (_getTarget(e, '.mtcitem5')) {
           close();
           copyText(sobj.name);
@@ -5233,10 +5206,8 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
                   tid = $this.attr('data-id'),
                   listname = $this.attr('data-name');
                 let sobj = deepClone(musicobj);
-                alert(`确认添加到 ${listname}?`, {
-                  confirm: true,
-                  handled: (m) => {
-                    if (m !== 'confirm') return;
+                _pop({ e, text: `确认添加到 ${listname}?` }, (type) => {
+                  if (type == 'confirm') {
                     _postAjax('/player/songtolist', {
                       id: 'all',
                       tid,
@@ -5253,8 +5224,8 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
                         return;
                       }
                     }).catch(err => { });
-                  },
-                });
+                  }
+                })
               }
             },
             1000,
@@ -5264,10 +5235,8 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
       } else if (_getTarget(e, '.mtcitem9')) {
         if (!musicobj) return;
         let sobj = deepClone(musicobj);
-        alert(`确认删除：${sobj.artist}-${sobj.name}？`, {
-          confirm: true,
-          handled: (m) => {
-            if (m !== 'confirm') return;
+        _pop({ e, text: `确认删除：${sobj.artist}-${sobj.name}？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+          if (type == 'confirm') {
             _postAjax('/player/delsong', {
               id: 'all', ar: [sobj]
             }).then((result) => {
@@ -5279,8 +5248,8 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
                 return;
               }
             }).catch(err => { });
-          },
-        });
+          }
+        })
       } else if (_getTarget(e, '.mtcitem10')) {
         let { name = '--', artist = '--', duration = '--', album = '--', year = '--', collect_count = '--', play_count = '--', creat_time = '--' } = musicobj;
         name = encodeHtml(name);
@@ -5945,26 +5914,23 @@ $rightBox.on('click', '.user_name', function () {
                       }
                     }, 500, true));
                   } else if (_getTarget(e, '.mtcitem2')) {
-                    alert('确认注销账号？', {
-                      confirm: true,
-                      handled: (m) => {
-                        if (m === 'confirm') {
-                          _postAjax('/user/delaccount', {}).then(
-                            (result) => {
-                              if (parseInt(result.code) === 0) {
-                                _delData();
-                                _msg.success(result.codeText, (type) => {
-                                  if (type == 'close') {
-                                    myOpen('/login/');
-                                  }
-                                });
-                                return;
-                              }
+                    _pop({ e, text: '确认注销账号？', confirm: { type: 'danger', text: '注销' } }, (type) => {
+                      if (type == 'confirm') {
+                        _postAjax('/user/delaccount', {}).then(
+                          (result) => {
+                            if (parseInt(result.code) === 0) {
+                              _delData();
+                              _msg.success(result.codeText, (type) => {
+                                if (type == 'close') {
+                                  myOpen('/login/');
+                                }
+                              });
+                              return;
                             }
-                          ).catch(err => { });
-                        }
-                      },
-                    });
+                          }
+                        ).catch(err => { });
+                      }
+                    })
                   }
                 },
                 1000,
@@ -6175,27 +6141,29 @@ $rightBox.on('click', '.user_name', function () {
   },
   1000,
   true
-)).on('click', '.log_out', () => {
-  alert('退出当前，还是退出所有登录设备？', {
-    confirm: true,
-    button: {
-      confirm: '退出当前',
-      cancel: '退出所有',
+)).on('click', '.log_out', (e) => {
+  _pop({
+    e,
+    text: '退出当前，还是退出所有登录设备？',
+    confirm: {
+      text: '退出当前'
     },
-    handled: (m) => {
-      if (m === 'close') return;
-      let all = 'y';
-      m === 'confirm' ? (all = 'n') : null;
-      _getAjax('/user/signout', { all }).then((result) => {
-        if (parseInt(result.code) === 0) {
-          _delData('state');
-          _setData('originurl', '/');
-          myOpen('/login/');
-          return;
-        }
-      }).catch(err => { });
-    },
-  });
+    cancel: {
+      text: '退出所有'
+    }
+  }, (type) => {
+    if (type == 'close') return;
+    let all = 'y';
+    type === 'confirm' ? (all = 'n') : null;
+    _getAjax('/user/signout', { all }).then((result) => {
+      if (parseInt(result.code) === 0) {
+        _delData('state');
+        _setData('originurl', '/');
+        myOpen('/login/');
+        return;
+      }
+    }).catch(err => { });
+  })
 }).on('click', '.user_managa', function () {
   openIframe(`/root`, '用户管理')
 })
@@ -6306,23 +6274,19 @@ $logHeadBtns.on('click', '.l_close_btn', () => {
   logpage = 1;
   logxuanran(true);
 }, 1000)).on('click', '.l_clear_log', (e) => {
-  alert(`确认清空日志？`, {
-    confirm: true,
-    handled: (m) => {
-      if (m === 'confirm') {
-        _postAjax('/root/logclear', {}).then((result) => {
-          if (parseInt(result.code) === 0) {
-            $logContent.html('');
-            _msg.success(result.codeText);
-            $logHeadBtns.find('.l_search_inp').val('');
-            logpage = 1;
-            return;
-          }
-        }).catch(err => { });
-        return;
-      }
-    },
-  });
+  _pop({ e, text: `确认清空日志？`, confirm: { type: 'danger', text: '清空' } }, (type) => {
+    if (type == 'confirm') {
+      _postAjax('/root/logclear', {}).then((result) => {
+        if (parseInt(result.code) === 0) {
+          $logContent.html('');
+          _msg.success(result.codeText);
+          $logHeadBtns.find('.l_search_inp').val('');
+          logpage = 1;
+          return;
+        }
+      }).catch(err => { });
+    }
+  })
 });
 
 // 留言板
@@ -6336,31 +6300,27 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
   });
 }).on('click', '.c_back_btn', function () {
   $chatHeadBtns.find('.c_close_btn').click();
-}).on('click', '.clear_msg_btn', function () {
+}).on('click', '.clear_msg_btn', function (e) {
   let ac = chatobj.account;
   if (ac === 'chang' && _d.userInfo.account !== 'root') {
     _msg.error('没有权限操作');
     return;
   }
-  alert(`确认清空当前聊天记录？`, {
-    confirm: true,
-    handled: (msg) => {
-      if (msg === 'confirm') {
-        _postAjax('/chat/clearmsg', { ac }).then((result) => {
-          if (parseInt(result.code) === 0) {
-            $chatListBox.find('.chat_list').html('');
-            _msg.success(result.codeText);
-            sendCommand({
-              type: 'chat',
-              flag: 'clear',
-              to: ac,
-            });
-          }
-        }).catch(err => { });
-        return;
-      }
-    },
-  });
+  _pop({ e, text: `确认清空当前聊天记录？`, confirm: { type: 'danger', text: '清空' } }, (type) => {
+    if (type == 'confirm') {
+      _postAjax('/chat/clearmsg', { ac }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          $chatListBox.find('.chat_list').html('');
+          _msg.success(result.codeText);
+          sendCommand({
+            type: 'chat',
+            flag: 'clear',
+            to: ac,
+          });
+        }
+      }).catch(err => { });
+    }
+  })
 }).on('click', '.chat_home_btn', throttle(function () {
   if (_d.userInfo.account === 'root') {
     $chatHeadBtns.find('.clear_msg_btn').stop().fadeIn(_speed);

@@ -13,9 +13,9 @@ import {
   _getTarget,
 } from '../../utils/utils';
 import '../../js/common';
-import { alert } from '../../plugins/alert';
 import { rightMenu } from "../../plugins/rightMenu";
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 const $contentWrap = $('.content_wrap'),
   $headBtns = $contentWrap.find('.head_btns'),
   $tableBox = $contentWrap.find('.table_box'),
@@ -44,10 +44,10 @@ function renderList() {
           <td>${account}</td>
           <td style="${state == 0 ? '' : 'color:red;'}">${state == 0 ? '启用' : '停用'}</td>
           <td>
-            <button cursor class="user_state">${state == 0 ? '停用' : '启用'}</button>
-              <button cursor class="reset_pd">重置密码</button>
-              <button cursor class="to_login">进入</button>
-              <button cursor class="del_account">删除</button>
+            <button cursor class="user_state btn btn_light">${state == 0 ? '停用' : '启用'}</button>
+              <button cursor class="reset_pd btn btn_light">重置密码</button>
+              <button cursor class="to_login btn btn_light">进入</button>
+              <button cursor class="del_account btn btn_danger">删除</button>
           </td>
         </tr>`;
       });
@@ -58,121 +58,99 @@ function renderList() {
   }).catch(err => { });
 }
 $list
-  .on('click', '.user_state', function () {
+  .on('click', '.user_state', function (e) {
     let $this = $(this),
       x = $this.parent().parent().attr('data-acc'),
       state = $this.parent().parent().attr('data-state'),
       name = $this.parent().parent().attr('data-name'),
       flag = state == '0' ? '1' : '0';
-    alert(`确认 ${state == 0 ? '停用' : '启用'} ${name}(${x})？`, {
-      confirm: true,
-      handled: (msg) => {
-        if (msg === 'confirm') {
-          _postAjax('/root/deluser', { ac: x, flag }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              _msg.success(result.codeText);
-              renderList();
-            }
-          }).catch(err => { });
-          return;
-        }
-      },
-    });
+    _pop({ e, text: `确认 ${state == 0 ? '停用' : '启用'} ${name}(${x})？` }, (type) => {
+      if (type == 'confirm') {
+        _postAjax('/root/deluser', { ac: x, flag }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            _msg.success(result.codeText);
+            renderList();
+          }
+        }).catch(err => { });
+      }
+    })
   })
-  .on('click', '.del_account', function () {
+  .on('click', '.del_account', function (e) {
     let $this = $(this),
       x = $this.parent().parent().attr('data-acc'),
       name = $this.parent().parent().attr('data-name');
-    alert(`确认删除：${name}(${x})？`, {
-      confirm: true,
-      handled: (msg) => {
-        if (msg === 'confirm') {
-          _postAjax('/root/delaccount', { ac: x }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              _msg.success(result.codeText);
-              renderList();
-            }
-          }).catch(err => { });
-          return;
-        }
-      },
-    });
+    _pop({ e, text: `确认删除：${name}(${x})？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+      if (type == 'confirm') {
+        _postAjax('/root/delaccount', { ac: x }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            _msg.success(result.codeText);
+            renderList();
+          }
+        }).catch(err => { });
+      }
+    })
   })
-  .on('click', '.reset_pd', function () {
+  .on('click', '.reset_pd', function (e) {
     let $this = $(this),
       x = $this.parent().parent().attr('data-acc'),
       name = $this.parent().parent().attr('data-name');
-    alert(`确认重置账号 ${name}(${x})的密码？`, {
-      confirm: true,
-      handled: (msg) => {
-        if (msg === 'confirm') {
-          _getAjax('/root/resetpass', { a: x }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              _msg.success(result.codeText);
-            }
-          }).catch(err => { });
-        }
-      },
-    });
-  })
-  .on('click', '.to_login', function () {
-    let $this = $(this),
-      x = $this.parent().parent().attr('data-acc'),
-      name = $this.parent().parent().attr('data-name');
-    alert(`确认进入账号：${name}(${x})？`, {
-      confirm: true,
-      handled: (msg) => {
-        if (msg === 'confirm') {
-          _postAjax('/root/loginother', { a: x }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              myOpen('/', '_blank');
-            }
-          }).catch(err => { });
-        }
-      },
-    });
-  });
-
-$headBtns.on('click', '.clear_upload', function () {
-  alert('确认清空upload目录？', {
-    confirm: true,
-    handled: (msg) => {
-      if (msg === 'confirm') {
-        _getAjax('/root/clearup', {}).then((result) => {
+    _pop({ e, text: `确认重置账号 ${name}(${x})的密码？`, confirm: { type: 'danger', text: '重置' } }, (type) => {
+      if (type == 'confirm') {
+        _getAjax('/root/resetpass', { a: x }).then((result) => {
           if (parseInt(result.code) === 0) {
             _msg.success(result.codeText);
           }
         }).catch(err => { });
-        return;
       }
-    },
+    })
+  })
+  .on('click', '.to_login', function (e) {
+    let $this = $(this),
+      x = $this.parent().parent().attr('data-acc'),
+      name = $this.parent().parent().attr('data-name');
+    _pop({ e, text: `确认进入账号：${name}(${x})？` }, (type) => {
+      if (type == 'confirm') {
+        _postAjax('/root/loginother', { a: x }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            myOpen('/', '_blank');
+          }
+        }).catch(err => { });
+      }
+    })
   });
-}).on('click', '.del_music_file', function () {
-  alert(`确认删除多余歌曲文件？`, {
-    confirm: true,
-    handled: (m) => {
-      if (m !== 'confirm') return;
+
+$headBtns.on('click', '.clear_upload', function (e) {
+  _pop({ e, text: '确认清空upload目录？', confirm: { type: 'danger', text: '清空' } }, (type) => {
+    if (type == 'confirm') {
+      _getAjax('/root/clearup', {}).then((result) => {
+        if (parseInt(result.code) === 0) {
+          _msg.success(result.codeText);
+        }
+      }).catch(err => { });
+    }
+  })
+}).on('click', '.del_music_file', function (e) {
+  _pop({ e, text: `确认删除多余歌曲文件？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+    if (type == 'confirm') {
       _getAjax('/root/delmusicfile').then((result) => {
         if (parseInt(result.code) === 0) {
           _msg.success(result.codeText);
           return;
         }
       }).catch(err => { });
-    },
-  });
-}).on('click', '.clear_chat', function () {
-  alert(`确认清除已删除的聊天记录？`, {
-    confirm: true,
-    handled: (m) => {
-      if (m !== 'confirm') return;
+    }
+  })
+}).on('click', '.clear_chat', function (e) {
+  _pop({ e, text: `确认清除已删除的聊天记录？` }, (type) => {
+    if (type == 'confirm') {
       _getAjax('/root/clearchatdata').then((result) => {
         if (parseInt(result.code) === 0) {
           _msg.success(result.codeText);
           return;
         }
       }).catch(err => { });
-    },
-  });
+    }
+  })
 }).on('click', '.register_state', function () {
   _postAjax('/root/isregister').then(res => {
     if (res.code == 0) {
@@ -211,6 +189,7 @@ $headBtns.on('click', '.clear_upload', function () {
   rightMenu(e, str, debounce(function ({ e, close, inp }) {
     if (_getTarget(e, '.mtcbtn')) {
       let token = inp[0];
+      if (token == '') return;
       _postAjax('/root/updatetoken', { token }).then(res => {
         if (res.code == 0) {
           close();
@@ -227,6 +206,7 @@ $headBtns.on('click', '.clear_upload', function () {
   rightMenu(e, str, debounce(function ({ e, close, inp }) {
     if (_getTarget(e, '.mtcbtn')) {
       let filepath = inp[0];
+      if (filepath == '') return;
       _postAjax('/root/updatefilepath', { filepath }).then(res => {
         if (res.code == 0) {
           close();

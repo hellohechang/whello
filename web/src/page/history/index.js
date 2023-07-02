@@ -16,7 +16,7 @@ import {
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
-import { alert } from '../../plugins/alert';
+import _pop from '../../plugins/popConfirm';
 import { pagination } from '../../plugins/pagination';
 import _msg from "../../plugins/message";
 const $pageBg = $('.page_bg'),
@@ -90,23 +90,21 @@ renderList(true);
 let checkColor = 'rgb(118 254 89 / 58%)';
 // 删除历史
 $contentWrap
-  .on('click', '.del_item', function () {
+  .on('click', '.del_item', function (e) {
     let $this = $(this);
     let a = $this.parent().attr('data-id');
-    alert(`确认删除？`, {
-      confirm: true,
-      handled: (m) => {
-        if (m !== 'confirm') return;
+    _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+      if (type == 'confirm') {
         _postAjax('/search/del', { arr: [a] }).then((result) => {
           if (parseInt(result.code) === 0) {
             _msg.success(result.codeText)
             renderList();
             return;
           }
-          alert(result.codeText);
+          _msg.success(result.codeText);
         }).catch(err => { });
-      },
-    });
+      }
+    })
   })
   .on(
     'click',
@@ -216,7 +214,7 @@ $headWrap.on('click', '.h_check_item_btn', function (e) {
 }, 1000));
 
 $footer
-  .on('click', '.f_delete', function () {
+  .on('click', '.f_delete', function (e) {
     let $itemBox = $contentWrap.find('.item_box'),
       $checkArr = $itemBox.filter(
         (_, item) => $(item).find('.check_state').attr('check') === 'y'
@@ -227,19 +225,16 @@ $footer
       let $v = $(v);
       arr.push($v.attr('data-id'));
     });
-    alert(`确认删除？`, {
-      confirm: true,
-      handled: (msg) => {
-        if (msg === 'confirm') {
-          _postAjax('/search/del', { arr }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              renderList();
-              _msg.success(result.codeText);
-            }
-          }).catch(err => { });
-        }
-      },
-    });
+    _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+      if (type == 'confirm') {
+        _postAjax('/search/del', { arr }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            renderList();
+            _msg.success(result.codeText);
+          }
+        }).catch(err => { });
+      }
+    })
   })
   .on('click', '.f_close', function () {
     let $itemBox = $contentWrap.find('.item_box');

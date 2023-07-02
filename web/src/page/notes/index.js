@@ -19,12 +19,12 @@ import {
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
-import { alert } from '../../plugins/alert';
 import { pagination } from '../../plugins/pagination';
 import { rightMenu } from '../../plugins/rightMenu';
 import icon1logo from '../../img/icon1.png';
 import iconlogo from '../../img/icon.png';
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),
@@ -142,21 +142,17 @@ $contentWrap
             close();
             _myOpen(`/edit/#${id}`, name);
           } else if (_getTarget(e, '.mtcitem2')) {
-            alert(`确认删除：${name}？`, {
-              confirm: true,
-              handled: (msg) => {
-                if (msg === 'confirm') {
-                  _postAjax('/note/delnote', { arr: [id] }).then((result) => {
-                    if (parseInt(result.code) === 0) {
-                      close();
-                      _msg.success(result.codeText);
-                      renderList();
-                    }
-                  }).catch(err => { });
-                  return;
-                }
-              },
-            });
+            _pop({ e, text: `确认删除：${name}？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+              if (type == 'confirm') {
+                _postAjax('/note/delnote', { arr: [id] }).then((result) => {
+                  if (parseInt(result.code) === 0) {
+                    close();
+                    _msg.success(result.codeText);
+                    renderList();
+                  }
+                }).catch(err => { });
+              }
+            })
           }
         },
         1000,
@@ -295,7 +291,7 @@ $headWrap
   }, 1000));
 
 $footer
-  .on('click', '.f_delete', function () {
+  .on('click', '.f_delete', function (e) {
     let $itemBox = $contentWrap.find('.item_box'),
       $checkArr = $itemBox.filter(
         (_, item) => $(item).find('.check_state').attr('check') === 'y'
@@ -306,21 +302,17 @@ $footer
       let $v = $(v);
       arr.push($v.attr('data-id'));
     });
-    alert(`确认删除？`, {
-      confirm: true,
-      handled: (msg) => {
-        if (msg === 'confirm') {
-          _postAjax('/note/delnote', { arr }).then((result) => {
-            if (parseInt(result.code) === 0) {
-              _msg.success(result.codeText);
-              renderList();
-              return;
-            }
-          }).catch(err => { });
-          return;
-        }
-      },
-    });
+    _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+      if (type == 'confirm') {
+        _postAjax('/note/delnote', { arr }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            _msg.success(result.codeText);
+            renderList();
+            return;
+          }
+        }).catch(err => { });
+      }
+    })
   })
   .on('click', '.f_clock', function () {
     let $itemBox = $contentWrap.find('.item_box'),

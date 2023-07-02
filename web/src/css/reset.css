@@ -208,3 +208,52 @@ input:-ms-input-placeholder {
   color: rgb(165, 174, 177);
   font-size: 15px;
 }
+
+.btn {
+  margin: 5px;
+  padding: 8px 12px;
+  outline: none;
+  border: none;
+  border-radius: 4px;
+}
+
+.btn:active {
+  transition: 0s;
+  opacity: .2;
+}
+
+.btn_primary {
+  color: #409eff;
+  background-color: #ecf5ff;
+  border-color: #a0cfff;
+}
+
+.btn_primary:hover {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.btn_light {
+  color: #909399;
+  background-color: #f4f4f5;
+  border-color: #c8c9cc;
+}
+
+.btn_light:hover {
+  color: #fff;
+  background-color: #909399;
+  border-color: #909399;
+}
+
+.btn_danger {
+  color: #f56c6c;
+  background-color: #fef0f0;
+  border-color: #fab6b6;
+}
+
+.btn_danger:hover {
+  color: #fff;
+  background-color: #f56c6c;
+  border-color: #f56c6c;
+}

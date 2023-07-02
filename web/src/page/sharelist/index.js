@@ -11,8 +11,8 @@ import {
   copyText
 } from '../../utils/utils';
 import '../../js/common';
-import { alert } from '../../plugins/alert';
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 const $contentWrap = $('.content_wrap'), $headBtns = $contentWrap.find('.head_btns'), $shareList = $contentWrap.find('.share_list'),
   $pageBg = $('.page_bg');
 _setTimeout(() => {
@@ -45,12 +45,10 @@ function renderList() {
   }).catch(err => { });
 }
 renderList();
-$shareList.on('click', '.delete', function () {
+$shareList.on('click', '.delete', function (e) {
   let id = $(this).parent().attr('data-id');
-  alert(`确认删除？`, {
-    confirm: true,
-    handled: m => {
-      if (m !== 'confirm') return;
+  _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+    if (type == 'confirm') {
       _postAjax('/user/deleteshare', { id }).then(res => {
         if (res.code == 0) {
           _msg.success(res.codeText);
@@ -58,7 +56,7 @@ $shareList.on('click', '.delete', function () {
         }
       }).catch(err => { });
     }
-  });
+  })
 }).on('click', '.go', function () {
   let url = $(this).parent().attr('data-url');
   _myOpen(url, url);
@@ -66,11 +64,9 @@ $shareList.on('click', '.delete', function () {
   let url = $(this).parent().attr('data-url');
   copyText(url);
 })
-$headBtns.on('click', '.clear_share_list_btn', function () {
-  alert(`确认清空？`, {
-    confirm: true,
-    handled: m => {
-      if (m !== 'confirm') return;
+$headBtns.on('click', '.clear_share_list_btn', function (e) {
+  _pop({ e, text: `确认清空？`, confirm: { type: 'danger', text: '清空' } }, (type) => {
+    if (type == 'confirm') {
       _postAjax('/user/deleteshare').then(res => {
         if (res.code == 0) {
           _msg.success(res.codeText);
@@ -78,5 +74,5 @@ $headBtns.on('click', '.clear_share_list_btn', function () {
         }
       }).catch(err => { });
     }
-  });
+  })
 });

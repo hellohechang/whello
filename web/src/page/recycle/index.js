@@ -18,9 +18,9 @@ import {
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
-import { alert } from '../../plugins/alert';
 import { pagination } from '../../plugins/pagination';
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),
@@ -158,7 +158,7 @@ $contentWrap.on('click', '.check_state', function (e) {
   }
 }, 500, true));
 
-$footer.on('click', '.f_delete', function () {
+$footer.on('click', '.f_delete', function (e) {
   let $itemBox = $contentWrap.find('.item_box'),
     $checkArr = $itemBox.filter((_, item) => $(item).find('.check_state').attr('check') === 'y');
   if ($checkArr.length === 0) return;
@@ -167,24 +167,20 @@ $footer.on('click', '.f_delete', function () {
     let $v = $(v);
     arr.push($v.attr("data-id"));
   });
-  let type = $itemBox.attr('data-type');
-  alert(`确认删除？`, {
-    confirm: true,
-    handled: msg => {
-      if (msg === 'confirm') {
-        _postAjax('/user/deleterecycle', {
-          arr, type
-        }).then(result => {
-          if (parseInt(result.code) === 0) {
-            _msg.success(result.codeText);
-            renderList();
-            return;
-          }
-        }).catch(err => { });
-        return;
-      }
+  let t = $itemBox.attr('data-type');
+  _pop({ e, text: `确认删除？`, confirm: { type: 'danger', text: '删除' } }, (type) => {
+    if (type == 'confirm') {
+      _postAjax('/user/deleterecycle', {
+        arr, type: t
+      }).then(result => {
+        if (parseInt(result.code) === 0) {
+          _msg.success(result.codeText);
+          renderList();
+          return;
+        }
+      }).catch(err => { });
     }
-  });
+  })
 }).on('click', '.f_recover', function () {
   let $itemBox = $contentWrap.find('.item_box'),
     $checkArr = $itemBox.filter((_, item) => $(item).find('.check_state').attr('check') === 'y');
@@ -194,24 +190,20 @@ $footer.on('click', '.f_delete', function () {
     let $v = $(v);
     arr.push($v.attr("data-id"));
   });
-  let type = $itemBox.attr('data-type');
-  alert(`确认恢复？`, {
-    confirm: true,
-    handled: msg => {
-      if (msg === 'confirm') {
-        _postAjax('/user/recoverrecycle', {
-          arr, type
-        }).then(result => {
-          if (parseInt(result.code) === 0) {
-            _msg.success(result.codeText);
-            renderList();
-            return;
-          }
-        }).catch(err => { });
-        return;
-      }
+  let t = $itemBox.attr('data-type');
+  _pop({ e, text: `确认恢复？` }, (type) => {
+    if (type == 'confirm') {
+      _postAjax('/user/recoverrecycle', {
+        arr, type: t
+      }).then(result => {
+        if (parseInt(result.code) === 0) {
+          _msg.success(result.codeText);
+          renderList();
+          return;
+        }
+      }).catch(err => { });
     }
-  });
+  })
 }).on('click', '.f_close', function () {
   let $itemBox = $contentWrap.find('.item_box');
   $itemBox.find('.check_state').attr('check', 'n').css('background-color', 'transparent');
