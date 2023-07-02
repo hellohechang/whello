@@ -86,7 +86,8 @@ queryData('user', 'account').then(() => { }).catch(async () => {
     name    TEXT NOT NULL,
     link    TEXT NOT NULL,
     logo    TEXT NOT NULL,
-    des     TEXT
+    des     TEXT NOT NULL
+                 DEFAULT ('') 
 );
 `);
     await runSqlite(`CREATE TABLE chat (
@@ -101,8 +102,10 @@ queryData('user', 'account').then(() => { }).catch(async () => {
     time  TEXT NOT NULL,
     date  TEXT NOT NULL,
     data  TEXT NOT NULL,
-    isrc  TEXT,
-    size  TEXT
+    isrc  TEXT NOT NULL
+               DEFAULT (''),
+    size  TEXT NOT NULL
+               DEFAULT ('') 
 );
 `);
     await runSqlite(`CREATE TABLE friends (

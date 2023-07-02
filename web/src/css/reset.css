@@ -209,12 +209,17 @@ input:-ms-input-placeholder {
   font-size: 15px;
 }
 
+:root {
+  --text_hover_color: #409eff;
+}
+
 .btn {
   margin: 5px;
   padding: 8px 12px;
   outline: none;
-  border: none;
+  border: 1px solid;
   border-radius: 4px;
+  transition: .2s ease-out;
 }
 
 .btn:active {
@@ -223,24 +228,24 @@ input:-ms-input-placeholder {
 }
 
 .btn_primary {
-  color: #409eff;
+  color: var(--text_hover_color);
   background-color: #ecf5ff;
   border-color: #a0cfff;
 }
 
 .btn_primary:hover {
   color: #fff;
-  background-color: #409eff;
-  border-color: #409eff;
+  background-color: var(--text_hover_color);
+  border-color: var(--text_hover_color);
 }
 
-.btn_light {
+.btn_info {
   color: #909399;
   background-color: #f4f4f5;
   border-color: #c8c9cc;
 }
 
-.btn_light:hover {
+.btn_info:hover {
   color: #fff;
   background-color: #909399;
   border-color: #909399;

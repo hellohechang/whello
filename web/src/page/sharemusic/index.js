@@ -25,6 +25,7 @@ import { _speed, mediaURL } from "../../config";
 import '../../js/common';
 import { rightMenu } from "../../plugins/rightMenu";
 import _msg from "../../plugins/message";
+import _pop from "../../plugins/popConfirm";
 ~async function () {
   const urlparmes = queryURLParams(myOpen()),
     HASH = urlparmes.HASH,
@@ -572,10 +573,14 @@ import _msg from "../../plugins/message";
       }
     });
   }
-  $pMusicListBox.on('click', '.save_playing_list', debounce(function () {
-    _getAjax('/player/savesharesongs', { id: HASH }).then(res => {
-      if (res.code == 0) {
-        _msg.success(res.codeText);
+  $pMusicListBox.on('click', '.save_playing_list', debounce(function (e) {
+    _pop({ e, text: '保存到歌单列表？' }, type => {
+      if (type == 'confirm') {
+        _getAjax('/player/savesharesongs', { id: HASH }).then(res => {
+          if (res.code == 0) {
+            _msg.success(res.codeText);
+          }
+        })
       }
     })
   }, 1000, true))

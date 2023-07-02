@@ -44,9 +44,9 @@ function renderList() {
           <td>${account}</td>
           <td style="${state == 0 ? '' : 'color:red;'}">${state == 0 ? '启用' : '停用'}</td>
           <td>
-            <button cursor class="user_state btn btn_light">${state == 0 ? '停用' : '启用'}</button>
-              <button cursor class="reset_pd btn btn_light">重置密码</button>
-              <button cursor class="to_login btn btn_light">进入</button>
+            <button cursor class="user_state btn btn_primary">${state == 0 ? '停用' : '启用'}</button>
+              <button cursor class="reset_pd btn btn_primary">重置密码</button>
+              <button cursor class="to_login btn btn_primary">进入</button>
               <button cursor class="del_account btn btn_danger">删除</button>
           </td>
         </tr>`;

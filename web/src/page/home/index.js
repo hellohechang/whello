@@ -6399,7 +6399,7 @@ function sxliuyan(carr) {
   if (carr.length === 0) return '';
   let str = '',
     rnum = Math.random();
-  carr.forEach((v, i) => {
+  carr.forEach((v) => {
     let { id, data, time, isrc, _from, _to, name, size, showTime } = v;
     let date = formatDate({ template: '{0}-{1}-{2} {3}:{4}', timestamp: time }).split(' ');
     let showname = false;
@@ -6765,7 +6765,7 @@ if (isios()) {
 //操作消息
 function backmsg(e, tt, y, z, f, n, s) {
   let obj = deepClone(chatobj),
-    str = `${y === 'null'
+    str = `${!y
       ? `${isurl(z) ? '<div cursor class="mtcitem4"><i class="iconfont icon-link"></i><span>打开链接</span></div>' : ''}
       <div cursor class="mtcitem1"><i class="iconfont icon-fuzhi"></i><span>复制</span></div>
       <div cursor class="mtcitem2"><i class="iconfont icon-bianji"></i><span>编辑</span></div>`

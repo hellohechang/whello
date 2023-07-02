@@ -4,7 +4,7 @@ class Pop {
   constructor(opt, callback) {
     this.text = opt.text;
     this.cancel = {
-      type: 'light',
+      type: 'info',
       text: '取消',
       ...opt.cancel || {}
     };
@@ -58,12 +58,12 @@ class Pop {
     this.cancelBtn = document.createElement('button');
     this.cancelBtn.style.cssText = `padding:6px 10px;`;
     this.cancelBtn.className = `btn btn_${this.cancel.type}`;
-    this.cancelBtn.setAttribute('corsur', '');
+    this.cancelBtn.setAttribute('cursor', '');
     this.cancelBtn.innerText = this.cancel.text;
     this.confirmBtn = document.createElement('button');
     this.confirmBtn.style.cssText = `margin-left: 20px;padding:6px 10px;`;
     this.confirmBtn.className = `btn btn_${this.confirm.type}`;
-    this.confirmBtn.setAttribute('corsur', '');
+    this.confirmBtn.setAttribute('cursor', '');
     this.confirmBtn.innerText = this.confirm.text;
     this.btns.appendChild(this.cancelBtn);
     this.btns.appendChild(this.confirmBtn);

@@ -55,7 +55,7 @@ body {
   p {
     height: 30px;
     line-height: 30px;
-    color: red;
+    color: #f56c6c;
     font-size: 15px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -68,14 +68,12 @@ body {
     box-sizing: border-box;
     margin: 0;
     font-size: 16px;
-    border: 1px solid #aaa;
+    border: 1px solid #a0cfff;
     outline: none;
-    background-color: rgba(255, 255, 255, 0.644);
     border-radius: 2px;
 
     &:focus {
-      border: 1px solid rgb(119, 118, 118);
-      background-color: #fff;
+      border: 1px solid var(--text_hover_color);
     }
   }
 
@@ -87,9 +85,12 @@ body {
     border: none;
     outline: none;
     padding: 0;
+    border: 1px solid;
     margin: 0;
-    color: #ccc;
-    background-color: rgb(28, 125, 204);
+    color: var(--text_hover_color);
+    background-color: #ecf5ff;
+    border-color: #a0cfff;
+    border-radius: 4px;
     user-select: none;
 
     &:active {
@@ -98,8 +99,9 @@ body {
     }
 
     &:hover {
-      background-color: rgb(16, 76, 124);
       color: #fff;
+      background-color: var(--text_hover_color);
+      border-color: var(--text_hover_color);
     }
   }
 
@@ -109,7 +111,7 @@ body {
     user-select: none;
 
     &:hover {
-      color: rgb(38, 118, 210);
+      color: var(--text_hover_color);
     }
   }
 }

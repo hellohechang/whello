@@ -59,20 +59,18 @@ button {
     position: relative;
     font-size: 16px;
     width: 250px;
-    height: 100px;
+    height: 120px;
     border-radius: 5px;
     background-color: #ffffff24;
     color: #fff;
     overflow: hidden;
 
     &:hover {
-      background-color: #ffffff94;
-      color: #df0fbc;
+      background-color: #ffffff47;
+      color: var(--text_hover_color);
+      ;
     }
 
-    &:hover p {
-      color: #383737;
-    }
 
     &:hover .bm_title {
       border-bottom: 1px solid #747474;
@@ -90,32 +88,33 @@ button {
       left: 0;
       margin-left: 5px;
       border-radius: 5px;
-      width: 25px;
-      height: 25px;
+      width: 40px;
+      height: 40px;
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
     }
 
     .bm_title {
-      height: 40px;
-      line-height: 40px;
-      padding-left: 40px;
+      height: 50px;
+      line-height: 50px;
+      padding-left: 50px;
       box-sizing: border-box;
       text-decoration: none;
       overflow: hidden;
       white-space: nowrap;
+      font-size: 20px;
       text-overflow: ellipsis;
       border-bottom: 1px solid #cccccc78;
     }
 
     p {
-      color: #aaa;
+      color: #ccc;
       font-size: 14px;
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       line-height: 18px;
       margin: 5px;
