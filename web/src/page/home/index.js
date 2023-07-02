@@ -245,13 +245,18 @@ let $document = $(document),
 let closeLoading = function () {
   const $onloading = $('.onloading');
   return function () {
-    $onloading.css({
-      'transform': 'translateX(100%) rotate(180deg) scale(0)',
-      transition: '2s'
+    $onloading.html('').css({
+      'transform': 'scale(1.1)',
+      opacity: 0,
+      transition: '1s ease-out'
     });
     _setTimeout(() => {
+      $searchBoxBtn.stop().show(_speed, () => {
+        _msg.info(`Welcome ${_d.userInfo.username}`);
+      });
+      $pageBg.removeClass('sce');
       $onloading.remove();
-    }, 2000)
+    }, 1000)
   };
 }();
 if (dmwidth <= 800) $clock.css('display', 'none');
@@ -1070,9 +1075,6 @@ _getAjax('/user/getuserinfo').then((result) => {
       .attr('title', _d.userInfo.username)
       .stop()
       .fadeIn(_speed);
-    _setTimeout(() => {
-      _msg.info(`Welcome ${_d.userInfo.username}`);
-    }, 3000);
     $userLogoBtn.css(
       'background-image',
       `url(${mediaURL}/logo/${_d.userInfo.account}/${_d.userInfo.account
