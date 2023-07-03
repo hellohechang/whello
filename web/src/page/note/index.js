@@ -491,7 +491,7 @@ function BlogDirectory() {
     width: 0;
     height: 4px;
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     border-radio:20px;
     pointer-events: none;

@@ -35,6 +35,7 @@ html {
   max-width: 1200px;
   background-color: #ffffff73;
 
+  .img_list_btn,
   .uoload_img_btn {
     height: 30px;
     line-height: 30px;
@@ -54,6 +55,11 @@ html {
       color: var(--text_hover_color);
       background-color: rgba(0, 0, 0, 0.9);
     }
+  }
+
+  .img_list_btn {
+    top: 20px;
+    left: ;
   }
 
   .img_list {
@@ -126,10 +132,94 @@ html {
     bottom: 10px;
     right: 10px;
     background-color: rgba(248, 245, 245, 0.7);
-    height: 25px;
     outline: none;
     border: 1px solid #aaa;
     font-size: 20px;
     color: #4a4949;
+  }
+}
+
+.tab_mask {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  .tab_box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-height: 100%;
+    max-width: 800px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: rgb(94, 92, 92) 0px 0px 10px;
+
+    .head {
+      overflow-x: auto;
+      white-space: nowrap;
+      font-size: 18px;
+
+      span {
+        display: inline-block;
+        padding: 10px;
+
+        &:hover {
+          color: var(--text_hover_color);
+        }
+
+        &.active {
+          border-bottom: 1px solid var(--text_hover_color);
+        }
+      }
+    }
+
+    .content {
+      padding: 20px 0;
+    }
+
+    ul {
+      display: none;
+      width: 100%;
+      height: 100%;
+
+      &.active {
+        display: block;
+      }
+
+      li {
+        position: relative;
+        border: 1px solid #ccc;
+        padding: 20px;
+        word-break: break-all;
+        line-height: 20px;
+        margin: 10px 0;
+        color: #49a923;
+
+        &:hover i {
+          display: block;
+        }
+
+        i {
+          display: none;
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          font-size: 20px;
+          color: #1389a7;
+
+          &:hover {
+            color: var(--text_hover_color);
+          }
+        }
+      }
+    }
   }
 }

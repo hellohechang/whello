@@ -322,7 +322,7 @@ route.post('/register', async (req, res) => {
       maxAge: 1000 * 60 * 60 * 24 * 3,
       httpOnly: true,
     });
-    _success(res, '注册账号成功');
+    _success(res, '注册账号成功', account);
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);
@@ -362,7 +362,7 @@ route.post('/login', async (req, res) => {
           req,
           `[${_userinfo.username}(${_userinfo.account})]登录成功`
         );
-        _success(res, '登录成功');
+        _success(res, '登录成功', _userinfo.account);
         if (landingerr.hasOwnProperty(_ip)) delete landingerr[_ip];
       } else {
         _err(res, '登录密码错误，请重新输入');

@@ -18,7 +18,8 @@ import {
   compressionImg,
   isImgFile,
   imgPreview,
-  pageErr,
+  encodeHtml,
+  toLogin,
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
@@ -27,6 +28,9 @@ import { rightMenu } from '../../plugins/rightMenu';
 import { UpProgress } from '../../plugins/UpProgress';
 import _msg from "../../plugins/message";
 import _pop from "../../plugins/popConfirm";
+if (!_getData('account')) {
+  toLogin();
+}
 const $contentWrap = $('.content_wrap'),
   $imgList = $contentWrap.find('.img_list'),
   $pageBg = $('.page_bg'),
@@ -38,11 +42,14 @@ _setTimeout(() => {
   });
 }, 600);
 // 上传壁纸
+let fData = [];
 function hdUpFile(files) {
+  fData = [];
   ~(async function fn(num) {
     if (num >= files.length) {
       bgpage = 1;
       renderImgList(true);
+      showLink(fData);
       return;
     }
     let { name, size } = files[num];
@@ -85,8 +92,11 @@ function hdUpFile(files) {
 
       if (parseInt(isrepeat.code) === 0) {
         pro.close('文件已存在');
+        fData.push({
+          filename: name,
+          url: `${mediaURL}/pic/${HASH}.${suffix}`
+        })
         //文件已经存在操作
-        num++;
         fn(++num); //多文件递归上传
         return;
       }
@@ -102,6 +112,10 @@ function hdUpFile(files) {
             name: `${HASH}.${suffix}`,
           }); //合并切片
           if (parseInt(aa.code) === 0) {
+            fData.push({
+              filename: name,
+              url: `${mediaURL}/pic/${HASH}.${suffix}`
+            })
             pro.close();
           } else {
             pro.fail();
@@ -149,14 +163,13 @@ $contentWrap.on('click', '.uoload_img_btn', function () {
   });
 });
 ~(function () {
-  let allbg = $imgList[0];
-  allbg.addEventListener('dragenter', function (e) {
+  document.addEventListener('dragenter', function (e) {
     e.preventDefault();
   });
-  allbg.addEventListener('dragover', function (e) {
+  document.addEventListener('dragover', function (e) {
     e.preventDefault();
   });
-  allbg.addEventListener('drop', function (e) {
+  document.addEventListener('drop', function (e) {
     e.preventDefault();
     var files = [...e.dataTransfer.files];
     if (files.length == 0) return;
@@ -177,7 +190,12 @@ function imgListLoading() {
   });
   $imgList.html(str).scrollTop(0);
 }
+if (_getData('account') !== 'root') {
+  $imgList.remove();
+  $pageSize.remove();
+}
 function renderImgList(y) {
+  if (_getData('account') !== 'root') return;
   if (y) {
     imgListLoading();
   }
@@ -204,7 +222,7 @@ function renderImgList(y) {
       bglazyImg($imgList, '.img_item', '.img');
       return;
     }
-    pageErr('sorry 图床功能未开放');
+    isRoot = false;
   }).catch(err => { });
 }
 if (isios()) {
@@ -337,3 +355,68 @@ function bglazyImg($fel, sels, simg) {
     }
   });
 }
+
+
+let showLink = function () {
+  const $tabMask = $('.tab_mask'),
+    $head = $tabMask.find('.head'),
+    $content = $tabMask.find('.content');
+  let arr = [{
+    type: 'url',
+    template: '{{url}}'
+  }, {
+    type: 'markdown',
+    template: '![{{filename}}]({{url}})'
+  }, {
+    type: 'html',
+    template: '<img src="{{url}}" alt="{{filename}}" title="{{filename}}" />'
+  }, {
+    type: 'bbcode',
+    template: '[img]{{url}}[/img]'
+  }, {
+    type: 'markdown with link',
+    template: '[![{{filename}}]({{url}})]({{url}})'
+  }];
+  function render(data) {
+    let hstr = '';
+    let cstr = '';
+    arr.forEach((item, idx) => {
+      let { type, template } = item;
+      hstr += `<span data-idx="${idx}" cursor class="${idx == 0 ? 'active' : ''}">${type}</span>`;
+      cstr += `<ul class="${idx == 0 ? 'active' : ''}">`
+      data.forEach((obj) => {
+        let text = template.replace(/\{\{(.*?)\}\}/g, function () {
+          let key = arguments[1];
+          return obj[key];
+        })
+        text = encodeHtml(text);
+        cstr += `<li data-text="${text}">${text}<i cursor class="iconfont icon-fuzhi"></i></li>`
+      })
+      cstr += '</ul>'
+    })
+    $head.html(hstr);
+    $content.html(cstr);
+    $tabMask.stop().fadeIn(_speed);
+  }
+  $tabMask.on('click', function (e) {
+    if (e.target == this) {
+      $tabMask.stop().fadeOut(_speed);
+    }
+  })
+  $content.on('click', 'i', function () {
+    let text = $(this).parent().attr('data-text');
+    copyText(text);
+  })
+  $head.on('click', 'span', function () {
+    const $this = $(this),
+      idx = $this.attr('data-idx'),
+      $span = $head.find('span'),
+      $ul = $content.find('ul');
+    console.log(idx)
+    $span.removeClass('active');
+    $this.addClass('active');
+    $ul.removeClass('active');
+    $ul.eq(idx).addClass('active');
+  })
+  return render;
+}();

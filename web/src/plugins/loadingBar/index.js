@@ -27,7 +27,7 @@ class LoadingBar {
     height: ${size}px;
     background-color: ${color};
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 0;
     border-radio:20px;

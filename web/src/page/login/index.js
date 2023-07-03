@@ -29,7 +29,7 @@ import _msg from '../../plugins/message';
     $password = $box.find('.password input'),
     $repassword = $box.find('.repassword input'),
     $passwordErr = $box.find('.repassword p');
-  if (_getData('state')) {
+  if (_getData('account')) {
     myOpen('/');
     return;
   }
@@ -39,7 +39,7 @@ import _msg from '../../plugins/message';
     });
     $box.stop().show(_speed);
   }, 600);
-  $account.val(_getData('account'))
+  $account.val(_getData('username'));
   _getAjax('/user/isregister').then(res => {
     if (res.code == 0) {
       if (res.data == 'y') {
@@ -89,8 +89,8 @@ import _msg from '../../plugins/message';
             .then((result) => {
               $loading.stop().fadeOut();
               if (parseInt(result.code) === 0) {
-                _setData('account', npd.account);
-                _setData('state', 'y');
+                _setData('username', npd.account);
+                _setData('account', result.data);
                 myOpen(_getData('originurl'));
               }
             })
@@ -116,8 +116,8 @@ import _msg from '../../plugins/message';
           .then((result) => {
             $loading.stop().fadeOut();
             if (parseInt(result.code) === 0) {
-              _setData('account', npd.username);
-              _setData('state', 'y');
+              _setData('username', npd.username);
+              _setData('account', result.data);
               myOpen(_getData('originurl'));
             }
           })

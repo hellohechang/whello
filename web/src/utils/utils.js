@@ -395,9 +395,7 @@ export function _postAjax(url, data, y) {
         if (data.code == 1) {
           _msg.error(data.codeText);
         } else if (data.code == 2) {
-          _delData('state');
-          _setData('originurl', myOpen());
-          myOpen('/login/');
+          toLogin()
           return;
         }
         resolve(data);
@@ -446,9 +444,7 @@ export function _getAjax(url, data, y, time) {
         if (data.code == 1) {
           _msg.error(data.codeText);
         } else if (data.code == 2) {
-          _delData('state');
-          _setData('originurl', myOpen());
-          myOpen('/login');
+          toLogin()
           return;
         }
         resolve(data);
@@ -502,9 +498,7 @@ export function _upFile(url, file, callback) {
         if (data.code == 1) {
           _msg.error(data.codeText);
         } else if (data.code == 2) {
-          _delData('state');
-          _setData('originurl', myOpen());
-          myOpen('/login');
+          toLogin()
           return;
         }
         resolve(data);
@@ -515,6 +509,11 @@ export function _upFile(url, file, callback) {
       },
     });
   });
+}
+export function toLogin(){
+  _delData('account');
+  _setData('originurl', myOpen());
+  myOpen('/login');
 }
 // 格式化当前日期或时间戳日期
 export function formatDate(opt) {

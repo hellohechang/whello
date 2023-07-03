@@ -11,6 +11,7 @@ import {
   pageErr,
   debounce,
   _getTarget,
+  _getData,
 } from '../../utils/utils';
 import '../../js/common';
 import { rightMenu } from "../../plugins/rightMenu";
@@ -21,7 +22,11 @@ const $contentWrap = $('.content_wrap'),
   $tableBox = $contentWrap.find('.table_box'),
   $list = $tableBox.find('tbody');
 let dataObj = {};
-renderList();
+if (_getData('account') === 'root') {
+  renderList();
+} else {
+  myOpen('/');
+}
 function renderList() {
   _getAjax('/root/userlist', {}).then((result) => {
     if (parseInt(result.code) === 0) {

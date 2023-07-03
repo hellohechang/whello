@@ -12,7 +12,8 @@ import {
   isurl,
   _postAjax,
   _getAjax,
-  encodeHtml
+  encodeHtml,
+  toLogin
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
@@ -25,7 +26,9 @@ const $pageBg = $('.page_bg'),
   $contentWrap = $('.content_wrap'),
   $footer = $('footer'),
   $pageSize = $('.page_size');
-
+if (!_getData('account')) {
+  toLogin();
+}
 _setTimeout(() => {
   $headWrap.addClass('open');
 }, 600);

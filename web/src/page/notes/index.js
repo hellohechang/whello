@@ -16,6 +16,7 @@ import {
   setPageScrollTop,
   getPageScrollTop,
   myOpen,
+  toLogin,
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
@@ -25,6 +26,9 @@ import icon1logo from '../../img/icon1.png';
 import iconlogo from '../../img/icon.png';
 import _msg from "../../plugins/message";
 import _pop from "../../plugins/popConfirm";
+if (!_getData('account')) {
+  toLogin();
+}
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),

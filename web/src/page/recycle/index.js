@@ -14,13 +14,17 @@ import {
   _getAjax,
   encodeHtml,
   getPageScrollTop,
-  setPageScrollTop
+  setPageScrollTop,
+  toLogin
 } from '../../utils/utils';
 import { _speed } from "../../config";
 import '../../js/common';
 import { pagination } from '../../plugins/pagination';
 import _msg from "../../plugins/message";
 import _pop from "../../plugins/popConfirm";
+if (!_getData('account')) {
+  toLogin();
+}
 const $pageBg = $('.page_bg'),
   $headWrap = $('.head_wrap'),
   $contentWrap = $('.content_wrap'),

@@ -50,6 +50,7 @@ import {
   qucong,
   userlenght,
   getDuration,
+  toLogin,
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
@@ -133,6 +134,9 @@ let $document = $(document),
   curFontType = _getData('fonttype'),
   curLogPageSize = _getData('logshowpage');
 // 时钟
+if (!_getData('account')) {
+  toLogin();
+}
 ~(function () {
   // 动画
   let _head = document.querySelectorAll('head')[0],
@@ -6159,15 +6163,15 @@ $rightBox.on('click', '.user_name', function () {
     type === 'confirm' ? (all = 'n') : null;
     _getAjax('/user/signout', { all }).then((result) => {
       if (parseInt(result.code) === 0) {
-        _delData('state');
-        _setData('originurl', '/');
-        myOpen('/login/');
+        toLogin()
         return;
       }
     }).catch(err => { });
   })
 }).on('click', '.user_managa', function () {
-  openIframe(`/root`, '用户管理')
+  openIframe(`/root`, '用户管理');
+}).on('click', '.picture_bed', function () {
+  openIframe(`/pic`, '图床');
 })
 
 // 日志
@@ -7434,7 +7438,7 @@ function handleuser() {
     if (parseInt(result.code) === 0) {
       _d.userInfo = result.data;
       _d.myTitle = `Hello ${_d.userInfo.username}`;
-      _setData('account', _d.userInfo.username);
+      _setData('username', _d.userInfo.username);
       if ($myAudio[0].paused) {
         document.title = _d.myTitle;
       }
