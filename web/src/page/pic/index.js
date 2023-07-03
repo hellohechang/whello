@@ -378,6 +378,7 @@ let showLink = function () {
     template: '[![{{filename}}]({{url}})]({{url}})'
   }];
   function render(data) {
+    if (data.length === 0) return;
     let hstr = '';
     let cstr = '';
     arr.forEach((item, idx) => {
