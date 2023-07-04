@@ -241,8 +241,27 @@ function bgitemmenu(e, url) {
     debounce(
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
-          close();
-          copyText(`${mediaURL}/pic/${url}`);
+          let str = ``;
+          let obj = {
+            url: `${mediaURL}/pic/${url}`,
+            filename: url
+          }
+          typeTemplateArr.forEach((item) => {
+            let { type, template } = item;
+            let text = template.replace(/\{\{(.*?)\}\}/g, function () {
+              let key = arguments[1];
+              return obj[key];
+            })
+            text = encodeHtml(text);
+            str += `<div cursor data-text="${text}" class="mtcitem">${type}</div>`;
+          })
+          rightMenu(e, str, debounce(function ({ e, close }) {
+            let _this = _getTarget(e, '.mtcitem');
+            if (_this) {
+              close();
+              copyText(_this.getAttribute('data-text'));
+            }
+          }))
         } else if (_getTarget(e, '.mtcitem1')) {
           _pop({ e, text: '确认删除？', confirm: { type: 'danger', text: '删除' } }, (type) => {
             if (type == 'confirm') {
@@ -356,32 +375,32 @@ function bglazyImg($fel, sels, simg) {
   });
 }
 
+const typeTemplateArr = [{
+  type: 'url',
+  template: '{{url}}'
+}, {
+  type: 'markdown',
+  template: '![{{filename}}]({{url}})'
+}, {
+  type: 'html',
+  template: '<img src="{{url}}" alt="{{filename}}" title="{{filename}}" />'
+}, {
+  type: 'bbcode',
+  template: '[img]{{url}}[/img]'
+}, {
+  type: 'markdown with link',
+  template: '[![{{filename}}]({{url}})]({{url}})'
+}];
 
 let showLink = function () {
   const $tabMask = $('.tab_mask'),
     $head = $tabMask.find('.head'),
     $content = $tabMask.find('.content');
-  let arr = [{
-    type: 'url',
-    template: '{{url}}'
-  }, {
-    type: 'markdown',
-    template: '![{{filename}}]({{url}})'
-  }, {
-    type: 'html',
-    template: '<img src="{{url}}" alt="{{filename}}" title="{{filename}}" />'
-  }, {
-    type: 'bbcode',
-    template: '[img]{{url}}[/img]'
-  }, {
-    type: 'markdown with link',
-    template: '[![{{filename}}]({{url}})]({{url}})'
-  }];
   function render(data) {
     if (data.length === 0) return;
     let hstr = '';
     let cstr = '';
-    arr.forEach((item, idx) => {
+    typeTemplateArr.forEach((item, idx) => {
       let { type, template } = item;
       hstr += `<span data-idx="${idx}" cursor class="${idx == 0 ? 'active' : ''}">${type}</span>`;
       cstr += `<ul class="${idx == 0 ? 'active' : ''}">`
@@ -413,7 +432,6 @@ let showLink = function () {
       idx = $this.attr('data-idx'),
       $span = $head.find('span'),
       $ul = $content.find('ul');
-    console.log(idx)
     $span.removeClass('active');
     $this.addClass('active');
     $ul.removeClass('active');
