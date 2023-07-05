@@ -7,7 +7,7 @@ const { _err, _nologin, writelog } = require('../utils');
 
 route.get('*', async (req, res) => {
   try {
-    let { h } = req.query;
+    let { h, d } = req.query;
     let account = req._userInfo.account;
     let url = req.url.replace(/(\?|\#).*$/, '').replace(/\/$/, '');
     if (h) {
@@ -35,6 +35,9 @@ route.get('*', async (req, res) => {
     }
     // 合并url
     let path = decodeURI(_d.filepath + url);
+    if (d) {
+      await writelog(req, `下载文件[${path}]`)
+    }
     if (!fs.existsSync(path)) {
       _err(res, '文件不存在或已过期');
       return;

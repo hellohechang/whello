@@ -6856,7 +6856,7 @@ function backmsg(e, tt, y, z, f, n, s) {
           _getAjax('/chat/isexpired', { name: y }).then((result) => {
             if (parseInt(result.code) === 0) {
               close();
-              downloadFile(`/getfile${y}`, n);
+              downloadFile(`${mediaURL}${y}`, n);
               return;
             }
             _msg.error(`${type}已过期`);

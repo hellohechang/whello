@@ -82,7 +82,7 @@ import { pagination } from '../../plugins/pagination';
             name = encodeHtml(name);
             str += `<ul class="item_box" data-id="${id}" cursor x='${name}'>
                   <li class="item_type iconfont icon-bijiben"></li>
-                  <li title="${name}" class="item_title">${name}</li>
+                  <li class="item_title">${name}</li>
                   <li class="lock_state iconfont ${share === 'n' ? 'icon-24gl-unlock2 open' : 'icon-24gl-unlock4'}"></li>
                   </ul>`;
             if (con && con.length > 0) {

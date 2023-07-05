@@ -85,7 +85,7 @@ function renderList(y) {
             str += `<ul class="item_box" data-id="${id}" data-share="${share}" cursor x='${name}'>
                   <div cursor check="n" class="check_state"></div>
                   <li class="item_type iconfont icon-bijiben"></li>
-                  <li title="${name}" class="item_title">${name}</li>
+                  <li class="item_title">${name}</li>
                   <li class="lock_state iconfont ${share === 'n' ? 'icon-24gl-unlock2 open' : 'icon-24gl-unlock4'
               }"></li>
                   <li class="set_btn iconfont icon-icon"></li>

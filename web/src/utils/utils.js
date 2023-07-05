@@ -510,7 +510,7 @@ export function _upFile(url, file, callback) {
     });
   });
 }
-export function toLogin(){
+export function toLogin() {
   _delData('account');
   _setData('originurl', myOpen());
   myOpen('/login');
@@ -990,7 +990,7 @@ export function fileLogoType(fname) {
 // 下载文件
 export function downloadFile(url, fileName) {
   let a = document.createElement('a');
-  a.href = url;
+  a.href = url + `?d=${Date.now()}`;
   if (fileName) {
     a.download = fileName;
   }

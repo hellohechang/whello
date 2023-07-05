@@ -19,7 +19,8 @@ import {
   pageErr,
   deepClone,
   myShuffle,
-  _mySlide
+  _mySlide,
+  downloadFile
 } from '../../utils/utils';
 import { _speed, mediaURL } from "../../config";
 import '../../js/common';
@@ -700,6 +701,7 @@ import _pop from "../../plugins/popConfirm";
             <div cursor class="mtcitem4"><i class="iconfont icon-kaoyou"></i><span>靠右</span></div>
             <div cursor class="mtcitem6"><i class="iconfont icon-tupian"></i><span>封面</span></div>
             <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
+            <div cursor class="mtcitem5"><i class="iconfont icon-xiazai"></i><span>下载</span></div>
             <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制歌曲名</span></div>`
       rightMenu(e, str, function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
@@ -764,6 +766,10 @@ import _pop from "../../plugins/popConfirm";
             'text-align': 'right',
           });
           _setData('lrcstatu', lrcstatu);
+        } else if (_getTarget(e, '.mtcitem5')) {
+          close();
+          let fname = `${musicObj.artist}-${musicObj.name}.mp3`;
+          downloadFile(`${mediaURL}/music/${fname}`, fname)
         } else if (_getTarget(e, '.mtcitem6')) {
           close();
           imgPreview([{

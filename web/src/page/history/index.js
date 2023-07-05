@@ -66,7 +66,7 @@ function renderList(y) {
           data.forEach((v) => {
             let { id, data } = v;
             data = encodeHtml(data);
-            str += `<ul title="${data}" class="item_box" data-id="${id}" cursor x='${data}'>
+            str += `<ul class="item_box" data-id="${id}" cursor x='${data}'>
                           <div cursor check="n" class="check_state"></div>
                         <li class="item_type iconfont icon-lishijilu"></li>
                         <li class="item_title">${data}</li>
