@@ -38,10 +38,11 @@ import _msg from "../../plugins/message";
         let { name, link, logo, des } = item;
         des = des ? encodeHtml(des) : '';
         name = encodeHtml(name);
-        str += `<li data-name="${name}" data-src="${logo}" data-des="${des}" cursor class="bm_item jzxz" data-link="${link}">
+        link = encodeHtml(link);
+        str += `<li title="${name}\n${link}\n${des}" data-name="${name}" data-src="${logo}" data-des="${des}" cursor class="bm_item jzxz" data-link="${link}">
         <div class="logo"></div>
-        <div title="${name}(${link})" class="bm_title">${name}</div>
-        <p title="${des}">${des || '描述'}</p>
+        <div class="bm_title">${name}</div>
+        <p>${des || '描述'}</p>
         </li>`;
       });
       $box.html(str);

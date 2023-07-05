@@ -1,4 +1,4 @@
-import $ from "jquery";
+import $, { fn } from "jquery";
 import SparkMD5 from "spark-md5";
 import md5 from 'md5';
 import './recorder.mp3.min';
@@ -369,22 +369,22 @@ function rAsideList(p) {
       item.item.forEach((y) => {
         let name = encodeHtml(y.name);
         let des = y.des ? encodeHtml(y.des) : '';
-        str += `<li class="bm_item jzxz" data-id="${y.id}" cursor draggable="true">
+        str += `<li title="${name}\n${encodeHtml(y.link)}\n${des}" class="bm_item jzxz" data-id="${y.id}" cursor draggable="true">
           <div cursor check="n" class="check_bm"></div>
           <div class="bm_logo"></div>
           <div class="bm_name">${name}</div>
-          <p title="${des}">${des || '描述'}</p>
+          <p>${des || '描述'}</p>
           </li>`;
       });
       str += '<div cursor class="pack_up_bm_list iconfont icon-up"></div></ul>';
     } else {
-      str += `<div data-id="${item.id}" cursor title="${name}" flag="off" draggable="true" class="list_title jzxz">
+      str += `<div data-id="${item.id}" cursor flag="off" draggable="true" class="list_title jzxz">
       <i class="iconfont icon-shoucang"></i>
       <em>${name}</em></div>
       <ul style="display:'none'"></ul>`;
     }
   });
-  str += `<div cursor title="新增列表" class="add_list_btn iconfont icon-icon-test"></div>`;
+  str += `<div cursor title="添加分组" class="add_list_btn iconfont icon-icon-test"></div>`;
   const $aList = $aside.find('.list');
   $aList.html(str);
   if (p) {
@@ -467,11 +467,11 @@ $asideWrap.on('click', '.list_title', debounce(function () {
     bmk.item.forEach((y) => {
       let name = encodeHtml(y.name);
       let des = y.des ? encodeHtml(y.des) : '';
-      str += `<li data-id="${y.id}" cursor class="bm_item jzxz" draggable="true">
+      str += `<li title="${name}\n${encodeHtml(y.link)}\n${des}" data-id="${y.id}" cursor class="bm_item jzxz" draggable="true">
         <div cursor check="n" class="check_bm"></div>
         <div class="bm_logo"></div>
           <div class="bm_name">${name}</div>
-          <p title="${des}">${des || '描述'}</p>
+          <p>${des || '描述'}</p>
           </li>`;
     });
     str += `<div cursor class="pack_up_bm_list iconfont icon-up"></div>`;
@@ -1208,10 +1208,10 @@ function renderhomebook() {
   homearr.forEach((v) => {
     let name = encodeHtml(v.name);
     let des = v.des ? encodeHtml(v.des) : '';
-    str += `<li class="home_bm_item" data-id="${v.id}" draggable="true">
+    str += `<li title="${name}\n${encodeHtml(v.link)}\n${des}" class="home_bm_item" data-id="${v.id}" draggable="true">
               <div cursor check="n" class="check_home_bm"></div>
               <div class="home_bm_logo" cursor></div>
-              <p title="${des}">${name}</p>
+              <p>${name}</p>
               </li>`;
   });
   str += `<li class="home_bm_item">
@@ -1820,14 +1820,16 @@ function textinput(val) {
     if (parseInt(result.code) === 0) {
       if (result.data.length > 0) {
         result.data.forEach((v) => {
-          let { name, link, type, id } = v;
+          let { name, link, type, id, des } = v;
           name = encodeHtml(name);
+          link = encodeHtml(link);
+          des = des ? encodeHtml(des) : '';
           if (type === 'ss') {
-            searchstr += `<li x="${type}" cursor xx='${name}' ssid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
+            searchstr += `<li title="${name}" x="${type}" cursor xx='${name}' ssid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
           } else if (type === 'note') {
-            searchstr += `<li x="${type}" cursor xx="${name}" noteid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-bijiben"></div></li>`;
+            searchstr += `<li title="${name}" x="${type}" cursor xx="${name}" noteid="${id}" class="search_item">${name}<div class="type_logo iconfont icon-bijiben"></div></li>`;
           } else if (type === 'bmk') {
-            searchstr += `<li x="${type}" xxx="${link}" cursor xx="${name}" class="search_item">${name}<div class="type_logo iconfont icon-shuqian1"></div></li>`;
+            searchstr += `<li title="${name}\n${link}\n${des}" x="${type}" xxx="${link}" cursor xx="${name}" class="search_item">${name}<div class="type_logo iconfont icon-shuqian1"></div></li>`;
           }
         });
       }
@@ -1848,7 +1850,7 @@ window.showMsg = function (msg) {
   var str = '';
   for (var i = 0; i < msg.s.length; i++) {
     let name = encodeHtml(msg.s[i]);
-    str += `<li x="ss" cursor xx='${name}' class="search_item">${name}<div class="type_logo iconfont icon-tishi"></div></li>`;
+    str += `<li title="${name}" x="ss" cursor xx='${name}' class="search_item">${name}<div class="type_logo iconfont icon-tishi"></div></li>`;
   }
   str = searchstr += str;
   $searchInpWrap.find('.search_list_box ul').html(str);
@@ -1867,7 +1869,7 @@ function sxtsc(arr) {
   let str = '';
   arr.forEach((v) => {
     let data = encodeHtml(v.data);
-    str += `<li x="ss" cursor xx='${data}' ssid="${v.id}" class="search_item">${data}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
+    str += `<li title="${data}" x="ss" cursor xx='${data}' ssid="${v.id}" class="search_item">${data}<div class="type_logo iconfont icon-lishijilu"></div><div class="dellss iconfont icon-cangpeitubiao_shanchu"></div></li>`;
   });
   $searchInpWrap.find('.search_list_box ul').html(str);
   numff = -1;
@@ -1905,7 +1907,7 @@ $searchBoxMask.on('click', '.setting', debounce(function (e) {
       let str = ``;
       _d.searchEngineData.forEach((v, i) => {
         let { name, icon } = v;
-        str += `<div title="${name}" cursor class="mtcitem ${curSearchEngine.name == name ? 'active' : ''}" xi=${i}><img style="width: 40px;height: 40px;" src="${icon}"><span style="margin-left:10px;">${name}</span></div>`;
+        str += `<div cursor class="mtcitem ${curSearchEngine.name == name ? 'active' : ''}" xi=${i}><img style="width: 40px;height: 40px;" src="${icon}"><span style="margin-left:10px;">${name}</span></div>`;
       });
       rightMenu(
         e,
@@ -3373,7 +3375,8 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
           <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
-          <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>`;
+          <div cursor class="mtcitem3"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>
+          <div cursor class="mtcitem2"><i class="iconfont icon-xiazai"></i><span>下载</span></div>`;
   if (_d.userInfo.account === 'root') {
     str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span>编辑歌曲信息</span></div>
     <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
@@ -3409,6 +3412,10 @@ $searchMusicWrap.find('ul').on('click', '.song_info_wrap', function (e) {
               }).catch(err => { });
             }
           })
+        } else if (_getTarget(e, '.mtcitem2')) {
+          close();
+          let fname = `${sobj.artist}-${sobj.name}.mp3`;
+          downloadFile(`${mediaURL}/music/${fname}`, fname)
         } else if (_getTarget(e, '.mtcitem3')) {
           let str = '';
           _d.music.forEach((v, i) => {
@@ -3920,9 +3927,9 @@ function rendermusiclist() {
     str = '';
   arr.forEach((item) => {
     let name = encodeHtml(item.name);
-    let des = item.des ? `-${encodeHtml(item.des)}` : '';
+    let des = item.des ? encodeHtml(item.des) : '';
     let pic = !/^\/img/.test(item.pic) ? `${mediaURL}${item.pic}` : item.pic;
-    str += `<li class="song_list_item" title="${name}${des}" data-id="${item.id}" cursor draggable="true">
+    str += `<li class="song_list_item" title="${name}\n${des}" data-id="${item.id}" cursor draggable="true">
       <div class="list_logo">
         <img class="logo" data-src="${pic}"></div>
         <span>${name}</sapn>
@@ -4056,6 +4063,7 @@ function rendermusicitem(gao) {
         <div cursor title="添加到播放列表" class="add_all_playing_btn">添加</div>
         ${ind == 1 ? '' : '<div cursor class="collect_songs_btn">收藏</div>'}
         <div cursor class="move_song_btn">${ind < 3 ? '添加到' : '移动到'}</div>
+        <div cursor class="download_song_btn">下载</div>
         ${_d.userInfo.account === 'root' || ind != 2 ? `<div cursor class="del_songs_btn">${ind == 2 ? '删除' : '移除'}</div>` : ''}
         ${ind < 2 ? '<div cursor class="clear_all_song_btn">清空</div>' : ''}
       </div>`;
@@ -4485,7 +4493,15 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
       openIframe(`/sharelist`, '分享列表');
     }
   }).catch(err => { });
-}, 1000, true)).on('click', '.collect_songs_btn', function (e) {
+}, 1000, true)).on('click', '.download_song_btn', debounce(function () {
+  let arr = getCheckSongItem();
+  if (arr.length === 0) return;
+  arr.forEach(item => {
+    let fname = `${item.artist}-${item.name}.mp3`;
+    downloadFile(`${mediaURL}/music/${fname}`, fname)
+  })
+  $msuicContentBox.find('.list_items_wrap .sheck_song_btn').click();
+})).on('click', '.collect_songs_btn', function (e) {
   //收藏选中
   let ar = getCheckSongItem();
   if (ar.length === 0) return;
@@ -4695,7 +4711,8 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
           <div cursor class="mtcitem7"><i class="iconfont icon-bianji"></i><span>编辑歌词</span></div>
           <div cursor class="mtcitem8"><i class="iconfont icon-tupian"></i><span>封面</span></div>
           <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
-          <div cursor class="mtcitem3"><i class="iconfont ${ii < 3 ? 'icon-icon-test' : 'icon-moveto'}"></i><span>${ii < 3 ? '添加到' : '移动到'}</span></div>`;
+          <div cursor class="mtcitem3"><i class="iconfont ${ii < 3 ? 'icon-icon-test' : 'icon-moveto'}"></i><span>${ii < 3 ? '添加到' : '移动到'}</span></div>
+          <div cursor class="mtcitem2"><i class="iconfont icon-xiazai"></i><span>下载</span></div>`;
   if (_d.userInfo.account === 'root') {
     str += `<div cursor class="mtcitem6"><i class="iconfont icon-bianji"></i><span>编辑歌曲信息</span></div>`;
     if (sobj.mv === 'y') {
@@ -4741,6 +4758,10 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
               }).catch(err => { });
             }
           })
+        } else if (_getTarget(e, '.mtcitem2')) {
+          close();
+          let fname = `${sobj.artist}-${sobj.name}.mp3`;
+          downloadFile(`${mediaURL}/music/${fname}`, fname)
         } else if (_getTarget(e, '.mtcitem3')) {
           let str = '',
             id = $songListWrap.listId;
@@ -5093,6 +5114,7 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
             <div cursor class="mtcitem7"><i class="iconfont icon-fuzhi"></i><span>复制歌曲名</span></div>
             <div cursor class="mtcitem10"><i class="iconfont icon-about"></i><span>歌曲信息</span></div>
             <div cursor class="mtcitem8"><i class="iconfont icon-icon-test"></i><span>添加到</span></div>
+            <div cursor class="mtcitem11"><i class="iconfont icon-xiazai"></i><span>下载</span></div>
             ${_d.userInfo.account == 'root' ? '<div cursor class="mtcitem9"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>' : ''}`;
     rightMenu(e, str, function ({ close, e }) {
       if (_getTarget(e, '.mtcitem')) {
@@ -5272,6 +5294,10 @@ $lrcMenuWrap.on('click', '.collect_song_btn', function (e) {
               <div style="font-size:16px;"><em style="color:#1389a7;flex:none;">添加时间：</em><em style="flex:auto;color:#5a5a5a;">${creat_time}</em></div>
                     `
         rightMenu(e, str);
+      } else if (_getTarget(e, '.mtcitem11')) {
+        close();
+        let fname = `${musicobj.artist}-${musicobj.name}.mp3`;
+        downloadFile(`${mediaURL}/music/${fname}`, fname)
       };
     });
   },

@@ -727,7 +727,7 @@ route.get('/getrecycle', async (req, res) => {
       account = req._userInfo.account,
       str = 'id,name';
     if (type === 'bookmk') {
-      str = 'id,name,link';
+      str = 'id,name,link,des';
     } else if (type === 'history') {
       str = 'id,data';
     }

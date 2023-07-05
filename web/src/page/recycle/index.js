@@ -75,14 +75,15 @@ function renderList(y) {
         str += `<p>It feels lonely here...</p>`;
       } else {
         data.forEach(v => {
-          let { name, id, link, data } = v;
+          let { name, id, link, data, des } = v;
+          des = des ? encodeHtml(des) : '';
           name ? null : name = data;
           name = encodeHtml(name);
-          link ? name = `${name}(${link})` : null;
+          link ? name = `${name}(${encodeHtml(link)})${des ? `-${des}` : ''}` : null;
           str += `<ul class="item_box" data-id="${id}" data-type="${type}">
                   <div cursor check="n" class="check_state"></div>
                   <li class="item_type iconfont ${slogo}"></li>
-                  <li title="${name}" class="item_title">${name}</li>
+                  <li class="item_title">${name}</li>
                 </ul>`;
         });
       }
