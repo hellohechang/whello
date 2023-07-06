@@ -70,8 +70,10 @@ class Msg {
     this.el.isCheck = true;
     this.el.style.zIndex = zIndex + 1;
     this.el.style.opacity = 1;
-    clearTimeout(this.timer);
-    this.timer = null;
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
   hdLeave() {
     this.el.style.zIndex = zIndex;
@@ -102,13 +104,19 @@ class Msg {
   }
   close() {
     this.unbind();
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
     let idx = msgArr.findIndex(item => item === this.el);
     msgArr.splice(idx, 1);
     let h = this.el.offsetHeight + 20;
     this.el.style.transition = '.5s ease-out';
     this.el.style.marginTop = `-${h}px`;
     this.el.style.opacity = 0;
-    setTimeout(() => {
+    let timer = setTimeout(() => {
+      clearTimeout(timer);
+      timer = null;
       this.el.remove();
       this.callback && this.callback('close');
     }, 500)

@@ -126,6 +126,7 @@ body:before {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    align-items: center;
 
     &:hover {
       background-color: #ffffffde;
@@ -137,10 +138,8 @@ body:before {
     }
 
     li {
-      display: flex;
-      align-items: center;
       white-space: pre-wrap;
-      word-break: break-word;
+      word-break: break-all;
     }
 
     .del_item,
@@ -149,9 +148,9 @@ body:before {
     .lock_state {
       flex: none;
       width: 40px;
-      justify-content: center;
+      line-height: 40px;
       font-size: 20px;
-      line-height: 22px;
+      text-align: center;
     }
 
     .set_btn {
@@ -190,7 +189,7 @@ body:before {
 
     .item_title {
       flex: auto;
-      line-height: 22px;
+      line-height: 24px;
       color: #2d2e2e;
       padding: 10px 0;
 

@@ -196,6 +196,17 @@ queryData('user', 'account').then(() => { }).catch(async () => {
     data    TEXT NOT NULL
 );
 `);
+    await runSqlite(`CREATE TABLE todo (
+    id      TEXT UNIQUE
+                 NOT NULL
+                 PRIMARY KEY,
+    account TEXT NOT NULL,
+    time    TEXT NOT NULL,
+    data    TEXT NOT NULL,
+    state   TEXT NOT NULL
+                 DEFAULT (0) 
+);
+`);
     await runSqlite(`CREATE TABLE user (
     state    TEXT DEFAULT (0) 
                   NOT NULL,
@@ -790,5 +801,4 @@ route.post('/recoverrecycle', async (req, res) => {
     _err(res);
   }
 });
-
 module.exports = route;

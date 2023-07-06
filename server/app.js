@@ -26,7 +26,6 @@ let {
   jwtde,
   _mkdir,
   readMenu,
-  _readFile,
   sliceLog,
 } = require('./utils');
 const _d = require('./data.js');
@@ -123,6 +122,7 @@ app.use('/api/chat', require('./routes/chat'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/note', require('./routes/note'));
 app.use('/api/getfile', require('./routes/getfile'));
+app.use('/api/todo', require('./routes/todo'));
 
 app.use(express.static(__dirname + '/static'));
 app.get('*', (req, res) => {

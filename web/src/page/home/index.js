@@ -117,7 +117,10 @@ const $pageBg = $('.page_bg'),
   $bgList = $allBgWrap.find('.bg_list'),
   $searchBoxBtn = $('.search_box_btn'),
   $mainid = $('#main'),
-  $clock = $('.clock');
+  $clock = $('.clock'),
+  $todoBox = $('.todo_box'),
+  $theadBtns = $todoBox.find('.t_head_btns'),
+  $todoList = $todoBox.find('.todo_list');;
 $myAudio[0].preload = "none";
 let $document = $(document),
   dmwidth = $document.width(),
@@ -257,6 +260,31 @@ let closeLoading = function () {
     _setTimeout(() => {
       $searchBoxBtn.stop().show(_speed, () => {
         _msg.info(`Welcome ${_d.userInfo.username}`);
+        _getAjax('/chat/getnews', { a: 3 }).then((result) => {
+          if (parseInt(result.code) === 0) {
+            $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeOut(_speed);
+          } else {
+            $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeIn(_speed);
+            _msg.warning(`您有新的消息，请注意查收`, type => {
+              if (type == 'click') {
+                $showChatRoomBtn.click();
+              }
+            })
+          }
+        }).catch(err => { });
+        _getAjax('/user/renewal').then(res => { }).catch(err => { });
+        _getAjax('/todo/list').then(res => {
+          if (res.code == 0) {
+            _d.todoList = res.data;
+            let arr = _d.todoList.filter(item => item.state == '0');
+            if (arr.length == 0) return;
+            _msg.warning(`您有 ${arr.length} 条未完成事项`, type => {
+              if (type == 'click') {
+                $rightBox.find('.show_todo').click();
+              }
+            })
+          }
+        })
       });
       $pageBg.removeClass('sce');
       $onloading.remove();
@@ -269,6 +297,177 @@ function setZindex($el) {
   zindexnum++;
   $el.css('z-index', zindexnum);
 }
+function todoLoading() {
+  let str = '';
+  new Array(30).fill(null).forEach(() => {
+    let w = Math.round(Math.random() * (90 - 20) + 20);
+    str += `<p style="pointer-events: none;background-color:rgb(171 171 171 / 20%);height:40px;width:100%;margin:10px 0;"></p>
+            ${w % 2 === 0
+        ? '<p style="pointer-events: none;background-color:rgb(171 171 171 / 20%);height:40px;width:100%;margin:10px 0;"></p>'
+        : ''
+      }
+            <p style="pointer-events: none;background-color:rgb(171 171 171 / 20%);height:40px;width:${w}%;margin:10px 0;"></p>
+      `;
+  });
+  $todoList.html(str).scrollTop(0);
+}
+function renderTodoList() {
+  if ($todoBox.is(':hidden')) return;
+  if ($todoList.children().length == 0) {
+    todoLoading();
+  }
+  _getAjax('/todo/list').then(res => {
+    if (res.code == 0) {
+      _d.todoList = res.data;
+      rTodoList();
+    }
+  })
+}
+function rTodoList() {
+  if ($todoBox.is(':hidden')) return;
+  let str = `<div>
+    <button class="add_btn btn btn_primary">添加</button>${_d.todoList.some(item => item.state == '1') ? '<button class="clear_btn btn btn_danger">清除已完成</button>' : ''}
+    ${_d.todoList.length > 0 ? '<button class="clear_all_btn btn btn_danger">清空</button>' : ''}
+        </div>`;
+  if (_d.todoList.length == 0) {
+    str += `<p style="padding: 20px 0;pointer-events: none;text-align: center;">暂无待办事项</p>`
+    $todoList.html(str);
+    return;
+  }
+  _d.todoList.forEach(item => {
+    let { id, data, state } = item;
+    data = encodeHtml(data);
+    str += `<ul data-id="${id}">
+          <li cursor class="todo_text ${state == '0' ? '' : 'del'}">${data}</li>
+          <li cursor class="set_btn iconfont icon-icon"></li>
+        </ul>`;
+  })
+  $todoList.html(str);
+}
+function getTodoList(id) {
+  return _d.todoList.find(item => item.id == id);
+}
+$theadBtns.on('click', '.t_close_btn', function () {
+  $todoBox.stop().fadeOut(_speed, () => {
+    $todoList.html('');
+  })
+}).on('click', '.t_back_btn', function () {
+  $theadBtns.find('.t_close_btn').click();
+})
+$todoList.on('click', '.add_btn', function (e) {
+  let str = `<textarea autocomplete="off" placeholder="待办内容"></textarea>
+          <button cursor class="mtcbtn">提交</button>`;
+  rightMenu(e, str, debounce(function ({ close, e, inp }) {
+    if (_getTarget(e, '.mtcbtn')) {
+      let va = inp[0];
+      if (va === '') {
+        _msg.error('请输入待办内容');
+        return;
+      }
+      _postAjax('/todo/add', { data: va }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          close();
+          _msg.success(result.codeText);
+          sendCommand({ type: 'updatedata', flag: 'todolist' });
+          renderTodoList();
+          return;
+        }
+      }).catch(err => { });
+    }
+  },
+    1000,
+    true
+  )
+  );
+}).on('click', '.clear_btn', function (e) {
+  _pop({ e, text: '确认清除已完成事项？', confirm: { type: 'danger', text: '清除' } }, type => {
+    if (type == 'confirm') {
+      _getAjax('/todo/del').then((result) => {
+        if (parseInt(result.code) === 0) {
+          _msg.success(result.codeText);
+          sendCommand({ type: 'updatedata', flag: 'todolist' });
+          renderTodoList();
+          return;
+        }
+      }).catch(err => { });
+    }
+  })
+}).on('click', '.clear_all_btn', function (e) {
+  _pop({ e, text: '确认清空事项？', confirm: { type: 'danger', text: '清空' } }, type => {
+    if (type == 'confirm') {
+      _getAjax('/todo/del', { id: 'all' }).then((result) => {
+        if (parseInt(result.code) === 0) {
+          _msg.success(result.codeText);
+          sendCommand({ type: 'updatedata', flag: 'todolist' });
+          renderTodoList();
+          return;
+        }
+      }).catch(err => { });
+    }
+  })
+}).on('click', '.set_btn', function (e) {
+  const todo = getTodoList($(this).parent().attr('data-id'));
+  let str = `${todo.state == 0 ? '<div cursor class="mtcitem"><i class="iconfont icon-bianji"></i><span>编辑</span></div>' : ''}
+    <div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
+  rightMenu(e, str, debounce(function ({ close, e }) {
+    if (_getTarget(e, '.mtcitem')) {
+      let str = `<textarea autocomplete="off" placeholder="待办内容">${encodeHtml(todo.data)}</textarea>
+          <button cursor class="mtcbtn">提交</button>`;
+      rightMenu(e, str, debounce(function ({ close, e, inp }) {
+        if (_getTarget(e, '.mtcbtn')) {
+          let va = inp[0];
+          if (va === '') {
+            _msg.error('请输入待办内容');
+            return;
+          }
+          if (va == todo.data) return;
+          _postAjax('/todo/edit', { id: todo.id, data: va }).then((result) => {
+            if (parseInt(result.code) === 0) {
+              close();
+              todo.data = va;
+              _msg.success(result.codeText);
+              sendCommand({ type: 'updatedata', flag: 'todolist' });
+              renderTodoList();
+              return;
+            }
+          }).catch(err => { });
+        }
+      },
+        1000,
+        true
+      )
+      );
+    } else if (_getTarget(e, '.mtcitem1')) {
+      _pop({ e, text: '确认删除？', confirm: { type: 'danger', text: '删除' } }, type => {
+        if (type == 'confirm') {
+          _getAjax('/todo/del', { id: todo.id }).then((result) => {
+            if (parseInt(result.code) === 0) {
+              close();
+              _msg.success(result.codeText);
+              sendCommand({ type: 'updatedata', flag: 'todolist' });
+              renderTodoList();
+              return;
+            }
+          }).catch(err => { });
+        }
+      })
+    }
+  }, 1000, true))
+}).on('click', '.todo_text', debounce(function () {
+  const todo = getTodoList($(this).parent().attr('data-id'));
+  let obj = { id: todo.id };
+  if (todo.state == '1') {
+    obj.flag = 'y'
+  }
+  _getAjax('/todo/state', obj).then(res => {
+    if (res.code == 0) {
+      _msg.success(res.codeText);
+      sendCommand({ type: 'updatedata', flag: 'todolist' });
+      renderTodoList();
+    }
+  })
+}, 1000, true))
+
 // 拖动移动列表位置
 ~(function () {
   let fromDom = null;
@@ -1052,16 +1251,6 @@ function hideAside() {
     $aside.find('.list').html('');
   });
 }
-
-_getAjax('/chat/getnews', { a: 3 }).then((result) => {
-  if (parseInt(result.code) === 0) {
-    $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeOut(_speed);
-  } else {
-    $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeIn(_speed);
-  }
-}).catch(err => { });
-_getAjax('/user/renewal').then(res => { }).catch(err => { });
-
 
 _getAjax('/user/getuserinfo').then((result) => {
   if (parseInt(result.code) === 0) {
@@ -3270,6 +3459,8 @@ $document.on('click', function (e) {
     setZindex($musicMvWrap);
   } else if (_getTarget(e, '.log_wrap')) {
     setZindex($logWrap);
+  } else if (_getTarget(e, '.todo_box')) {
+    setZindex($todoBox);
   } else if (_getTarget(e, '.chat_room_wrap')) {
     setZindex($chatRoomWrap);
   } else if (_getTarget(e, '.edit_lrc_wrap')) {
@@ -5454,6 +5645,7 @@ drag($('.clock')[0], $('.clock')[0], 'lastmyclock');
 drag($chatHeadBtns.find('.chat_title')[0], $chatRoomWrap[0]);
 drag($userInfoWrap[0], $userInfoWrap[0]);
 drag($logHeadBtns.find('.l_log_space')[0], $logWrap[0]);
+drag($theadBtns.find('.t_space')[0], $todoBox[0]);
 drag($miniPlayer[0], $miniPlayer[0], 'lastmusichide');
 drag($miniLrcWrap[0], $miniLrcWrap[0], 'lastwingc');
 drag($musicMvWrap.find('.m_top_space')[0], $musicMvWrap[0]);
@@ -5716,7 +5908,8 @@ $userLogoBtn.on('click',
   debounce(
     function (e) {
       $rightMenuMask.css('display', 'block');
-      $rightBox.scrollTop(0);
+      let num = _d.todoList.filter(item => item.state == 0).length;
+      $rightBox.scrollTop(0).find('.show_todo span').text(`待办事项${num == 0 ? '' : `(${num})`}`);
       setZindex($rightMenuMask);
       _setTimeout(() => {
         $rightBox.addClass('open');
@@ -5726,10 +5919,6 @@ $userLogoBtn.on('click',
     true
   )
 );
-
-
-
-
 
 $userInfoWrap
   .on('click', '.edit_user_name', function (e) {
@@ -6173,7 +6362,15 @@ $rightBox.on('click', '.user_name', function () {
   },
   1000,
   true
-)).on('click', '.log_out', (e) => {
+)).on('click', '.show_todo', function () {
+  $rightBox.removeClass('open');
+  $rightMenuMask.stop().fadeOut(_speed);
+  setZindex($todoBox);
+  $todoBox.stop().fadeIn(_speed, () => {
+    $todoBox.css('display', 'flex');
+    renderTodoList();
+  });
+}).on('click', '.log_out', (e) => {
   _pop({
     e,
     text: '退出当前，还是退出所有登录设备？',
@@ -7420,6 +7617,10 @@ window.addEventListener(
         top: '50%',
         left: '50%',
       });
+      $todoBox.css({
+        top: '50%',
+        left: '50%',
+      });
       $musicMvWrap.css({
         top: '50%',
         left: '50%',
@@ -7670,7 +7871,9 @@ function handleuser() {
                   ).catch(err => { });
                 }
               }
-            }
+            } else if (flag === 'todolist') {
+              renderTodoList();
+            };
           } else if (type === 'yc') {
             _d.remoteState = false;
             $lrcHead.find('.remote_play').removeClass('red');
