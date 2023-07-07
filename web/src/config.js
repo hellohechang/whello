@@ -94,6 +94,7 @@ export const _d = {
   remoteState: false,
   checkColor: 'rgb(118 254 89 / 58%)',
   myTitle: 'Hello',
+  todoList: [],
   localStorageDefaultData: {
     md: [],
     dian: 'y',

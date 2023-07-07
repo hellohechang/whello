@@ -1382,3 +1382,34 @@ export function getDuration(file) {
     }
   })
 }
+export function sendNotification(opt, callback) {
+  try {
+    // 先检查浏览器是否支持
+    if (!('Notification' in window) || Notification.permission === 'denied') return;
+
+    if (Notification.permission === 'granted') {
+      //用户已授权，直接发送通知
+      notify();
+    } else {
+      // 默认，先向用户询问是否允许显示通知
+      Notification.requestPermission(function (permission) {
+        // 如果用户同意，就可以直接发送通知
+        if (permission === 'granted') {
+          notify();
+        }
+      });
+    }
+    function notify() {
+      let obj = {
+        title: '新通知', body: '', icon: '', ...opt
+      }
+      let notification = new Notification(obj.title, {
+        icon: obj.icon,
+        body: obj.body
+      });
+      notification.onclick = function () {
+        callback && callback();
+      }
+    }
+  } catch (error) { }
+}

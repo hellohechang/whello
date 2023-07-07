@@ -51,6 +51,7 @@ import {
   userlenght,
   getDuration,
   toLogin,
+  sendNotification,
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
@@ -276,13 +277,7 @@ let closeLoading = function () {
         _getAjax('/todo/list').then(res => {
           if (res.code == 0) {
             _d.todoList = res.data;
-            let arr = _d.todoList.filter(item => item.state == '0');
-            if (arr.length == 0) return;
-            _msg.warning(`您有 ${arr.length} 条未完成事项`, type => {
-              if (type == 'click') {
-                $rightBox.find('.show_todo').click();
-              }
-            })
+            todoMsg();
           }
         })
       });
@@ -296,6 +291,15 @@ let zindexnum = 100;
 function setZindex($el) {
   zindexnum++;
   $el.css('z-index', zindexnum);
+}
+function todoMsg() {
+  let arr = _d.todoList.filter(item => item.state == '0');
+  if (arr.length == 0) return;
+  _msg.warning(`您有 ${arr.length} 条未完成事项`, type => {
+    if (type == 'click') {
+      $rightBox.find('.show_todo').click();
+    }
+  })
 }
 function todoLoading() {
   let str = '';
@@ -325,7 +329,7 @@ function renderTodoList() {
 }
 function rTodoList() {
   if ($todoBox.is(':hidden')) return;
-  let str = `<div>
+  let str = `<div style="padding-bottom: 10px;">
     <button class="add_btn btn btn_primary">添加</button>${_d.todoList.some(item => item.state == '1') ? '<button class="clear_btn btn btn_danger">清除已完成</button>' : ''}
     ${_d.todoList.length > 0 ? '<button class="clear_all_btn btn btn_danger">清空</button>' : ''}
         </div>`;
@@ -2564,6 +2568,7 @@ $randomChangeBgBtn.on('click', throttle(function () {
 
 // 时间日期
 let musicflagnum = 0;
+let todoNum = 0;
 function showTime(time = Date.now()) {
   let arr = formatDate({ template: '{0}-{1}-{2}-{3}-{4}-{5}-{6}', timestamp: +time }).split('-'),
     [year, month, date, hour, minute, second, strDate] = arr;
@@ -2596,6 +2601,11 @@ function showTime(time = Date.now()) {
         }
       }).catch(err => { });
     }
+  }
+  todoNum++;
+  if (todoNum >= 30 * 60) {
+    todoNum = 0;
+    todoMsg();
   }
   _setTimeout(showTime, 1000);
 }
@@ -5840,6 +5850,12 @@ _mySlide({
     $logHeadBtns.find('.l_close_btn').click();
   },
 });
+_mySlide({
+  el: '.todo_list',
+  right() {
+    $theadBtns.find('.t_close_btn').click();
+  },
+});
 // 聊天
 _mySlide({
   el: '.chat_list_box',
@@ -5909,7 +5925,8 @@ $userLogoBtn.on('click',
     function (e) {
       $rightMenuMask.css('display', 'block');
       let num = _d.todoList.filter(item => item.state == 0).length;
-      $rightBox.scrollTop(0).find('.show_todo span').text(`待办事项${num == 0 ? '' : `(${num})`}`);
+      $rightBox.scrollTop(0).find('.show_todo span').html(`待办事项${num == 0 ? '' : `<em style="display: inline-block;background-color: #ffffffd4;width: 20px;line-height: 20px;text-align: center;border-radius: 4px;color: #f56c6c;margin-left: 10px;
+">${num}</em>`}`);
       setZindex($rightMenuMask);
       _setTimeout(() => {
         $rightBox.addClass('open');
@@ -6556,7 +6573,6 @@ $chatHeadBtns.on('click', '.c_close_btn', function () {
   } else {
     $chatHeadBtns.find('.clear_msg_btn').stop().fadeOut(_speed);
   }
-  $chatHeadBtns.find('.search_msg_inp').val('');
   chatobj.account = 'chang';
   $chatHeadBtns.find('.chat_title').text('聊天室');
   $chatHeadBtns.find('.search_msg_inp').val('');
@@ -6733,28 +6749,21 @@ function chatimgLoad() {
 }
 
 // 浏览器通知
-function tongzhi(name, data) {
-  playSound(`/img/notice.mp3`);
+function tongzhi(name, data, from, to) {
   _msg.warning(`${name}: ${data}`, (type) => {
     if (type == 'click') {
+      chatobj.account = to == 'chang' ? to : from;
+      $chatHeadBtns.find('.chat_title').text(`${to == 'chang' ? '聊天室' : name}`);
+      $chatHeadBtns.find('.search_msg_inp').val('');
       $showChatRoomBtn.click();
     }
   });
-  // try {
-  //   if (window.Notification.permission == "granted") {
-  //     new Notification(name, {
-  //       body: data,
-  //     });
-  //   } else if (window.Notification.permission != "denied") {
-  //     window.Notification.requestPermission(function (permission) {
-  //       new Notification(name, {
-  //         body: data,
-  //       });
-  //     });
-  //   }
-  // } catch (error) {
-
-  // }
+  sendNotification({ title: name + '：', body: data, icon: `${mediaURL}/logo/${from}/${from}.png` }, () => {
+    chatobj.account = to == 'chang' ? to : from;
+    $chatHeadBtns.find('.chat_title').text(`${to == 'chang' ? '聊天室' : name}`);
+    $chatHeadBtns.find('.search_msg_inp').val('');
+    $showChatRoomBtn.click();
+  });
 }
 
 //打开聊天窗
@@ -7721,7 +7730,7 @@ function handleuser() {
                   let data = result.data;
                   //如果是自己发送的则不通知
                   if (from.account !== _d.userInfo.account) {
-                    tongzhi(data[0].name, data[0].data);
+                    tongzhi(data[0].name, data[0].data, from.account, to);
                   }
                   if ($chatRoomWrap.is(':hidden')) {
                     //聊天框是隐藏
@@ -7797,7 +7806,7 @@ function handleuser() {
             } else if (flag === 'del') {
               //撤回消息
               if (from.account !== _d.userInfo.account) {
-                tongzhi(from.username, '撤回消息');
+                tongzhi(from.username, '撤回消息', from.account, to);
               }
               if (!$chatRoomWrap.is(':hidden')) {
                 if (
@@ -7814,7 +7823,7 @@ function handleuser() {
             } else if (flag === 'clear') {
               //清空聊天框
               if (from.account !== _d.userInfo.account) {
-                tongzhi(from.username, '清空聊天记录');
+                tongzhi(from.username, '清空聊天记录', from.account, to);
               }
               if (!$chatRoomWrap.is(':hidden')) {
                 if (
