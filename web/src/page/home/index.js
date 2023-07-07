@@ -338,6 +338,7 @@ function rTodoList() {
     $todoList.html(str);
     return;
   }
+  _d.todoList.sort((a, b) => a.state - b.state);
   _d.todoList.forEach(item => {
     let { id, data, state } = item;
     data = encodeHtml(data);
