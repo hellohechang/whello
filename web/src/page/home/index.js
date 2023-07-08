@@ -1,4 +1,4 @@
-import $, { fn } from "jquery";
+import $ from "jquery";
 import SparkMD5 from "spark-md5";
 import md5 from 'md5';
 import './recorder.mp3.min';
@@ -52,6 +52,8 @@ import {
   getDuration,
   toLogin,
   sendNotification,
+  formartSongFilename,
+  isMusicFile,
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
@@ -4533,16 +4535,15 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
         fn(num);
         return;
       }
-      if (
-        !/^[^\-]*[^\s\-]\-[^\s\-][^\-]*\.(jpg|mp3|lrc|mp4)$/i.test(name)
-      ) {
+      const newName = formartSongFilename(name);
+      if (!newName) {
         pro.fail();
         _msg.error(`${name} 格式错误`);
         num++;
         fn(num);
         return;
       }
-
+      name = newName;
       try {
         //文件切片
         let { chunks, count, suffix, HASH } = await fileSlice(
@@ -4588,7 +4589,7 @@ $msuicContentBox.find('.list_items_wrap').on('click', '.edit_song_list_btn', fun
             let robj = {
               HASH, count, name
             }
-            if (b.toLowerCase() === 'mp3') {
+            if (isMusicFile(name)) {
               let duration = await getDuration(files[num]);
               robj.duration = duration;
             }

@@ -35,15 +35,15 @@ module.exports = merge(require('./webpack.base'), {
       patterns: [
         {
           from: resolve(__dirname, '..', 'src/img'),
-          to: resolve(__dirname, '..', 'static/img')
+          to: resolve(__dirname, '../../server/static/img')
         },
         {
           from: resolve(__dirname, '..', 'src/css'),
-          to: resolve(__dirname, '..', 'static/css')
+          to: resolve(__dirname, '../../server/static/css')
         },
         {
           from: resolve(__dirname, '..', 'src/favicon.ico'),
-          to: resolve(__dirname, '..', 'static')
+          to: resolve(__dirname, '../../server/static')
         }
       ],
     }),

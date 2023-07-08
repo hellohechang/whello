@@ -19,7 +19,7 @@ module.exports = {
   },
   output: {
     filename: 'js/[name].[chunkhash:8].js',
-    path: resolve(__dirname, '..', 'static'),
+    path: resolve(__dirname, '../../server/static'),
     clean: true,
   },
   plugins: [

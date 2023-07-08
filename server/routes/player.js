@@ -24,6 +24,8 @@ const {
   _rename,
   hdSearch,
   getMusicObj,
+  formartSongFilename,
+  isMusicFile
 } = require('../utils');
 const _d = require('../data');
 
@@ -738,7 +740,8 @@ route.post('/mergefile', async (req, res) => {
       return;
     }
     let { HASH, count, name, duration } = req.body;
-    if (!/(\.JPG|\.LRC|\.MP3|\.MP4)$/gi.test(name)) {
+    name = formartSongFilename(name);
+    if (!name) {
       _err(res);
       return;
     }
@@ -750,7 +753,7 @@ route.post('/mergefile', async (req, res) => {
     }
     await mergefile(count, `${_d.filepath}/tem/${HASH}`, `${_d.filepath}/music/${name}`);
     let [a, b] = extname(name);
-    if (b.toLowerCase() == 'mp3') {
+    if (isMusicFile(name)) {
       let id = nanoid();
       let arr = a.split('-');
       await insertData('musics', [{

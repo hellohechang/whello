@@ -1413,3 +1413,14 @@ export function sendNotification(opt, callback) {
     }
   } catch (error) { }
 }
+export function formartSongFilename(str) {
+  if (/[^\-]+\-[^\-]+\.(jpg|mp3|lrc|mp4)$/i.test(str)) {
+    const [fname, suffix] = str.split('.'),
+      [name, artist] = fname.split('-');
+    return name.trim() + '-' + artist.trim() + '.' + suffix.toLowerCase();
+  }
+  return false;
+}
+export function isMusicFile(str) {
+  return /\.(mp3)$/i.test(str);
+}

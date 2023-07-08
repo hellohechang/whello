@@ -561,7 +561,20 @@ function getSongInfo(url) {
     });
   })
 }
+function formartSongFilename(str) {
+  if (/[^\-]+\-[^\-]+\.(jpg|mp3|lrc|mp4)$/i.test(str)) {
+    const [fname, suffix] = str.split('.'),
+      [name, artist] = fname.split('-');
+    return name.trim() + '-' + artist.trim() + '.' + suffix.toLowerCase();
+  }
+  return false;
+}
+function isMusicFile(str) {
+  return /\.(mp3)$/i.test(str);
+}
 module.exports = {
+  isMusicFile,
+  formartSongFilename,
   getSongInfo,
   sliceLog,
   deepClone,
