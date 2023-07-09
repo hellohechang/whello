@@ -33,7 +33,7 @@ class LoadingBar {
     border-radio:20px;
     pointer-events: none;
     z-index: ${zIndex};
-    background-image: linear-gradient(to right, Green, Orange, red);`;
+    background-image: linear-gradient(to right,Orange 90%, red);`;
     document.body.appendChild(this.el);
   }
   start() {

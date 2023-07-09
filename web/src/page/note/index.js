@@ -489,7 +489,7 @@ function BlogDirectory() {
   let div = document.createElement('div');
   div.style.cssText = `
     width: 0;
-    height: 4px;
+    height: 5px;
     position: fixed;
     bottom: 0;
     left: 0;
