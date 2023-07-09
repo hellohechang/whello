@@ -1424,3 +1424,9 @@ export function formartSongFilename(str) {
 export function isMusicFile(str) {
   return /\.(mp3)$/i.test(str);
 }
+
+export function getPhrase() {
+  return fetch('https://v1.hitokoto.cn').then(res => {
+    return res.json();
+  })
+}

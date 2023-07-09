@@ -54,6 +54,7 @@ import {
   sendNotification,
   formartSongFilename,
   isMusicFile,
+  getPhrase,
 } from '../../utils/utils.js';
 import { _speed, serverURL, mediaURL, _d } from "../../config";
 import '../../js/common';
@@ -123,7 +124,8 @@ const $pageBg = $('.page_bg'),
   $clock = $('.clock'),
   $todoBox = $('.todo_box'),
   $theadBtns = $todoBox.find('.t_head_btns'),
-  $todoList = $todoBox.find('.todo_list');;
+  $todoList = $todoBox.find('.todo_list'),
+  $weatherBox = $('.weather_box');
 $myAudio[0].preload = "none";
 let $document = $(document),
   dmwidth = $document.width(),
@@ -143,6 +145,19 @@ let $document = $(document),
 if (!_getData('account')) {
   toLogin();
 }
+function renderPhrase() {
+  getPhrase().then(res => {
+    let { from, hitokoto } = res,
+      str = `<div class="phrase">${hitokoto || 'xxx'}</div>
+          <div class="phrase_from">— 「 ${from || 'xxx'} 」</div>`;
+    $weatherBox.html(str).stop().fadeIn(_speed);
+  }).catch(() => {
+    $weatherBox.stop().fadeOut(_speed);
+  })
+}
+$weatherBox.on('click', debounce(function () {
+  renderPhrase();
+}, 1000, true))
 ~(function () {
   // 动画
   let _head = document.querySelectorAll('head')[0],
@@ -263,6 +278,7 @@ let closeLoading = function () {
     _setTimeout(() => {
       $searchBoxBtn.stop().show(_speed, () => {
         _msg.info(`Welcome ${_d.userInfo.username}`);
+        renderPhrase();
         _getAjax('/chat/getnews', { a: 3 }).then((result) => {
           if (parseInt(result.code) === 0) {
             $showChatRoomBtn.find('.g_chat_msg_alert').stop().fadeOut(_speed);
@@ -2336,8 +2352,11 @@ $allBgWrap.on('click', '.upload_bg', function () {
   });
 })();
 function bgitemmenu(e, url) {
+  let bgflag = dmwidth > 800 ? 'bg' : 'bgxs',
+    xx = `${mediaURL}/bg/${bgflag}/${url}`;
   let str = '';
-  str += `<div cursor class="mtcitem"><i class="iconfont icon-bizhishezhi"></i><span>设为壁纸</span></div>`;
+  str += `<div cursor class="mtcitem"><i class="iconfont icon-bizhishezhi"></i><span>设为壁纸</span></div>
+          <div cursor class="mtcitem2"><i class="iconfont icon-xiazai"></i><span>下载</span></div>`;
   if (_d.userInfo.account === 'root') {
     str += `<div cursor class="mtcitem1"><i class="iconfont icon-cangpeitubiao_shanchu"></i><span>删除</span></div>`;
   }
@@ -2347,8 +2366,6 @@ function bgitemmenu(e, url) {
     debounce(
       function ({ close, e }) {
         if (_getTarget(e, '.mtcitem')) {
-          let bgflag = dmwidth > 800 ? 'bg' : 'bgxs',
-            xx = `${mediaURL}/bg/${bgflag}/${url}`;
           $allBgWrap.stop().fadeOut(_speed, () => {
             $bgList.html('');
           });
@@ -2390,7 +2407,9 @@ function bgitemmenu(e, url) {
               }
             })
           }
-        }
+        } else if (_getTarget(e, '.mtcitem2')) {
+          downloadFile(xx, url);
+        };
       },
       1000,
       true
@@ -7560,32 +7579,19 @@ $userListBox.on('click', '.user_item', function (e) {
   );
 });
 // 天气
-$.ajax({
-  type: 'get',
-  url: 'https://widget-v3.seniverse.com/api/weather/e14489a8-9a7e-477d-9c6c-b4b390175cca?unit=c&language=auto&location=WX4FBXXFKE4F&geolocation=true&detected=zh-cn',
-  dataType: 'json',
-  contentType: 'application/json;charset=UTF-8',
-  xhrFields: {
-    withCredentials: true,
-  },
-  success: (data) => {
-    try {
-      let w = data.results[0].data[0],
-        { location, text, today, suggestion } = w,
-        str = `<span>${location}</span>
-          <span>${text}</span>
-          <span>${parseInt(today.low)}~${today.high}</span>
-          <span>${suggestion}</span>`;
-      $('.weather_box').html(str);
-    } catch (error) {
-      $('.weather_box').stop().fadeOut(_speed);
-    }
-  },
-  error: (err) => {
-    $('.weather_box').stop().fadeOut(_speed);
-  },
-});
-
+// $.ajax({
+//   type: 'get',
+//   url: 'https://widget-v3.seniverse.com/api/weather/e14489a8-9a7e-477d-9c6c-b4b390175cca?unit=c&language=auto&location=WX4FBXXFKE4F&geolocation=true&detected=zh-cn',
+//   dataType: 'json',
+//   contentType: 'application/json;charset=UTF-8',
+//   xhrFields: {
+//     withCredentials: true,
+//   },
+//   success: (data) => {
+//   },
+//   error: (err) => {
+//   },
+// });
 //桌面大小改变自适应
 window.addEventListener(
   'resize',
