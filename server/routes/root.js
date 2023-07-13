@@ -15,6 +15,7 @@ const {
   jwten,
   hdSearch,
   sliceLog,
+  nanoid
 } = require('../utils');
 
 //拦截器
@@ -268,21 +269,9 @@ route.post('/continuereqlog', async (req, res) => {
 })
 route.post('/updatetoken', async (req, res) => {
   try {
-    let { token } = req.body;
-    _d.tokenKey = token;
+    _d.tokenKey = nanoid();
     await writelog(req, `[更新tokenKey]`);
     _success(res, '更新tokenKey成功');
-  } catch (error) {
-    await writelog(req, `[${req._pathUrl}] ${error}`);
-    _err(res);
-  }
-})
-route.post('/updatefilepath', async (req, res) => {
-  try {
-    let { filepath } = req.body;
-    _d.filepath = filepath;
-    await writelog(req, `[更新filepath]`);
-    _success(res, '更新文件路径成功');
   } catch (error) {
     await writelog(req, `[${req._pathUrl}] ${error}`);
     _err(res);

@@ -188,37 +188,10 @@ $headBtns.on('click', '.clear_upload', function (e) {
     }
   }, 1000, true))
 }).on('click', '.set_token_key', function (e) {
-  let str = `
-        <input autocomplete="off" value="${dataObj.tokenKey}" type="text">
-        <button cursor class="mtcbtn">提交</button>`;
-  rightMenu(e, str, debounce(function ({ e, close, inp }) {
-    if (_getTarget(e, '.mtcbtn')) {
-      let token = inp[0];
-      if (token == '') return;
-      _postAjax('/root/updatetoken', { token }).then(res => {
-        if (res.code == 0) {
-          close();
-          _msg.success(res.codeText);
-          dataObj.tokenKey = token;
-        }
-      })
+  _postAjax('/root/updatetoken').then(res => {
+    if (res.code == 0) {
+      close();
+      _msg.success(res.codeText);
     }
-  }, 1000, true))
-}).on('click', '.file_path', function (e) {
-  let str = `
-        <input autocomplete="off" value="${dataObj.filepath}" type="text">
-        <button cursor class="mtcbtn">提交</button>`;
-  rightMenu(e, str, debounce(function ({ e, close, inp }) {
-    if (_getTarget(e, '.mtcbtn')) {
-      let filepath = inp[0];
-      if (filepath == '') return;
-      _postAjax('/root/updatefilepath', { filepath }).then(res => {
-        if (res.code == 0) {
-          close();
-          _msg.success(res.codeText);
-          dataObj.filepath = filepath;
-        }
-      })
-    }
-  }, 1000, true))
+  })
 });
